@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOB — Agente de Tráfego — Monaco Agency</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #059669; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; transition: all .15s; }
+.btn:hover { background: #262a3a; }
+.btn-primary { background: #059669; color: #fff; border-color: #059669; }
+.btn-primary:hover { background: #047857; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+.summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.sc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 14px 16px; }
+.sc-label { font-size: 11px; color: #6b7280; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px; }
+.sc-val { font-size: 24px; font-weight: 700; color: #fff; }
+.sc-val.red { color: #f87171; }
+.sc-val.amber { color: #fbbf24; }
+.sc-val.green { color: #34d399; }
+.sc-val.blue { color: #60a5fa; }
+.filters { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filters select { background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #c8c8c8; outline: none; }
+.search-box { display: flex; align-items: center; gap: 8px; background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; flex: 1; min-width: 200px; }
+.search-box input { background: transparent; border: none; color: #e8e8e8; font-size: 13px; outline: none; width: 100%; }
+.alert-card { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; transition: border-color .15s; }
+.alert-card:hover { border-color: #374151; }
+.alert-card.critico { border-left: 3px solid #f87171; }
+.alert-card.atencao { border-left: 3px solid #fbbf24; }
+.alert-card.info { border-left: 3px solid #60a5fa; }
+.alert-card.ok { border-left: 3px solid #34d399; }
+.alert-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.alert-content { flex: 1; }
+.alert-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.alert-desc { font-size: 13px; color: #9ca3af; line-height: 1.6; }
+.alert-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.meta-tag { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #1e2130; color: #9ca3af; border: 1px solid #2a2d3a; }
+.meta-tag.red { background: rgba(248,113,113,.1); color: #f87171; border-color: rgba(248,113,113,.3); }
+.meta-tag.amber { background: rgba(251,191,36,.1); color: #fbbf24; border-color: rgba(251,191,36,.3); }
+.meta-tag.green { background: rgba(52,211,153,.1); color: #34d399; border-color: rgba(52,211,153,.3); }
+.meta-tag.blue { background: rgba(96,165,250,.1); color: #60a5fa; border-color: rgba(96,165,250,.3); }
+.meta-tag.purple { background: rgba(167,139,250,.1); color: #a78bfa; border-color: rgba(167,139,250,.3); }
+.alert-bm { font-size: 11px; color: #6b7280; margin-bottom: 3px; }
+.progress-bar { height: 4px; background: #2a2d3a; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+.loading { text-align: center; padding: 60px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 60px; color: #4b5563; }
+.section-header { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+.section-header::after { content: ''; flex: 1; height: 1px; background: #2a2d3a; }
+.last-run { font-size: 12px; color: #4b5563; }
+.periodo-btns { display: flex; gap: 4px; background: #111318; border: 1px solid #2a2d3a; border-radius: 8px; padding: 3px; }
+.periodo-btn { padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; background: transparent; color: #6b7280; transition: all .15s; white-space: nowrap; }
+.periodo-btn:hover { color: #c8c8c8; }
+.periodo-btn.ativo { background: #3b82f6; color: #fff; }
+.date-picker-wrap { display:none; align-items:center; gap:8px; background:#111318; border:1px solid #2a2d3a; border-radius:8px; padding:4px 10px; }
+.date-picker-wrap.show { display:flex; }
+.date-picker-wrap input[type=date] { background:#1e2130; border:1px solid #2a2d3a; border-radius:6px; padding:4px 8px; font-size:12px; color:#e8e8e8; outline:none; }
+.date-picker-wrap span { font-size:12px; color:#6b7280; }
+.date-picker-wrap .btn-aplicar { padding:4px 12px; font-size:12px; background:#3b82f6; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🤖 BOB — Agente de Tráfego <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <div class="periodo-btns">
+      <button class="periodo-btn" onclick="setPeriodo('today', this)">Hoje</button>
+      <button class="periodo-btn" onclick="setPeriodo('yesterday', this)">Ontem</button>
+      <button class="periodo-btn ativo" onclick="setPeriodo('last_7d', this)">7 dias</button>
+      <button class="periodo-btn" onclick="setPeriodo('last_14d', this)">14 dias</button>
+      <button class="periodo-btn" onclick="setPeriodo('last_30d', this)">30 dias</button>
+      <button class="periodo-btn" onclick="toggleCustomDate(this)" id="btn-custom-agente">📅 Personalizado</button>
+    </div>
+    <div class="date-picker-wrap" id="custom-date-agente">
+      <input type="date" id="agente-data-inicio">
+      <span>até</span>
+      <input type="date" id="agente-data-fim">
+      <button class="btn-aplicar" onclick="aplicarCustom()">Aplicar</button>
+    </div>
+    <span class="last-run" id="last-run">Nunca executado</span>
+    <button class="btn btn-primary" onclick="rodarAgente()" id="btn-rodar">🤖 Rodar BOB</button>
+    <button class="btn" onclick="enviarAlertas()" id="btn-enviar" style="border-color:#059669;color:#34d399;display:none;">📤 Enviar no grupo</button>
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="summary-cards">
+    <div class="sc"><div class="sc-label">🔴 Crítico</div><div class="sc-val red" id="s-critico">—</div></div>
+    <div class="sc"><div class="sc-label">⚠️ Atenção</div><div class="sc-val amber" id="s-atencao">—</div></div>
+    <div class="sc"><div class="sc-label">ℹ️ Informativo</div><div class="sc-val blue" id="s-info">—</div></div>
+    <div class="sc"><div class="sc-label">✅ Saudável</div><div class="sc-val green" id="s-ok">—</div></div>
+    <div class="sc"><div class="sc-label">📊 BMs analisadas</div><div class="sc-val" id="s-bms">—</div></div>
+    <div class="sc"><div class="sc-label">📢 Campanhas</div><div class="sc-val" id="s-camps">—</div></div>
+  </div>
+
+  <div class="filters">
+    <div class="search-box">🔍 <input type="text" id="busca" placeholder="Buscar BM ou campanha..." oninput="filtrar()"></div>
+    <select id="filtro-tipo" onchange="filtrar()">
+      <option value="">Todos os alertas</option>
+      <option value="critico">🔴 Crítico</option>
+      <option value="atencao">⚠️ Atenção</option>
+      <option value="info">ℹ️ Informativo</option>
+      <option value="ok">✅ Saudável</option>
+    </select>
+    <select id="filtro-categoria" onchange="filtrar()">
+      <option value="">Todas as categorias</option>
+      <option value="orcamento">💰 Orçamento</option>
+      <option value="performance">📈 Performance</option>
+      <option value="criativo">🎨 Criativo</option>
+      <option value="status">🔄 Status</option>
+      <option value="prazo">⏰ Prazo</option>
+    </select>
+  </div>
+
+  <div id="alertas-container">
+    <div class="empty">Clique em <strong>🤖 Rodar BOB</strong> para o agente analisar todas as BMs</div>
+  </div>
+
+</div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+const token = localStorage.getItem(TOKEN_KEY);
+
+let periodoAgente = 'last_7d';
+let agenteDataInicio = '';
+let agenteDataFim = '';
+
+function setPeriodo(p, el) {
+  periodoAgente = p;
+  agenteDataInicio = '';
+  agenteDataFim = '';
+  document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
+  el.classList.add('ativo');
+  document.getElementById('custom-date-agente').classList.remove('show');
+}
+
+function toggleCustomDate(el) {
+  const wrap = document.getElementById('custom-date-agente');
+  wrap.classList.toggle('show');
+  if (wrap.classList.contains('show')) {
+    el.classList.add('ativo');
+    const hoje = new Date();
+    document.getElementById('agente-data-fim').value = hoje.toISOString().split('T')[0];
+    document.getElementById('agente-data-inicio').value = new Date(hoje - 6*86400000).toISOString().split('T')[0];
+  } else {
+    el.classList.remove('ativo');
+  }
+}
+
+function aplicarCustom() {
+  const ini = document.getElementById('agente-data-inicio').value;
+  const fim = document.getElementById('agente-data-fim').value;
+  if (!ini || !fim) { alert('Selecione as duas datas!'); return; }
+  periodoAgente = 'custom';
+  agenteDataInicio = ini;
+  agenteDataFim = fim;
+  document.getElementById('custom-date-agente').classList.remove('show');
+}
+
+function buildAgenteTimeParam() {
+  if (periodoAgente === 'custom' && agenteDataInicio && agenteDataFim) {
+    return `time_range=${encodeURIComponent(JSON.stringify({since: agenteDataInicio, until: agenteDataFim}))}`;
+  }
+  return `date_preset=${periodoAgente}`;
+}
+
+const CONTAS_FOOD = [
+  { nome: 'CA - ROSA SUL NOVA', id: 'act_2523170184768797', tipo: 'food' },
+  { nome: 'Dia de Pizza - Dourados', id: 'act_723575425785405', tipo: 'food' },
+  { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food' },
+  { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food' },
+  { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food' },
+  { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food' },
+  { nome: 'CA - Bella Capri Uberlândia', id: 'act_2379679152502158', tipo: 'food' },
+  { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food' },
+  { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food' },
+  { nome: 'Berlim Pizzaria', id: 'act_836447545843342', tipo: 'food' },
+  { nome: 'A FAVORITA', id: 'act_969681458906352', tipo: 'food' },
+  { nome: 'CA - BRAVA PIZZA', id: 'act_4279801688941861', tipo: 'food' },
+  { nome: 'Pavão Lanchonete', id: 'act_1759603645448352', tipo: 'food' },
+  { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food' },
+  { nome: 'Ótica Scherer', id: 'act_1179077680434286', tipo: 'food' },
+];
+
+let todosAlertas = [];
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+async function fetchCampanhas(accountId) {
+  const tp = buildAgenteTimeParam();
+  const insField = tp.startsWith('time_range')
+    ? `insights.time_range(${decodeURIComponent(tp.replace('time_range=',''))}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`
+    : `insights.date_preset(${periodoAgente}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`;
+  const adsInsField = tp.startsWith('time_range')
+    ? `insights.time_range(${decodeURIComponent(tp.replace('time_range=',''))}){spend,impressions,clicks,actions,action_values}`
+    : `insights.date_preset(${periodoAgente}){spend,impressions,clicks,actions,action_values}`;
+  const fields = [
+    'id', 'name', 'status', 'effective_status', 'objective',
+    'lifetime_budget', 'daily_budget', 'budget_remaining',
+    'start_time', 'stop_time', 'created_time',
+    insField,
+    `ads.limit(50){id,name,status,effective_status,${adsInsField}}`
+  ].join(',');
+  const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
+  const r = await fetch(url);
+  return r.json();
+}
+
+function analisarCampanha(camp, bmNome, bmId) {
+  const alertas = [];
+  const hoje = new Date();
+
+  const ins = camp.insights?.data?.[0];
+  const gasto7d = parseFloat(ins?.spend || 0);
+  const impr7d = parseInt(ins?.impressions || 0);
+  const actions = ins?.actions || [];
+  const actionValues = ins?.action_values || [];
+  const pedidos7d = parseInt(actions.find(a => a.action_type === 'purchase')?.value || 0);
+  const fat7d = parseFloat(actionValues.find(a => a.action_type === 'purchase')?.value || 0);
+  const roas7d = gasto7d > 0 && fat7d > 0 ? fat7d / gasto7d : 0;
+  const cpr7d = pedidos7d > 0 ? gasto7d / pedidos7d : 0;
+
+  const lifetimeBudget = parseFloat(camp.lifetime_budget || 0) / 100;
+  const dailyBudget = parseFloat(camp.daily_budget || 0) / 100;
+  const budgetRemaining = parseFloat(camp.budget_remaining || 0) / 100;
+  const status = camp.effective_status || camp.status;
+
+  // Ads ativos
+  const ads = camp.ads?.data || [];
+  const adsAtivos = ads.filter(a => a.effective_status === 'ACTIVE' || a.effective_status === 'CAMPAIGN_PAUSED');
+  const adsPausados = ads.filter(a => ['PAUSED', 'ADSET_PAUSED'].includes(a.effective_status));
+  const adsRascunho = ads.filter(a => a.effective_status === 'ARCHIVED');
+
+  // Calcular gasto por anúncio ativo
+  const gastoMedioAd = adsAtivos.length > 0 ? gasto7d / adsAtivos.length : 0;
+
+  // Calcular dias restantes se tiver lifetime budget e stop_time
+  let diasRestantes = null;
+  let gastoDiarioEstimado = null;
+  let orcamentoSemanalEstimado = null;
+  let tetoMaxAdSemanal = null;
+
+  if (camp.stop_time) {
+    const stopDate = new Date(camp.stop_time);
+    diasRestantes = Math.ceil((stopDate - hoje) / 86400000);
+  }
+
+  if (lifetimeBudget > 0) {
+    // Calcular dias totais da campanha
+    const startDate = camp.start_time ? new Date(camp.start_time) : hoje;
+    const stopDate = camp.stop_time ? new Date(camp.stop_time) : null;
+    const diasTotais = stopDate ? Math.ceil((stopDate - startDate) / 86400000) : null;
+
+    if (diasTotais && diasTotais > 0) {
+      gastoDiarioEstimado = lifetimeBudget / diasTotais;
+      orcamentoSemanalEstimado = gastoDiarioEstimado * 7;
+      tetoMaxAdSemanal = adsAtivos.length > 0 ? orcamentoSemanalEstimado / adsAtivos.length : 0;
+    }
+  } else if (dailyBudget > 0) {
+    gastoDiarioEstimado = dailyBudget;
+    orcamentoSemanalEstimado = dailyBudget * 7;
+    tetoMaxAdSemanal = adsAtivos.length > 0 ? orcamentoSemanalEstimado / adsAtivos.length : 0;
+  }
+
+  const base = { bmNome, bmId, campNome: camp.name, campId: camp.id, status, gasto7d, roas7d, cpr7d, pedidos7d, adsAtivos: adsAtivos.length, diasRestantes };
+
+  // ── ALERTAS DE STATUS ──────────────────────────────────────────
+  if (status === 'PAUSED' && gasto7d > 0) {
+    alertas.push({ ...base, tipo: 'atencao', categoria: 'status', icon: '⏸️',
+      titulo: `Campanha pausada com histórico de gasto`,
+      desc: `A campanha estava gastando ${fmt(gasto7d)} nos últimos 7 dias e foi pausada. Verificar se foi intencional.`,
+      tags: [{ txt: 'Pausada', cor: 'amber' }, { txt: fmt(gasto7d)+' últimos 7d', cor: 'amber' }]
+    });
+  }
+
+  if (status === 'CAMPAIGN_PAUSED' || status === 'PAUSED') {
+    if (gasto7d === 0) {
+      alertas.push({ ...base, tipo: 'info', categoria: 'status', icon: '💤',
+        titulo: `Campanha pausada sem gasto recente`,
+        desc: `Campanha pausada. Sem gasto nos últimos 7 dias. Verificar se deve ser reativada ou arquivada.`,
+        tags: [{ txt: 'Pausada', cor: 'blue' }, { txt: 'Sem gasto', cor: 'blue' }]
+      });
+    }
+  }
+
+  if (status === 'ACTIVE') {
+    // ── ALERTAS DE PERFORMANCE ───────────────────────────────────
+    if (gasto7d > 0 && pedidos7d === 0) {
+      alertas.push({ ...base, tipo: 'critico', categoria: 'performance', icon: '🚨',
+        titulo: `Sem resultado — gasto sem retorno`,
+        desc: `Investiu ${fmt(gasto7d)} nos últimos 7 dias sem nenhuma compra registrada. Campanha precisa de revisão urgente.`,
+        tags: [{ txt: fmt(gasto7d)+' gasto', cor: 'red' }, { txt: '0 pedidos', cor: 'red' }, { txt: 'Ativo', cor: 'red' }],
+        progresso: { val: 0, max: 100, cor: '#f87171' }
+      });
+    } else if (gasto7d > 0 && roas7d < 1.5 && pedidos7d > 0) {
+      alertas.push({ ...base, tipo: 'critico', categoria: 'performance', icon: '📉',
+        titulo: `ROAS crítico — campanha no prejuízo`,
+        desc: `ROAS de ${roas7d.toFixed(2)}x está abaixo do mínimo aceitável. Para cada R$ 1 investido retorna R$ ${roas7d.toFixed(2)}. Revisar criativos e segmentação.`,
+        tags: [{ txt: 'ROAS '+roas7d.toFixed(2)+'x', cor: 'red' }, { txt: fmt(cpr7d)+' CPR', cor: 'red' }],
+        progresso: { val: Math.min(roas7d * 20, 100), max: 100, cor: '#f87171' }
+      });
+    } else if (gasto7d > 0 && roas7d >= 1.5 && roas7d < 3) {
+      alertas.push({ ...base, tipo: 'atencao', categoria: 'performance', icon: '⚠️',
+        titulo: `ROAS abaixo do ideal`,
+        desc: `ROAS de ${roas7d.toFixed(2)}x. Campanha está retornando mas abaixo do esperado (meta: 3x+). Verificar criativos e público.`,
+        tags: [{ txt: 'ROAS '+roas7d.toFixed(2)+'x', cor: 'amber' }, { txt: fmt(cpr7d)+' CPR', cor: 'amber' }],
+        progresso: { val: Math.min(roas7d * 20, 100), max: 100, cor: '#fbbf24' }
+      });
+    } else if (gasto7d > 0 && roas7d >= 3) {
+      alertas.push({ ...base, tipo: 'ok', categoria: 'performance', icon: '✅',
+        titulo: `Performance excelente`,
+        desc: `ROAS de ${roas7d.toFixed(2)}x com ${pedidos7d} pedidos e ${fmt(fat7d)} em faturamento nos últimos 7 dias.`,
+        tags: [{ txt: 'ROAS '+roas7d.toFixed(2)+'x', cor: 'green' }, { txt: fmt(cpr7d)+' CPR', cor: 'green' }, { txt: pedidos7d+' pedidos', cor: 'green' }],
+        progresso: { val: Math.min(roas7d * 10, 100), max: 100, cor: '#34d399' }
+      });
+    }
+
+    // ── ALERTAS DE ORÇAMENTO ──────────────────────────────────────
+    if (lifetimeBudget > 0 && budgetRemaining > 0) {
+      const pctGasto = ((lifetimeBudget - budgetRemaining) / lifetimeBudget) * 100;
+      if (pctGasto > 90) {
+        alertas.push({ ...base, tipo: 'critico', categoria: 'orcamento', icon: '💸',
+          titulo: `Orçamento quase esgotado (${pctGasto.toFixed(0)}%)`,
+          desc: `Restam apenas ${fmt(budgetRemaining)} de ${fmt(lifetimeBudget)} do orçamento total. Campanha pode pausar em breve.`,
+          tags: [{ txt: fmt(budgetRemaining)+' restante', cor: 'red' }, { txt: pctGasto.toFixed(0)+'% gasto', cor: 'red' }, diasRestantes !== null && diasRestantes >= 0 ? { txt: '⏰ '+diasRestantes+' dia(s) p/ encerrar', cor: 'red' } : null].filter(Boolean),
+          progresso: { val: pctGasto, max: 100, cor: '#f87171' }
+        });
+      } else if (pctGasto > 70) {
+        alertas.push({ ...base, tipo: 'atencao', categoria: 'orcamento', icon: '💰',
+          titulo: `Orçamento em ${pctGasto.toFixed(0)}% — atenção`,
+          desc: `Já foi utilizado ${pctGasto.toFixed(0)}% do orçamento total. Restam ${fmt(budgetRemaining)}.`,
+          tags: [{ txt: fmt(budgetRemaining)+' restante', cor: 'amber' }, { txt: pctGasto.toFixed(0)+'% gasto', cor: 'amber' }, diasRestantes !== null && diasRestantes >= 0 ? { txt: '⏰ '+diasRestantes+' dia(s) p/ encerrar', cor: 'amber' } : null].filter(Boolean),
+          progresso: { val: pctGasto, max: 100, cor: '#fbbf24' }
+        });
+      }
+
+      // Teto máximo por anúncio
+      if (tetoMaxAdSemanal > 0 && gastoMedioAd > 0) {
+        const pctTetoAd = (gastoMedioAd / tetoMaxAdSemanal) * 100;
+        if (pctTetoAd > 120) {
+          alertas.push({ ...base, tipo: 'atencao', categoria: 'criativo', icon: '🎨',
+            titulo: `Criativo ultrapassando teto de gasto`,
+            desc: `Gasto médio por anúncio (${fmt(gastoMedioAd)}/sem) está ${pctTetoAd.toFixed(0)}% acima do teto calculado (${fmt(tetoMaxAdSemanal)}/sem por anúncio). Orçamento: ${fmt(lifetimeBudget)} total, ${adsAtivos.length} anúncios ativos.`,
+            tags: [{ txt: fmt(gastoMedioAd)+' médio/ad', cor: 'amber' }, { txt: 'Teto: '+fmt(tetoMaxAdSemanal), cor: 'blue' }, { txt: adsAtivos.length+' ads ativos', cor: 'blue' }]
+          });
+        }
+      }
+    }
+
+    // ── ALERTAS DE PRAZO ─────────────────────────────────────────
+    if (diasRestantes !== null) {
+      if (diasRestantes <= 2 && diasRestantes > 0) {
+        alertas.push({ ...base, tipo: 'critico', categoria: 'prazo', icon: '⏰',
+          titulo: `Campanha encerra em ${diasRestantes} dia(s)!`,
+          desc: `A campanha tem data de término definida e está prestes a encerrar em ${diasRestantes} dia(s). Verificar se deve ser renovada.`,
+          tags: [{ txt: '⏰ '+diasRestantes+' dia(s) restante(s)', cor: 'red' }, { txt: 'Encerrando', cor: 'red' }],
+          diasRestantes
+        });
+      } else if (diasRestantes <= 7 && diasRestantes > 2) {
+        alertas.push({ ...base, tipo: 'atencao', categoria: 'prazo', icon: '📅',
+          titulo: `Campanha encerra em ${diasRestantes} dias`,
+          desc: `Prazo de encerramento se aproxima em ${diasRestantes} dias. Planejar renovação ou nova campanha.`,
+          tags: [{ txt: '📅 '+diasRestantes+' dias restantes', cor: 'amber' }],
+          diasRestantes
+        });
+      }
+    }
+
+    // ── ALERTAS DE CRIATIVO ───────────────────────────────────────
+    if (adsAtivos.length === 0 && gasto7d === 0) {
+      alertas.push({ ...base, tipo: 'atencao', categoria: 'criativo', icon: '🎭',
+        titulo: `Nenhum anúncio ativo`,
+        desc: `A campanha está ativa mas sem nenhum anúncio rodando. Verificar conjuntos de anúncios e criativos.`,
+        tags: [{ txt: '0 anúncios ativos', cor: 'amber' }, { txt: adsPausados.length+' pausados', cor: 'blue' }]
+      });
+    }
+
+    if (adsAtivos.length >= 5) {
+      alertas.push({ ...base, tipo: 'info', categoria: 'criativo', icon: '📊',
+        titulo: `Muitos anúncios ativos (${adsAtivos.length})`,
+        desc: `Com ${adsAtivos.length} anúncios ativos, o orçamento é dividido entre eles. Teto estimado por anúncio: ${tetoMaxAdSemanal > 0 ? fmt(tetoMaxAdSemanal)+'/semana' : 'não calculado'}.`,
+        tags: [{ txt: adsAtivos.length+' anúncios ativos', cor: 'blue' }, tetoMaxAdSemanal > 0 ? { txt: 'Teto: '+fmt(tetoMaxAdSemanal)+'/sem', cor: 'purple' } : null].filter(Boolean)
+      });
+    }
+  }
+
+  // Campanha em rascunho
+  if (['CAMPAIGN_PAUSED', 'PAUSED'].includes(status) && !camp.start_time) {
+    alertas.push({ ...base, tipo: 'info', categoria: 'status', icon: '📝',
+      titulo: `Campanha em rascunho / não iniciada`,
+      desc: `Campanha criada mas ainda não foi iniciada. Verificar se precisa ser publicada.`,
+      tags: [{ txt: 'Rascunho', cor: 'blue' }]
+    });
+  }
+
+  return alertas;
+}
+
+async function rodarAgente() {
+  if (!token) {
+    alert('Token não encontrado. Volte ao dashboard e salve o token.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-rodar');
+  btn.textContent = '⏳ Analisando...';
+  btn.disabled = true;
+  document.getElementById('alertas-container').innerHTML = `<div class="loading"><span class="spin">⟳</span> Analisando ${CONTAS_FOOD.length} BMs e todas as campanhas...</div>`;
+
+  todosAlertas = [];
+  let totalCamps = 0;
+  let bmsAnalisadas = 0;
+
+  for (const conta of CONTAS_FOOD) {
+    try {
+      const res = await fetchCampanhas(conta.id);
+      const campanhas = res.data || [];
+      totalCamps += campanhas.length;
+      bmsAnalisadas++;
+
+      for (const camp of campanhas) {
+        const alertas = analisarCampanha(camp, conta.nome, conta.id);
+        todosAlertas.push(...alertas);
+      }
+
+      // Atualizar progresso
+      document.getElementById('alertas-container').innerHTML = `<div class="loading"><span class="spin">⟳</span> Analisando ${bmsAnalisadas}/${CONTAS_FOOD.length} BMs... ${totalCamps} campanhas verificadas</div>`;
+    } catch(e) {
+      console.error(`Erro em ${conta.nome}:`, e);
+    }
+  }
+
+  // Atualizar cards de resumo
+  const criticos = todosAlertas.filter(a => a.tipo === 'critico').length;
+  const atencao = todosAlertas.filter(a => a.tipo === 'atencao').length;
+  const info = todosAlertas.filter(a => a.tipo === 'info').length;
+  const ok = todosAlertas.filter(a => a.tipo === 'ok').length;
+
+  document.getElementById('s-critico').textContent = criticos;
+  document.getElementById('s-atencao').textContent = atencao;
+  document.getElementById('s-info').textContent = info;
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('s-bms').textContent = bmsAnalisadas;
+  document.getElementById('s-camps').textContent = totalCamps;
+
+  const agora = new Date().toLocaleString('pt-BR');
+  document.getElementById('last-run').textContent = `Última análise: ${agora}`;
+  localStorage.setItem('agente_last_run', agora);
+  localStorage.setItem('agente_alertas', JSON.stringify(todosAlertas));
+
+  btn.textContent = '🤖 Rodar BOB';
+  btn.disabled = false;
+  document.getElementById('btn-enviar').style.display = criticos + atencao > 0 ? 'inline-flex' : 'none';
+
+  filtrar();
+}
+
+function filtrar() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const filtroTipo = document.getElementById('filtro-tipo').value;
+  const filtroCategoria = document.getElementById('filtro-categoria').value;
+
+  let dados = todosAlertas.filter(a => {
+    const textFit = !busca || a.bmNome.toLowerCase().includes(busca) || a.campNome.toLowerCase().includes(busca);
+    const tipoFit = !filtroTipo || a.tipo === filtroTipo;
+    const catFit = !filtroCategoria || a.categoria === filtroCategoria;
+    return textFit && tipoFit && catFit;
+  });
+
+  // Ordenar: critico > atencao > info > ok
+  const ordem = { critico: 0, atencao: 1, info: 2, ok: 3 };
+  dados.sort((a, b) => (ordem[a.tipo] || 0) - (ordem[b.tipo] || 0));
+
+  if (!dados.length) {
+    document.getElementById('alertas-container').innerHTML = '<div class="empty">✅ Nenhum alerta encontrado para os filtros selecionados.</div>';
+    return;
+  }
+
+  // Agrupar por tipo
+  const grupos = { critico: [], atencao: [], info: [], ok: [] };
+  dados.forEach(a => grupos[a.tipo]?.push(a));
+
+  const tipoLabels = {
+    critico: '🔴 Crítico — Ação imediata necessária',
+    atencao: '⚠️ Atenção — Verificar em breve',
+    info: 'ℹ️ Informativo',
+    ok: '✅ Saudável'
+  };
+
+  let html = '';
+  for (const [tipo, lista] of Object.entries(grupos)) {
+    if (!lista.length) continue;
+    html += `<div class="section-header">${tipoLabels[tipo]} <span style="color:#374151;font-size:11px;">(${lista.length})</span></div>`;
+    html += lista.map(a => `
+      <div class="alert-card ${a.tipo}">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-content">
+          <div class="alert-bm">📊 ${a.bmNome}</div>
+          <div class="alert-title">${a.campNome}</div>
+          <div class="alert-desc">${a.desc}</div>
+          <div class="alert-meta">
+            ${(a.tags || []).map(t => `<span class="meta-tag ${t.cor}">${t.txt}</span>`).join('')}
+            ${a.adsAtivos > 0 ? `<span class="meta-tag blue">${a.adsAtivos} ad(s) ativo(s)</span>` : ''}
+          </div>
+          ${a.diasRestantes !== null && a.diasRestantes !== undefined && a.diasRestantes >= 0 ? `<div style="font-size:11px;color:${a.diasRestantes <= 2 ? '#f87171' : a.diasRestantes <= 7 ? '#fbbf24' : '#6b7280'};margin-top:6px;font-weight:500;">⏰ ${a.diasRestantes > 0 ? 'Encerra em '+a.diasRestantes+' dia(s)' : 'Encerra hoje!'}</div>` : ''}
+          ${a.progresso ? `<div class="progress-bar"><div class="progress-fill" style="width:${Math.min(a.progresso.val,100)}%;background:${a.progresso.cor};"></div></div>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('alertas-container').innerHTML = html;
+}
+
+const WPP_URL = 'http://localhost:8080';
+const WPP_KEY = 'minhaChave123';
+const WPP_INSTANCIA = 'meu-whatsapp';
+const GRUPO_OPERACOES = '120363403884174816@g.us';
+
+async function enviarAlertas() {
+  const criticos = todosAlertas.filter(a => a.tipo === 'critico');
+  const atencao = todosAlertas.filter(a => a.tipo === 'atencao');
+
+  if (!criticos.length && !atencao.length) {
+    alert('Nenhum alerta crítico ou de atenção para enviar!');
+    return;
+  }
+
+  const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  let linhas = [
+    `🤖 *Relatório do BOB — Agente de Tráfego*`,
+    `Monaco Agency | ${agora}`,
+    ``,
+  ];
+
+  if (criticos.length) {
+    linhas.push(`🔴 *CRÍTICO (${criticos.length} alerta(s))*`);
+    criticos.forEach(a => {
+      linhas.push(`  ${a.icon} *${a.bmNome}*`);
+      linhas.push(`  📢 ${a.campNome}`);
+      linhas.push(`  ${a.desc}`);
+      if (a.diasRestantes !== null && a.diasRestantes !== undefined) {
+        linhas.push(`  ⏰ ${a.diasRestantes} dia(s) para encerrar`);
+      }
+      linhas.push(``);
+    });
+  }
+
+  if (atencao.length) {
+    linhas.push(`⚠️ *ATENÇÃO (${atencao.length} alerta(s))*`);
+    atencao.forEach(a => {
+      linhas.push(`  ${a.icon} *${a.bmNome}*`);
+      linhas.push(`  📢 ${a.campNome}`);
+      linhas.push(`  ${a.desc}`);
+      if (a.diasRestantes !== null && a.diasRestantes !== undefined) {
+        linhas.push(`  ⏰ ${a.diasRestantes} dia(s) para encerrar`);
+      }
+      linhas.push(``);
+    });
+  }
+
+  linhas.push(`━━━━━━━━━━━━━━━━━━━━`);
+  linhas.push(`Total: ${criticos.length} crítico(s) | ${atencao.length} atenção`);
+
+  const mensagem = linhas.join('\n');
+
+  const btn = document.getElementById('btn-enviar');
+  btn.textContent = '⏳ Enviando...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(`${WPP_URL}/message/sendText/${WPP_INSTANCIA}`, {
+      method: 'POST',
+      headers: { 'apikey': WPP_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number: GRUPO_OPERACOES, textMessage: { text: mensagem } })
+    });
+
+    if (r.ok) {
+      btn.textContent = '✅ Enviado!';
+      btn.style.background = '#059669';
+      btn.style.color = '#fff';
+      setTimeout(() => {
+        btn.textContent = '📤 Enviar no grupo';
+        btn.style.background = '';
+        btn.style.color = '#34d399';
+        btn.disabled = false;
+      }, 3000);
+    } else {
+      throw new Error('Erro ' + r.status);
+    }
+  } catch(e) {
+    btn.textContent = '❌ Erro ao enviar';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = '📤 Enviar no grupo'; }, 3000);
+    alert('Erro ao enviar: ' + e.message + '\nVerifique se o servidor Python está rodando.');
+  }
+}
+
+// Restaurar última análise se existir
+const savedAlertas = localStorage.getItem('agente_alertas');
+const savedLastRun = localStorage.getItem('agente_last_run');
+if (savedAlertas && savedLastRun) {
+  todosAlertas = JSON.parse(savedAlertas);
+  document.getElementById('last-run').textContent = `Última análise: ${savedLastRun}`;
+  const criticos = todosAlertas.filter(a => a.tipo === 'critico').length;
+  const atencao = todosAlertas.filter(a => a.tipo === 'atencao').length;
+  const info = todosAlertas.filter(a => a.tipo === 'info').length;
+  const ok = todosAlertas.filter(a => a.tipo === 'ok').length;
+  const bms = [...new Set(todosAlertas.map(a => a.bmId))].length;
+  document.getElementById('s-critico').textContent = criticos;
+  document.getElementById('s-atencao').textContent = atencao;
+  document.getElementById('s-info').textContent = info;
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('s-bms').textContent = bms;
+  document.getElementById('btn-enviar').style.display = (criticos + atencao) > 0 ? 'inline-flex' : 'none';
+  filtrar();
+}
+</script>
+</body>
+</html>

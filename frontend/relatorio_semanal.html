@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Semanal — Monaco Agency</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #7c3aed; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; transition: all .15s; }
+.btn:hover { background: #262a3a; }
+.btn-primary { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.btn-primary:hover { background: #2563eb; }
+.btn-green { background: #059669; color: #fff; border-color: #059669; }
+.btn-green:hover { background: #047857; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+.periodo-card { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.periodo-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.periodo-label { font-size: 13px; color: #6b7280; }
+.periodo-datas { font-size: 15px; font-weight: 600; color: #fff; }
+.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
+.semana-nav { display: flex; align-items: center; gap: 8px; }
+.semana-nav button { padding: 5px 10px; border-radius: 6px; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; cursor: pointer; font-size: 13px; }
+.semana-nav button:hover { background: #262a3a; }
+.semana-nav span { font-size: 12px; color: #6b7280; min-width: 80px; text-align: center; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.sc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
+.sc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.sc-val { font-size: 20px; font-weight: 700; color: #fff; }
+.sc-val.green { color: #34d399; }
+.filters { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.search-box { display: flex; align-items: center; gap: 8px; background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; flex: 1; min-width: 200px; }
+.search-box input { background: transparent; border: none; color: #e8e8e8; font-size: 13px; outline: none; width: 100%; }
+select { background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #c8c8c8; outline: none; }
+.table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 10px 14px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; background: #111318; border-bottom: 1px solid #2a2d3a; white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #1a1e2a; }
+.nome-cell { font-weight: 500; color: #fff; font-size: 13px; }
+.id-cell { font-size: 11px; color: #4b5563; margin-top: 2px; }
+.btn-enviar { padding: 4px 10px; font-size: 11px; border-radius: 6px; border: 1px solid #059669; background: transparent; color: #34d399; cursor: pointer; white-space: nowrap; transition: all .15s; }
+.btn-enviar:hover { background: #059669; color: #fff; }
+.btn-enviar.enviando { opacity: .6; cursor: wait; }
+.btn-enviar.enviado { background: #059669; color: #fff; }
+.btn-enviar.erro { border-color: #f87171; color: #f87171; }
+.preview-btn { padding: 3px 8px; font-size: 11px; border-radius: 6px; border: 1px solid #374151; background: transparent; color: #6b7280; cursor: pointer; }
+.preview-btn:hover { color: #c8c8c8; border-color: #6b7280; }
+.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.8); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #161a24; border: 1px solid #2a2d3a; border-radius: 14px; padding: 24px; width: 90%; max-width: 500px; }
+.modal-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.modal-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
+.wpp-preview { background: #075e54; border-radius: 10px; padding: 14px; }
+.wpp-bubble { background: #dcf8c6; border-radius: 8px; border-top-left-radius: 0; padding: 10px 14px; display: inline-block; max-width: 100%; }
+.wpp-text { font-size: 13px; color: #111; line-height: 1.7; white-space: pre-wrap; }
+.wpp-time { font-size: 10px; color: #777; text-align: right; margin-top: 4px; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 300; display: none; }
+.toast.ok { background: #059669; color: #fff; }
+.toast.err { background: #dc2626; color: #fff; }
+.roas-val { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">📋 Relatório Semanal <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn btn-primary" onclick="carregarTodos()" id="btn-carregar">⟳ Carregar dados</button>
+    <button class="btn btn-green" onclick="enviarTodos()" id="btn-enviar-todos" style="display:none;">📤 Enviar todos</button>
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Período -->
+  <div class="periodo-card">
+    <div class="periodo-info">
+      <div>
+        <div class="periodo-label">Período do relatório</div>
+        <div class="periodo-datas" id="periodo-datas">—</div>
+      </div>
+      <span class="periodo-badge" id="periodo-semana">Semana atual</span>
+    </div>
+    <div class="semana-nav">
+      <button onclick="navegarSemana(-1)">◀ Anterior</button>
+      <span id="semana-num">Semana 0</span>
+      <button onclick="navegarSemana(1)">Próxima ▶</button>
+    </div>
+  </div>
+
+  <!-- Cards resumo -->
+  <div class="summary">
+    <div class="sc"><div class="sc-label">💰 Investido</div><div class="sc-val" id="s-inv">—</div></div>
+    <div class="sc"><div class="sc-label">📦 Pedidos</div><div class="sc-val" id="s-ped">—</div></div>
+    <div class="sc"><div class="sc-label">🛒 Faturamento</div><div class="sc-val green" id="s-fat">—</div></div>
+    <div class="sc"><div class="sc-label">🚀 ROAS médio</div><div class="sc-val green" id="s-roas">—</div></div>
+    <div class="sc"><div class="sc-label">📉 CPR médio</div><div class="sc-val" id="s-cpr">—</div></div>
+    <div class="sc"><div class="sc-label">BMs carregadas</div><div class="sc-val" id="s-bms">—</div></div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters">
+    <div class="search-box">🔍 <input type="text" id="busca" placeholder="Buscar BM..." oninput="filtrar()"></div>
+    <select id="filtro-tipo" onchange="filtrar()">
+      <option value="">Todos os segmentos</option>
+      <option value="food">🍕 Food</option>
+      <option value="outros">🏢 Outros</option>
+    </select>
+    <select id="filtro-status" onchange="filtrar()">
+      <option value="">Todos</option>
+      <option value="enviado">✅ Enviados</option>
+      <option value="pendente">⏳ Pendentes</option>
+    </select>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>BM / Conta</th>
+          <th>💰 Investido</th>
+          <th>👁 Page Views</th>
+          <th>🛒 Carrinho</th>
+          <th>📦 Pedidos</th>
+          <th>🛍 Faturamento</th>
+          <th>📉 CPR</th>
+          <th>🚀 ROAS</th>
+          <th>Preview</th>
+          <th>Enviar</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="10" class="loading">Selecione o período e clique em "Carregar dados"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Modal preview -->
+<div class="modal-overlay" id="modal-preview" onclick="fecharModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      👁 Preview da mensagem
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="wpp-preview">
+      <div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:6px;">Monaco Agency</div>
+      <div class="wpp-bubble">
+        <div class="wpp-text" id="preview-texto"></div>
+        <div class="wpp-time" id="preview-hora"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-green" style="flex:1;" onclick="enviarDoModal()">📤 Enviar agora</button>
+      <button class="btn" onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+const token = localStorage.getItem(TOKEN_KEY);
+const WPP_URL = 'http://localhost:8080';
+const WPP_KEY = 'minhaChave123';
+const WPP_INSTANCIA = 'meu-whatsapp';
+
+// Mapa BM → grupo WhatsApp (atualizar com IDs reais de cada cliente)
+const GRUPOS = {
+  'act_3379098802257981': '120363403884174816@g.us', // CA- BISTROGOURMETPIZZARIA → ops por enquanto
+  'act_2523170184768797': '120363403884174816@g.us',
+  'act_218943216626025':  '120363403884174816@g.us',
+  'act_723575425785405':  '120363403884174816@g.us',
+  'act_626472496317271':  '120363403884174816@g.us',
+  'act_1131240581799095': '120363403884174816@g.us',
+  'act_1179077680434286': '120363403884174816@g.us',
+  'act_459274303920372':  '120363403884174816@g.us',
+  'act_728296823243425':  '120363403884174816@g.us',
+  'act_831936562721815':  '120363403884174816@g.us',
+  'act_1632381294729040': '120363403884174816@g.us',
+  'act_2379679152502158': '120363403884174816@g.us',
+  'act_909424425271250':  '120363403884174816@g.us',
+  'act_972023765779926':  '120363403884174816@g.us',
+  'act_836447545843342':  '120363403884174816@g.us',
+  'act_1166398428853886': '120363403884174816@g.us',
+  'act_969681458906352':  '120363403884174816@g.us',
+  'act_4279801688941861': '120363403884174816@g.us',
+  'act_933386533018776':  '120363403884174816@g.us',
+  'act_1759603645448352': '120363403884174816@g.us',
+  'act_1618084519451450': '120363403884174816@g.us',
+};
+
+const CONTAS = [
+  { nome: 'CA - ROSA SUL NOVA', id: 'act_2523170184768797', tipo: 'food' },
+  { nome: 'CA1 - Doces Mania', id: 'act_105301940058633', tipo: 'outros' },
+  { nome: 'CA RJK SHOP', id: 'act_297417165372711', tipo: 'outros' },
+  { nome: 'CA - Miotto Construtora', id: 'act_213109970735074', tipo: 'outros' },
+  { nome: 'CA - ICGP', id: 'act_360815898753195', tipo: 'outros' },
+  { nome: 'CA - Miotto Backup', id: 'act_533683308259417', tipo: 'outros' },
+  { nome: 'CA - Monaco Agency', id: 'act_732966175219099', tipo: 'outros' },
+  { nome: 'Dia de Pizza - Dourados', id: 'act_723575425785405', tipo: 'food' },
+  { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food' },
+  { nome: 'BRUNA MACHADO - DOTCON', id: 'act_1102427261426373', tipo: 'outros' },
+  { nome: 'CA - AMK Estética', id: 'act_590117117342811', tipo: 'outros' },
+  { nome: 'Ótica Scherer', id: 'act_1179077680434286', tipo: 'food' },
+  { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food' },
+  { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food' },
+  { nome: 'CA - Facilita cell', id: 'act_1288527439639093', tipo: 'outros' },
+  { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food' },
+  { nome: 'CA - Bella Capri Uberlândia', id: 'act_2379679152502158', tipo: 'food' },
+  { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food' },
+  { nome: 'JS - UNIFORME', id: 'act_1452225369942067', tipo: 'outros' },
+  { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food' },
+  { nome: 'Berlim Pizzaria', id: 'act_836447545843342', tipo: 'food' },
+  { nome: 'A FAVORITA', id: 'act_969681458906352', tipo: 'food' },
+  { nome: 'CA - BRAVA PIZZA', id: 'act_4279801688941861', tipo: 'food' },
+  { nome: 'Pavão Lanchonete', id: 'act_1759603645448352', tipo: 'food' },
+  { nome: 'SH Tijolos', id: 'act_3858259327816511', tipo: 'outros' },
+  { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food' },
+];
+
+let dadosCarregados = [];
+let semanaOffset = 0;
+let modalContaId = null;
+
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtN = v => Number(v).toLocaleString('pt-BR');
+
+function getSemana(offset = 0) {
+  const hoje = new Date();
+  // Última sexta
+  const diasDesexta = (hoje.getDay() - 5 + 7) % 7;
+  const sexta = new Date(hoje);
+  sexta.setDate(hoje.getDate() - diasDesexta - (offset * 7));
+  const quinta = new Date(sexta);
+  quinta.setDate(sexta.getDate() + 6);
+  return { sexta, quinta };
+}
+
+function formatData(d) {
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatDataApi(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function atualizarPeriodo() {
+  const { sexta, quinta } = getSemana(semanaOffset);
+  document.getElementById('periodo-datas').textContent = `${formatData(sexta)} até ${formatData(quinta)}`;
+  document.getElementById('semana-num').textContent = semanaOffset === 0 ? 'Esta semana' : semanaOffset === 1 ? 'Semana passada' : `${semanaOffset} semanas atrás`;
+  document.getElementById('periodo-semana').textContent = `Sex ${sexta.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'})} → Qui ${quinta.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'})}`;
+}
+
+function navegarSemana(dir) {
+  semanaOffset += dir;
+  if (semanaOffset < 0) semanaOffset = 0;
+  atualizarPeriodo();
+  dadosCarregados = [];
+  document.getElementById('tbody').innerHTML = '<tr><td colspan="10" class="loading">Clique em "Carregar dados" para o novo período</td></tr>';
+  document.getElementById('btn-enviar-todos').style.display = 'none';
+  ['s-inv','s-ped','s-fat','s-roas','s-cpr','s-bms'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+async function carregarTodos() {
+  if (!token) {
+    alert('Token não encontrado. Volte ao dashboard e salve o token.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-carregar');
+  btn.innerHTML = '<span class="spin">⟳</span> Carregando...';
+  btn.disabled = true;
+
+  const { sexta, quinta } = getSemana(semanaOffset);
+  const since = formatDataApi(sexta);
+  const until = formatDataApi(quinta);
+  dadosCarregados = [];
+  document.getElementById('tbody').innerHTML = `<tr><td colspan="10" class="loading"><span class="spin">⟳</span> Consultando ${CONTAS.length} BMs...</td></tr>`;
+
+  for (const conta of CONTAS) {
+    try {
+      const url = `https://graph.facebook.com/${API_VERSION}/${conta.id}/insights?fields=spend,actions,action_values&time_range={"since":"${since}","until":"${until}"}&access_token=${token}`;
+      const r = await fetch(url);
+      const d = await r.json();
+      const ins = d.data?.[0];
+
+      const gasto = parseFloat(ins?.spend || 0);
+      const actions = ins?.actions || [];
+      const actionValues = ins?.action_values || [];
+
+      const pedidos = parseInt(actions.find(a => a.action_type === 'purchase')?.value || 0);
+      const fat = parseFloat(actionValues.find(a => a.action_type === 'purchase')?.value || 0);
+      const pageView = parseInt(actions.find(a => a.action_type === 'landing_page_view')?.value || 0);
+      const addCart = parseInt(actions.find(a => a.action_type === 'add_to_cart')?.value || 0);
+      const cpr = pedidos > 0 ? gasto / pedidos : 0;
+      const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+
+      dadosCarregados.push({ ...conta, gasto, pedidos, fat, pageView, addCart, cpr, roas, enviado: false });
+    } catch(e) {
+      dadosCarregados.push({ ...conta, gasto: 0, pedidos: 0, fat: 0, pageView: 0, addCart: 0, cpr: 0, roas: 0, enviado: false });
+    }
+  }
+
+  // Atualizar resumo
+  const totalInv = dadosCarregados.reduce((s, d) => s + d.gasto, 0);
+  const totalPed = dadosCarregados.reduce((s, d) => s + d.pedidos, 0);
+  const totalFat = dadosCarregados.reduce((s, d) => s + d.fat, 0);
+  const roasMedio = totalInv > 0 && totalFat > 0 ? totalFat / totalInv : 0;
+  const cprMedio = totalPed > 0 ? totalInv / totalPed : 0;
+
+  document.getElementById('s-inv').textContent = fmt(totalInv);
+  document.getElementById('s-ped').textContent = fmtN(totalPed);
+  document.getElementById('s-fat').textContent = fmt(totalFat);
+  document.getElementById('s-roas').textContent = roasMedio > 0 ? roasMedio.toFixed(2) + 'x' : '—';
+  document.getElementById('s-cpr').textContent = cprMedio > 0 ? fmt(cprMedio) : '—';
+  document.getElementById('s-bms').textContent = dadosCarregados.length;
+
+  btn.innerHTML = '⟳ Atualizar';
+  btn.disabled = false;
+  document.getElementById('btn-enviar-todos').style.display = 'inline-flex';
+
+  filtrar();
+}
+
+function montarMensagem(d) {
+  const { sexta, quinta } = getSemana(semanaOffset);
+  const periodo = `${formatData(sexta).slice(0,5)} - ${formatData(quinta).slice(0,5)}`;
+  const roas = d.roas > 0 ? d.roas.toFixed(2) : '0';
+  const cpr = d.cpr > 0 ? fmt(d.cpr) : 'R$ 0,00';
+
+  return `Olá pessoal! Excelente semana a todos! 😊\n\nSegue o resumo das campanhas de Meta Ads\nPeríodo: ${periodo}\n\n📦 Pedidos: ${fmtN(d.pedidos)}\n🛒 Faturamento: ${fmt(d.fat)}\n💰 Valor investido: ${fmt(d.gasto)}\n📉 Custo por compra: ${cpr}\n🚀 ROAS: ${roas}\n\nSeguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.\nDesejo a todos um excelente final de semana! 🚀`;
+}
+
+function filtrar() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const filtroTipo = document.getElementById('filtro-tipo').value;
+  const filtroStatus = document.getElementById('filtro-status').value;
+
+  let dados = dadosCarregados.filter(d => {
+    const nomeFit = !busca || d.nome.toLowerCase().includes(busca);
+    const tipoFit = !filtroTipo || d.tipo === filtroTipo;
+    const statusFit = !filtroStatus || (filtroStatus === 'enviado' ? d.enviado : !d.enviado);
+    return nomeFit && tipoFit && statusFit;
+  });
+
+  dados.sort((a, b) => b.gasto - a.gasto);
+
+  const tbody = document.getElementById('tbody');
+  if (!dados.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="loading">Nenhuma BM encontrada</td></tr>';
+    return;
+  }
+
+  const roasColor = roas => roas >= 10 ? '#34d399' : roas >= 3 ? '#60a5fa' : roas >= 1.5 ? '#fbbf24' : roas > 0 ? '#f87171' : '#6b7280';
+
+  tbody.innerHTML = dados.map(d => `
+    <tr>
+      <td>
+        <div class="nome-cell">${d.nome}</div>
+        <div class="id-cell">${d.id} <span style="color:${d.tipo==='food'?'#f97316':'#6b7280'};font-size:10px;">${d.tipo==='food'?'🍕':'🏢'}</span></div>
+      </td>
+      <td style="font-weight:500;">${d.gasto > 0 ? fmt(d.gasto) : '<span style="color:#374151">—</span>'}</td>
+      <td style="color:#9ca3af;">${d.pageView > 0 ? fmtN(d.pageView) : '—'}</td>
+      <td style="color:#9ca3af;">${d.addCart > 0 ? fmtN(d.addCart) : '—'}</td>
+      <td>${d.pedidos > 0 ? `<strong>${fmtN(d.pedidos)}</strong>` : '<span style="color:#374151">0</span>'}</td>
+      <td style="color:#34d399;">${d.fat > 0 ? fmt(d.fat) : '<span style="color:#374151">—</span>'}</td>
+      <td>${d.cpr > 0 ? fmt(d.cpr) : '—'}</td>
+      <td><span class="roas-val" style="color:${roasColor(d.roas)}">${d.roas > 0 ? d.roas.toFixed(2)+'x' : '—'}</span></td>
+      <td><button class="preview-btn" onclick="abrirPreview('${d.id}')">👁 Ver</button></td>
+      <td>
+        ${GRUPOS[d.id] ? `<button class="btn-enviar ${d.enviado ? 'enviado' : ''}" id="btn-${d.id}" onclick="enviarBM('${d.id}', this)">${d.enviado ? '✅ Enviado' : '📤 Enviar'}</button>` : '<span style="color:#4b5563;font-size:11px;">Sem grupo</span>'}
+      </td>
+    </tr>`).join('');
+}
+
+function abrirPreview(id) {
+  const d = dadosCarregados.find(x => x.id === id);
+  if (!d) return;
+  modalContaId = id;
+  document.getElementById('preview-texto').textContent = montarMensagem(d);
+  document.getElementById('preview-hora').textContent = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('modal-preview').classList.add('open');
+}
+
+function fecharModal(e) {
+  if (!e || e.target === document.getElementById('modal-preview')) {
+    document.getElementById('modal-preview').classList.remove('open');
+    modalContaId = null;
+  }
+}
+
+async function enviarDoModal() {
+  if (modalContaId) {
+    fecharModal();
+    const btn = document.getElementById(`btn-${modalContaId}`);
+    await enviarBM(modalContaId, btn);
+  }
+}
+
+async function enviarBM(id, btn) {
+  const d = dadosCarregados.find(x => x.id === id);
+  if (!d) return;
+  const grupo = GRUPOS[id];
+  if (!grupo) return;
+
+  btn.classList.add('enviando');
+  btn.textContent = '⏳';
+
+  try {
+    const r = await fetch(`${WPP_URL}/message/sendText/${WPP_INSTANCIA}`, {
+      method: 'POST',
+      headers: { 'apikey': WPP_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number: grupo, textMessage: { text: montarMensagem(d) } })
+    });
+
+    if (r.ok) {
+      d.enviado = true;
+      btn.classList.remove('enviando');
+      btn.classList.add('enviado');
+      btn.textContent = '✅ Enviado';
+      showToast(`✅ Relatório enviado para ${d.nome}!`, 'ok');
+    } else {
+      throw new Error(r.status);
+    }
+  } catch(e) {
+    btn.classList.remove('enviando');
+    btn.textContent = '📤 Enviar';
+    showToast(`❌ Erro ao enviar para ${d.nome}`, 'err');
+  }
+}
+
+async function enviarTodos() {
+  const pendentes = dadosCarregados.filter(d => !d.enviado && GRUPOS[d.id] && d.gasto > 0);
+  if (!pendentes.length) { showToast('Nenhuma BM pendente com dados para enviar', 'err'); return; }
+
+  const btn = document.getElementById('btn-enviar-todos');
+  btn.textContent = `⏳ Enviando 0/${pendentes.length}...`;
+  btn.disabled = true;
+
+  for (let i = 0; i < pendentes.length; i++) {
+    const d = pendentes[i];
+    btn.textContent = `⏳ Enviando ${i+1}/${pendentes.length}...`;
+    const rowBtn = document.getElementById(`btn-${d.id}`);
+    if (rowBtn) await enviarBM(d.id, rowBtn);
+    await new Promise(r => setTimeout(r, 5000));
+  }
+
+  btn.textContent = '✅ Todos enviados!';
+  setTimeout(() => { btn.textContent = '📤 Enviar todos'; btn.disabled = false; }, 3000);
+}
+
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${tipo}`;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// Inicializar período
+atualizarPeriodo();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+﻿name: BOB Analise Automatica
+on:
+  schedule:
+    - cron: '0 13 * * 1,3,5'
+  workflow_dispatch:
+jobs:
+  bob-analise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install -r backend/requirements.txt
+      - run: python backend/run_bob.py
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          WPP_API_URL: ${{ secrets.WPP_API_URL }}
+          WPP_API_KEY: ${{ secrets.WPP_API_KEY }}
+          WPP_INSTANCIA: ${{ secrets.WPP_INSTANCIA }}
+          GRUPO_OPERACOES: ${{ secrets.GRUPO_OPERACOES }}

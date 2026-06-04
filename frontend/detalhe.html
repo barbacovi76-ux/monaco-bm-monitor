@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalhe BM — Monaco Agency</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #3b82f6; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.back-btn:hover { background: #262a3a; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
+.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.mc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
+.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
+.mc-val.green { color: #34d399; }
+.mc-val.amber { color: #fbbf24; }
+.mc-val.red { color: #f87171; }
+.tabs { display: flex; gap: 4px; background: #111318; border: 1px solid #2a2d3a; border-radius: 8px; padding: 3px; margin-bottom: 16px; width: fit-content; }
+.tab-btn { padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; background: transparent; color: #6b7280; transition: all .15s; }
+.tab-btn:hover { color: #c8c8c8; }
+.tab-btn.ativo { background: #3b82f6; color: #fff; }
+.table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 10px 14px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; background: #111318; border-bottom: 1px solid #2a2d3a; white-space: nowrap; cursor: pointer; }
+th:hover { color: #9ca3af; }
+td { padding: 10px 14px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #1a1e2a; }
+.nome-cell { font-weight: 500; color: #fff; font-size: 13px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.nome-cell:hover { color: #3b82f6; text-decoration: underline; }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; white-space: nowrap; }
+.badge-green { background: rgba(52,211,153,.15); color: #34d399; }
+.badge-amber { background: rgba(251,191,36,.15); color: #fbbf24; }
+.badge-red { background: rgba(248,113,113,.15); color: #f87171; }
+.badge-gray { background: rgba(107,114,128,.15); color: #6b7280; }
+.badge-blue { background: rgba(59,130,246,.15); color: #60a5fa; }
+.veiculacao { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; }
+.dot-ativo { width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block; }
+.dot-pausado { width: 6px; height: 6px; border-radius: 50%; background: #6b7280; display: inline-block; }
+.expand-btn { background: none; border: 1px solid #2a2d3a; border-radius: 4px; color: #6b7280; cursor: pointer; padding: 2px 6px; font-size: 11px; }
+.expand-btn:hover { background: #1e2130; color: #fff; }
+.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.indent-1 { padding-left: 28px !important; }
+.indent-2 { padding-left: 48px !important; }
+.level-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 6px; font-weight: 500; }
+.level-camp { background: rgba(139,92,246,.2); color: #a78bfa; }
+.level-conj { background: rgba(59,130,246,.2); color: #60a5fa; }
+.level-ad { background: rgba(16,185,129,.2); color: #34d399; }
+.roas-val { font-weight: 600; }
+.bar-wrap { width: 80px; height: 3px; background: #2a2d3a; border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+.bar-fill { height: 100%; border-radius: 2px; }
+.empty-state { text-align: center; padding: 60px 20px; color: #4b5563; }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .thumb-wrap { width: 48px; height: 48px; border-radius: 6px; overflow: hidden; background: #1e2130; border: 1px solid #2a2d3a; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb-wrap .play-icon { font-size: 18px; color: #6b7280; }
+  .thumb-wrap:hover { border-color: #3b82f6; }
+  .nome-ad-cell { display: flex; align-items: center; gap: 10px; }
+  .modal-criativo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; }
+  .modal-criativo.open { display: flex; }
+  .modal-criativo-inner { background: #161a24; border: 1px solid #2a2d3a; border-radius: 14px; padding: 20px; max-width: 540px; width: 90%; }
+  .modal-criativo-inner img { width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain; }
+  .modal-criativo-inner video { width: 100%; border-radius: 8px; max-height: 400px; }
+  .modal-criativo-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 12px; }
+  .modal-criativo-body { font-size: 12px; color: #9ca3af; margin-top: 8px; line-height: 1.5; }
+  .modal-close-btn { float: right; background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
+  .bob-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 400px; background: #111318; border-left: 1px solid #2a2d3a; z-index: 50; transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column; }
+  .bob-panel.open { transform: translateX(0); }
+  .bob-header { padding: 16px 18px; border-bottom: 1px solid #2a2d3a; display: flex; align-items: center; justify-content: space-between; background: #161a24; flex-shrink: 0; }
+  .bob-title { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .bob-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
+  .bob-close:hover { color: #fff; }
+  .bob-body { flex: 1; overflow-y: auto; padding: 14px; }
+  .bob-loading { text-align: center; padding: 40px; color: #4b5563; font-size: 13px; }
+  .bob-alert { border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border-left: 3px solid; }
+  .bob-alert.critico { background: rgba(248,113,113,.08); border-color: #f87171; }
+  .bob-alert.atencao { background: rgba(251,191,36,.08); border-color: #fbbf24; }
+  .bob-alert.info { background: rgba(96,165,250,.08); border-color: #60a5fa; }
+  .bob-alert.ok { background: rgba(52,211,153,.08); border-color: #34d399; }
+  .bob-alert-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .bob-alert-desc { font-size: 12px; color: #9ca3af; line-height: 1.5; }
+  .bob-alert-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; }
+  .bob-tag.red { background: rgba(248,113,113,.15); color: #f87171; }
+  .bob-tag.amber { background: rgba(251,191,36,.15); color: #fbbf24; }
+  .bob-tag.green { background: rgba(52,211,153,.15); color: #34d399; }
+  .bob-tag.blue { background: rgba(96,165,250,.15); color: #60a5fa; }
+  .bob-empty { text-align: center; padding: 40px 20px; color: #34d399; font-size: 13px; }
+  .bob-section { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; margin: 14px 0 8px; }
+  .overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); z-index: 49; }
+  .overlay-bg.open { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">📊 Performance BMs <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="periodo-badge" id="periodo-label">Carregando...</span>
+    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="bm-header">
+    <div>
+      <div class="bm-title" id="bm-title">Carregando...</div>
+      <div class="bm-id" id="bm-id"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="abrirAnalise()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #7c3aed;background:rgba(124,58,237,.15);color:#a78bfa;font-weight:500;">
+        🔍 Análise Gestor
+      </button>
+      <button onclick="abrirBOB()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;font-weight:500;">
+        🤖 BOB
+      </button>
+      <div class="tabs">
+      <button class="tab-btn ativo" onclick="setTab('campanhas', this)">📢 Campanhas</button>
+      <button class="tab-btn" onclick="setTab('conjuntos', this)">📦 Conjuntos</button>
+      <button class="tab-btn" onclick="setTab('anuncios', this)">🎯 Anúncios</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics" id="metrics">
+    <div class="mc"><div class="mc-label">💰 Investido</div><div class="mc-val" id="m-gasto">—</div></div>
+    <div class="mc"><div class="mc-label">📦 Pedidos</div><div class="mc-val" id="m-pedidos">—</div></div>
+    <div class="mc"><div class="mc-label">🛒 Faturamento</div><div class="mc-val green" id="m-fat">—</div></div>
+    <div class="mc"><div class="mc-label">📉 CPR</div><div class="mc-val" id="m-cpr">—</div></div>
+    <div class="mc"><div class="mc-label">🚀 ROAS</div><div class="mc-val green" id="m-roas">—</div></div>
+    <div class="mc"><div class="mc-label">👁 Impressões</div><div class="mc-val" id="m-impr">—</div></div>
+    <div class="mc"><div class="mc-label">🖱 Cliques</div><div class="mc-val" id="m-clicks">—</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="main-table">
+      <thead id="thead">
+        <tr>
+          <th style="width:35%">Nome</th>
+          <th>Veiculação</th>
+          <th>Investido</th>
+          <th>Pedidos</th>
+          <th>Faturamento</th>
+          <th>CPR</th>
+          <th>ROAS</th>
+          <th>Impressões</th>
+          <th>CTR</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="9" class="loading"><span class="spin">⟳</span> Carregando dados da API do Meta...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+
+// Pegar params da URL
+const params = new URLSearchParams(window.location.search);
+const accountId = params.get('id');
+const bmNome = decodeURIComponent(params.get('nome') || 'BM');
+const periodoAtual = params.get('periodo') || 'last_7d';
+const dataInicio = params.get('since') || '';
+const dataFim = params.get('until') || '';
+
+let tabAtual = 'campanhas';
+let dadosCache = {};
+
+document.getElementById('bm-title').textContent = bmNome;
+document.getElementById('bm-id').textContent = accountId;
+
+// Label do período
+const periodoLabels = {
+  today: 'Hoje', yesterday: 'Ontem',
+  last_7d: 'Últimos 7 dias', last_14d: 'Últimos 14 dias', last_30d: 'Últimos 30 dias'
+};
+if (periodoAtual === 'custom' && dataInicio && dataFim) {
+  const fmt = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
+  document.getElementById('periodo-label').textContent = `${fmt(dataInicio)} até ${fmt(dataFim)}`;
+} else {
+  document.getElementById('periodo-label').textContent = periodoLabels[periodoAtual] || periodoAtual;
+}
+
+const token = localStorage.getItem(TOKEN_KEY);
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtN = v => v.toLocaleString('pt-BR');
+
+function buildTimeParam() {
+  if (dataInicio && dataFim) {
+    return `time_range=${encodeURIComponent(JSON.stringify({since: dataInicio, until: dataFim}))}`;
+  }
+  if (periodoAtual && periodoAtual !== 'custom') {
+    return `date_preset=${periodoAtual}`;
+  }
+  return 'date_preset=last_7d';
+}
+
+function getStatusBadge(status) {
+  const map = {
+    'ACTIVE': '<span class="status-badge badge-green"><span class="dot-ativo"></span> Ativo</span>',
+    'PAUSED': '<span class="status-badge badge-gray"><span class="dot-pausado"></span> Pausado</span>',
+    'ARCHIVED': '<span class="status-badge badge-gray">Arquivado</span>',
+    'DELETED': '<span class="status-badge badge-red">Deletado</span>',
+    'IN_PROCESS': '<span class="status-badge badge-blue">Processando</span>',
+    'WITH_ISSUES': '<span class="status-badge badge-red">Com problemas</span>',
+  };
+  return map[status] || `<span class="status-badge badge-gray">${status}</span>`;
+}
+
+function getRoasColor(roas) {
+  if (roas >= 10) return '#34d399';
+  if (roas >= 3) return '#60a5fa';
+  if (roas >= 1.5) return '#fbbf24';
+  if (roas > 0) return '#f87171';
+  return '#6b7280';
+}
+
+function parseInsights(ins) {
+  if (!ins || !ins.length) return { gasto: 0, pedidos: 0, fat: 0, impr: 0, clicks: 0 };
+  const d = ins[0];
+  const gasto = parseFloat(d.spend || 0);
+  const impr = parseInt(d.impressions || 0);
+  const clicks = parseInt(d.clicks || 0);
+  const actions = d.actions || [];
+  const actionValues = d.action_values || [];
+  const pedidos = (actions.find(a => a.action_type === 'purchase') || {value: 0}).value * 1;
+  const fat = parseFloat((actionValues.find(a => a.action_type === 'purchase') || {value: 0}).value);
+  return { gasto, pedidos, fat, impr, clicks };
+}
+
+async function fetchLevel(level, parentId) {
+  const cacheKey = `${level}-${parentId}`;
+  // Cache desabilitado para garantir dados do período correto
+  // if (dadosCache[cacheKey]) return dadosCache[cacheKey];
+
+  let url;
+  const insightsField = dataInicio && dataFim
+    ? `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values}`
+    : `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,actions,action_values}`;
+  const fields = `id,name,status,effective_status,${insightsField}`;
+
+  if (level === 'campanhas') {
+    url = `https://graph.facebook.com/${API_VERSION}/${parentId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
+  } else if (level === 'conjuntos') {
+    url = `https://graph.facebook.com/${API_VERSION}/${parentId}/adsets?fields=${fields}&limit=100&access_token=${token}`;
+  } else {
+    const adFields = `id,name,status,effective_status,creative{title,body,thumbnail_url,video_id},${insightsField}`;
+    url = `https://graph.facebook.com/${API_VERSION}/${parentId}/ads?fields=${adFields}&limit=100&access_token=${token}`;
+  }
+
+  const r = await fetch(url);
+  const d = await r.json();
+  const result = d.data || [];
+  dadosCache[cacheKey] = result;
+  return result;
+}
+
+function buildRow(item, level, indent, maxGasto) {
+  const ins = parseInsights(item.insights ? item.insights.data : null);
+  const cpr = ins.pedidos > 0 ? ins.gasto / ins.pedidos : 0;
+  const roas = ins.gasto > 0 && ins.fat > 0 ? ins.fat / ins.gasto : 0;
+  const ctr = ins.impr > 0 ? (ins.clicks / ins.impr * 100) : 0;
+  const pct = maxGasto > 0 ? Math.round((ins.gasto / maxGasto) * 100) : 0;
+  const roasColor = getRoasColor(roas);
+  const levelLabels = { campanhas: 'camp', conjuntos: 'conj', anuncios: 'ad' };
+  const levelColors = { campanhas: 'level-camp', conjuntos: 'level-conj', anuncios: 'level-ad' };
+  const indentClass = indent === 1 ? 'indent-1' : indent === 2 ? 'indent-2' : '';
+  const hasChildren = level !== 'anuncios';
+
+  // Extrair criativo do anúncio
+  const creative = item.creative || {};
+  const thumbUrl = creative.thumbnail_url || '';
+  const videoUrl = creative.video_url || '';
+  const adTitle = creative.title || '';
+  const adBody = creative.body || '';
+  return `<tr data-id="${item.id}" data-level="${level}" data-expand="false">
+    <td class="${indentClass}">
+      <div class="${level === 'anuncios' ? 'nome-ad-cell' : ''}">
+        ${level === 'anuncios' ? `
+          <div class="thumb-wrap" 
+               data-nome="${item.name.replace(/"/g,'&quot;')}"
+               data-thumb="${thumbUrl}"
+               data-video="${videoUrl}"
+               data-titulo="${adTitle.replace(/"/g,'&quot;')}"
+               data-corpo="${adBody.replace(/"/g,'&quot;')}"
+               onclick="abrirCriativoEl(this)">
+            ${thumbUrl ? `<img src="${thumbUrl}" alt="thumb" onerror="this.parentElement.innerHTML='<span class=\'play-icon\'>🖼</span>'">` : `<span class="play-icon">${videoUrl ? '▶' : '🖼'}</span>`}
+          </div>` : ''}
+        <div>
+          ${hasChildren ? `<button class="expand-btn" onclick="toggleExpand('${item.id}', '${level}', this)">▶</button> ` : '<span style="width:24px;display:inline-block;"></span> '}
+          <span class="level-tag ${levelColors[level]}">${levelLabels[level]}</span>
+          <span class="nome-cell" title="${item.name}" onclick="${hasChildren ? `toggleExpand('${item.id}', '${level}', this.previousElementSibling.previousElementSibling)` : ''}">${item.name}</span>
+        </div>
+      </div>
+    </td>
+    <td>${getStatusBadge(item.effective_status || item.status)}</td>
+    <td style="font-weight:500;">
+      ${ins.gasto > 0 ? fmt(ins.gasto) : '<span style="color:#374151">—</span>'}
+      ${ins.gasto > 0 ? `<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:#3b82f6;"></div></div>` : ''}
+    </td>
+    <td>${ins.pedidos > 0 ? `<strong>${fmtN(ins.pedidos)}</strong>` : '<span style="color:#374151">0</span>'}</td>
+    <td style="color:#34d399;">${ins.fat > 0 ? fmt(ins.fat) : '<span style="color:#374151">—</span>'}</td>
+    <td>${cpr > 0 ? fmt(cpr) : '<span style="color:#374151">—</span>'}</td>
+    <td><span class="roas-val" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</span></td>
+    <td style="color:#9ca3af;">${ins.impr > 0 ? fmtN(ins.impr) : '—'}</td>
+    <td style="color:#9ca3af;">${ctr > 0 ? ctr.toFixed(2) + '%' : '—'}</td>
+  </tr>`;
+}
+
+async function toggleExpand(parentId, level, btn) {
+  const nextLevel = level === 'campanhas' ? 'conjuntos' : 'anuncios';
+  const row = document.querySelector(`tr[data-id="${parentId}"]`);
+  const expanded = row.getAttribute('data-expand') === 'true';
+
+  if (expanded) {
+    // Colapsar — remover filhos
+    row.setAttribute('data-expand', 'false');
+    btn.textContent = '▶';
+    let next = row.nextSibling;
+    while (next && next.getAttribute && next.getAttribute('data-parent') === parentId) {
+      const toRemove = next;
+      next = next.nextSibling;
+      toRemove.remove();
+    }
+    return;
+  }
+
+  // Expandir
+  btn.textContent = '⏳';
+  row.setAttribute('data-expand', 'true');
+
+  try {
+    const items = await fetchLevel(nextLevel, parentId);
+    const indent = nextLevel === 'conjuntos' ? 1 : 2;
+    const maxGasto = Math.max(...items.map(i => parseFloat(i.insights?.data?.[0]?.spend || 0)), 1);
+
+    const rows = items.map(item => {
+      const html = buildRow(item, nextLevel, indent, maxGasto);
+      const tmp = document.createElement('tbody');
+      tmp.innerHTML = html;
+      const tr = tmp.firstChild;
+      tr.setAttribute('data-parent', parentId);
+      return tr;
+    });
+
+    let insertAfter = row;
+    rows.forEach(tr => {
+      insertAfter.parentNode.insertBefore(tr, insertAfter.nextSibling);
+      insertAfter = tr;
+    });
+
+    btn.textContent = '▼';
+    if (items.length === 0) btn.textContent = '—';
+  } catch(e) {
+    btn.textContent = '▶';
+    row.setAttribute('data-expand', 'false');
+    console.error(e);
+  }
+}
+
+async function setTab(tab, el) {
+  tabAtual = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+  el.classList.add('ativo');
+  await carregarTab();
+}
+
+async function carregarTab() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = `<tr><td colspan="9" class="loading"><span class="spin">⟳</span> Carregando ${tabAtual}...</td></tr>`;
+
+  if (!token) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">🔑</div><div>Token não encontrado. Volte ao dashboard e salve o token.</div></td></tr>`;
+    return;
+  }
+
+  try {
+    const parentId = tabAtual === 'campanhas' ? accountId :
+                     tabAtual === 'conjuntos' ? accountId : accountId;
+
+    let level = tabAtual;
+    let url;
+    // Para insights com período customizado, precisamos passar o time_range dentro do campo insights
+    let insightsParam;
+    if (dataInicio && dataFim) {
+      insightsParam = `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values}`;
+    } else {
+      insightsParam = `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,actions,action_values}`;
+    }
+    const fields = `id,name,status,effective_status,${insightsParam}`;
+
+    if (tabAtual === 'campanhas') {
+      url = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
+    } else if (tabAtual === 'conjuntos') {
+      url = `https://graph.facebook.com/${API_VERSION}/${accountId}/adsets?fields=${fields}&limit=100&access_token=${token}`;
+    } else {
+      const adF = `id,name,status,effective_status,creative{title,body,thumbnail_url,video_id},${insightsField}`;
+      url = `https://graph.facebook.com/${API_VERSION}/${accountId}/ads?fields=${adF}&limit=100&access_token=${token}`;
+    }
+
+    const r = await fetch(url);
+    const d = await r.json();
+    const items = d.data || [];
+
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">📭</div><div>Nenhum ${tabAtual.slice(0,-1)} encontrado para este período.</div></td></tr>`;
+      return;
+    }
+
+    const maxGasto = Math.max(...items.map(i => parseFloat(i.insights?.data?.[0]?.spend || 0)), 1);
+
+    // Atualizar métricas totais
+    let totalGasto = 0, totalPedidos = 0, totalFat = 0, totalImpr = 0, totalClicks = 0;
+    items.forEach(item => {
+      const ins = parseInsights(item.insights ? item.insights.data : null);
+      totalGasto += ins.gasto; totalPedidos += ins.pedidos;
+      totalFat += ins.fat; totalImpr += ins.impr; totalClicks += ins.clicks;
+    });
+
+    if (tabAtual === 'campanhas') {
+      const cprMedio = totalPedidos > 0 ? totalGasto / totalPedidos : 0;
+      const roasMedio = totalGasto > 0 && totalFat > 0 ? totalFat / totalGasto : 0;
+      document.getElementById('m-gasto').textContent = fmt(totalGasto);
+      document.getElementById('m-pedidos').textContent = fmtN(totalPedidos);
+      document.getElementById('m-fat').textContent = fmt(totalFat);
+      document.getElementById('m-cpr').textContent = cprMedio > 0 ? fmt(cprMedio) : '—';
+      document.getElementById('m-roas').textContent = roasMedio > 0 ? roasMedio.toFixed(2) + 'x' : '—';
+      document.getElementById('m-roas').className = 'mc-val ' + (roasMedio >= 3 ? 'green' : roasMedio >= 1.5 ? 'amber' : roasMedio > 0 ? 'red' : '');
+      document.getElementById('m-impr').textContent = fmtN(totalImpr);
+      document.getElementById('m-clicks').textContent = fmtN(totalClicks);
+    }
+
+    tbody.innerHTML = items.map(item => buildRow(item, level, 0, maxGasto)).join('');
+
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">⚠️</div><div>Erro ao carregar: ${e.message}</div></td></tr>`;
+  }
+}
+
+async function abrirBOB() {
+  document.getElementById('bob-panel').classList.add('open');
+  document.getElementById('overlay-bg').classList.add('open');
+  document.getElementById('bob-body').innerHTML = '<div class="bob-loading"><span class="spin">⟳</span> BOB analisando campanhas...</div>';
+
+  const alertas = [];
+  const hoje = new Date();
+  const insightsField = dataInicio && dataFim
+    ? `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`
+    : `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`;
+
+  try {
+    const fields = `id,name,status,effective_status,lifetime_budget,daily_budget,budget_remaining,start_time,stop_time,${insightsField},ads.limit(50){id,status,effective_status}`;
+    const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const campanhas = d.data || [];
+
+    for (const camp of campanhas) {
+      const status = camp.effective_status || camp.status;
+      const ins = camp.insights?.data?.[0] || {};
+      const gasto = parseFloat(ins.spend || 0);
+      const actions = ins.actions || [];
+      const avs = ins.action_values || [];
+      const pedidos = parseInt(actions.find(a => a.action_type === 'purchase')?.value || 0);
+      const fat = parseFloat(avs.find(a => a.action_type === 'purchase')?.value || 0);
+      const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+      const cpr = pedidos > 0 ? gasto / pedidos : 0;
+      const ads = camp.ads?.data || [];
+      const adsAtivos = ads.filter(a => a.effective_status === 'ACTIVE').length;
+      const lifetimeBudget = parseFloat(camp.lifetime_budget || 0) / 100;
+      const budgetRemaining = parseFloat(camp.budget_remaining || 0) / 100;
+      const pctGasto = lifetimeBudget > 0 ? ((lifetimeBudget - budgetRemaining) / lifetimeBudget * 100) : 0;
+
+      let diasRestantes = null;
+      if (camp.stop_time) {
+        const stop = new Date(camp.stop_time);
+        diasRestantes = Math.ceil((stop - hoje) / 86400000);
+      }
+
+      if (status === 'ACTIVE') {
+        if (gasto > 0 && pedidos === 0) {
+          alertas.push({ tipo: 'critico', icon: '🚨', camp: camp.name, titulo: 'Gasto sem resultado', desc: `Investiu ${fmt(gasto)} sem nenhuma compra. Revisar pixel e criativos.`, tags: [{txt: fmt(gasto)+' gasto', cor: 'red'}, {txt: '0 pedidos', cor: 'red'}], diasRestantes });
+        } else if (gasto > 0 && roas > 0 && roas < 1.5) {
+          alertas.push({ tipo: 'critico', icon: '📉', camp: camp.name, titulo: 'ROAS crítico — prejuízo', desc: `ROAS ${roas.toFixed(2)}x. Cada R$ 1 investido retorna R$ ${roas.toFixed(2)}. Campanha no prejuízo.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'red'}, {txt: fmt(cpr)+' CPR', cor: 'red'}], diasRestantes });
+        } else if (gasto > 0 && roas >= 1.5 && roas < 3) {
+          alertas.push({ tipo: 'atencao', icon: '⚠️', camp: camp.name, titulo: 'ROAS abaixo do ideal', desc: `ROAS ${roas.toFixed(2)}x está abaixo da meta de 3x. Otimizar público e criativos.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'amber'}, {txt: fmt(cpr)+' CPR', cor: 'amber'}], diasRestantes });
+        } else if (gasto > 0 && roas >= 3) {
+          alertas.push({ tipo: 'ok', icon: '✅', camp: camp.name, titulo: 'Performance excelente', desc: `ROAS ${roas.toFixed(2)}x com ${pedidos} pedidos. ${fmt(fat)} em faturamento.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'green'}, {txt: pedidos+' pedidos', cor: 'green'}], diasRestantes });
+        }
+        if (pctGasto > 90) {
+          alertas.push({ tipo: 'critico', icon: '💸', camp: camp.name, titulo: 'Orçamento quase esgotado', desc: `${pctGasto.toFixed(0)}% do orçamento usado. Restam apenas ${fmt(budgetRemaining)}.`, tags: [{txt: fmt(budgetRemaining)+' restante', cor: 'red'}], diasRestantes });
+        }
+        if (diasRestantes !== null && diasRestantes <= 2 && diasRestantes >= 0) {
+          alertas.push({ tipo: 'critico', icon: '⏰', camp: camp.name, titulo: `Encerra em ${diasRestantes} dia(s)!`, desc: `Campanha com data de término se aproximando. Verificar renovação.`, tags: [{txt: diasRestantes+' dia(s)', cor: 'red'}], diasRestantes });
+        } else if (diasRestantes !== null && diasRestantes <= 7 && diasRestantes > 2) {
+          alertas.push({ tipo: 'atencao', icon: '📅', camp: camp.name, titulo: `Encerra em ${diasRestantes} dias`, desc: `Planejar renovação ou nova campanha.`, tags: [{txt: diasRestantes+' dias', cor: 'amber'}], diasRestantes });
+        }
+        if (adsAtivos === 0) {
+          alertas.push({ tipo: 'atencao', icon: '🎭', camp: camp.name, titulo: 'Nenhum anúncio ativo', desc: `Campanha ativa sem anúncios rodando. Verificar conjuntos e criativos.`, tags: [{txt: '0 anúncios ativos', cor: 'amber'}], diasRestantes });
+        }
+      } else if (status === 'PAUSED' && gasto > 0) {
+        alertas.push({ tipo: 'info', icon: '⏸️', camp: camp.name, titulo: 'Campanha pausada com histórico', desc: `Estava gastando ${fmt(gasto)} no período. Verificar se pausa foi intencional.`, tags: [{txt: 'Pausada', cor: 'blue'}, {txt: fmt(gasto)+' gasto', cor: 'blue'}], diasRestantes });
+      }
+    }
+
+    // Renderizar
+    if (!alertas.length) {
+      document.getElementById('bob-body').innerHTML = '<div class="bob-empty">✅ Nenhum alerta encontrado!<br><span style="font-size:11px;color:#6b7280;margin-top:6px;display:block;">Todas as campanhas estão saudáveis.</span></div>';
+      return;
+    }
+
+    const ordem = { critico: 0, atencao: 1, info: 2, ok: 3 };
+    alertas.sort((a, b) => (ordem[a.tipo] || 0) - (ordem[b.tipo] || 0));
+
+    const labels = { critico: '🔴 Crítico', atencao: '⚠️ Atenção', info: 'ℹ️ Info', ok: '✅ Saudável' };
+    const grupos = {};
+    alertas.forEach(a => { if (!grupos[a.tipo]) grupos[a.tipo] = []; grupos[a.tipo].push(a); });
+
+    let html = `<div style="font-size:12px;color:#6b7280;margin-bottom:12px;">${campanhas.length} campanhas analisadas — ${alertas.length} alerta(s)</div>`;
+
+    for (const [tipo, lista] of Object.entries(grupos)) {
+      html += `<div class="bob-section">${labels[tipo]} (${lista.length})</div>`;
+      html += lista.map(a => `
+        <div class="bob-alert ${a.tipo}">
+          <div class="bob-alert-title">${a.icon} ${a.camp}</div>
+          <div style="font-size:11px;font-weight:600;color:#e8e8e8;margin-bottom:3px;">${a.titulo}</div>
+          <div class="bob-alert-desc">${a.desc}</div>
+          ${a.diasRestantes !== null && a.diasRestantes >= 0 ? `<div style="font-size:11px;color:${a.diasRestantes <= 2 ? '#f87171' : '#fbbf24'};margin-top:4px;">⏰ Encerra em ${a.diasRestantes} dia(s)</div>` : ''}
+          <div class="bob-alert-tags">${(a.tags||[]).map(t => `<span class="bob-tag ${t.cor}">${t.txt}</span>`).join('')}</div>
+        </div>`).join('');
+    }
+
+    document.getElementById('bob-body').innerHTML = html;
+
+  } catch(e) {
+    document.getElementById('bob-body').innerHTML = `<div class="bob-loading">Erro: ${e.message}</div>`;
+  }
+}
+
+function fecharBOB() {
+  document.getElementById('bob-panel').classList.remove('open');
+  document.getElementById('overlay-bg').classList.remove('open');
+}
+
+function abrirAnalise() {
+  let url = `analise.html?id=${accountId}&nome=${encodeURIComponent(bmNome)}&periodo=${periodoAtual}`;
+  if (periodoAtual === 'custom' && dataInicio && dataFim) {
+    url += `&since=${dataInicio}&until=${dataFim}`;
+  }
+  window.open(url, '_blank');
+}
+
+function abrirCriativoEl(el) {
+  const nome = el.getAttribute('data-nome') || '';
+  const thumbUrl = el.getAttribute('data-thumb') || '';
+  const videoUrl = el.getAttribute('data-video') || '';
+  const titulo = el.getAttribute('data-titulo') || '';
+  const corpo = el.getAttribute('data-corpo') || '';
+  abrirCriativo(nome, thumbUrl, videoUrl, titulo, corpo);
+}
+
+function abrirCriativo(nome, thumbUrl, videoUrl, titulo, corpo) {
+  document.getElementById('mc-title').textContent = nome;
+  const media = document.getElementById('mc-media');
+  if (videoUrl) {
+    media.innerHTML = `<video controls autoplay muted style="width:100%;border-radius:8px;max-height:400px;"><source src="${videoUrl}"><p style="color:#9ca3af;text-align:center;">Vídeo não disponível</p></video>`;
+  } else if (thumbUrl) {
+    media.innerHTML = `<img src="${thumbUrl}" alt="${nome}" onerror="this.style.display='none'">`;
+  } else {
+    media.innerHTML = `<div style="text-align:center;padding:40px;color:#4b5563;">Sem prévia disponível</div>`;
+  }
+  const body = document.getElementById('mc-body');
+  body.innerHTML = '';
+  if (titulo) body.innerHTML += `<strong>${titulo}</strong><br>`;
+  if (corpo) body.innerHTML += corpo;
+  document.getElementById('modal-criativo').classList.add('open');
+}
+
+function fecharCriativo(e) {
+  if (!e || e.target === document.getElementById('modal-criativo')) {
+    document.getElementById('modal-criativo').classList.remove('open');
+    const media = document.getElementById('mc-media');
+    media.innerHTML = ''; // Para o vídeo
+  }
+}
+
+// Iniciar
+if (!accountId) {
+  document.getElementById('tbody').innerHTML = `<tr><td colspan="9" class="empty-state"><div>ID da conta não informado.</div></td></tr>`;
+} else {
+  carregarTab();
+}
+</script>
+<div class="modal-criativo" id="modal-criativo" onclick="fecharCriativo(event)">
+  <div class="modal-criativo-inner" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="fecharCriativo()">✕</button>
+    <div class="modal-criativo-title" id="mc-title"></div>
+    <div id="mc-media"></div>
+    <div class="modal-criativo-body" id="mc-body"></div>
+  </div>
+</div>
+<div class="overlay-bg" id="overlay-bg" onclick="fecharBOB()"></div>
+<div class="bob-panel" id="bob-panel">
+  <div class="bob-header">
+    <div class="bob-title">🤖 BOB — Análise da BM</div>
+    <button class="bob-close" onclick="fecharBOB()">✕</button>
+  </div>
+  <div class="bob-body" id="bob-body">
+    <div class="bob-loading">Clique em "🤖 BOB" para analisar esta BM</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise Gestor — Monaco Agency</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #7c3aed; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.back-btn:hover { background: #262a3a; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
+.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
+.section-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.mc { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
+.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
+.mc-val.green { color: #34d399; }
+.mc-val.amber { color: #fbbf24; }
+.mc-val.red { color: #f87171; }
+.mc-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.chart-wrap { position: relative; height: 240px; }
+.chart-wrap-tall { position: relative; height: 300px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.funil-wrap { display: flex; flex-direction: column; gap: 6px; }
+.funil-step { display: flex; align-items: center; gap: 12px; }
+.funil-bar-bg { flex: 1; height: 32px; background: #1e2130; border-radius: 6px; overflow: hidden; position: relative; }
+.funil-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; font-size: 12px; font-weight: 500; color: #fff; transition: width .6s ease; }
+.funil-label { width: 180px; font-size: 12px; color: #9ca3af; text-align: right; flex-shrink: 0; }
+.funil-val { width: 80px; font-size: 12px; font-weight: 600; color: #fff; text-align: right; flex-shrink: 0; }
+.funil-pct { width: 50px; font-size: 11px; color: #6b7280; text-align: right; flex-shrink: 0; }
+.comparativo-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.comp-card { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 14px; }
+.comp-card-title { font-size: 12px; color: #6b7280; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .4px; }
+.comp-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e2130; font-size: 13px; }
+.comp-row:last-child { border-bottom: none; }
+.comp-label { color: #9ca3af; }
+.comp-val { font-weight: 500; }
+.comp-delta { font-size: 11px; padding: 2px 6px; border-radius: 99px; }
+.delta-up { background: rgba(52,211,153,.15); color: #34d399; }
+.delta-down { background: rgba(248,113,113,.15); color: #f87171; }
+.delta-neutral { background: rgba(107,114,128,.15); color: #9ca3af; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 8px 12px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; background: #111318; border-bottom: 1px solid #2a2d3a; }
+td { padding: 8px 12px; border-bottom: 1px solid #1e2130; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #1a1e2a; }
+.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+@media print {
+  .header { position: static; }
+  button, .back-btn { display: none !important; }
+  body { background: #fff; color: #000; }
+  .section { background: #f9f9f9; border: 1px solid #ddd; break-inside: avoid; }
+  .mc { background: #f0f0f0; border: 1px solid #ddd; }
+  .mc-val { color: #000 !important; }
+  .mc-val.green { color: #065f46 !important; }
+  .mc-val.amber { color: #92400e !important; }
+  .mc-val.red { color: #991b1b !important; }
+  .funil-bar-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  canvas { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">📊 Análise Gestor <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="periodo-badge" id="periodo-label">Carregando...</span>
+    <button onclick="exportarHTML()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">
+      💾 Salvar HTML
+    </button>
+    <button onclick="exportarPDF()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #3b82f6;background:rgba(59,130,246,.15);color:#60a5fa;">
+      📄 Exportar PDF
+    </button>
+    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="bm-header">
+    <div>
+      <div class="bm-title" id="bm-title">Carregando...</div>
+      <div class="bm-id" id="bm-id"></div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="loading"><span class="spin">⟳</span> Carregando análise completa...</div>
+  </div>
+
+</div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+const params = new URLSearchParams(window.location.search);
+const accountId = params.get('id');
+const bmNome = decodeURIComponent(params.get('nome') || 'BM');
+const periodoAtual = params.get('periodo') || 'last_7d';
+const dataInicio = params.get('since') || '';
+const dataFim = params.get('until') || '';
+const token = localStorage.getItem(TOKEN_KEY);
+
+document.getElementById('bm-title').textContent = bmNome;
+document.getElementById('bm-id').textContent = accountId;
+
+const periodoLabels = { today: 'Hoje', yesterday: 'Ontem', last_7d: 'Últimos 7 dias', last_14d: 'Últimos 14 dias', last_30d: 'Últimos 30 dias' };
+if (periodoAtual === 'custom' && dataInicio && dataFim) {
+  const fmtD = d => new Date(d+'T12:00:00').toLocaleDateString('pt-BR');
+  document.getElementById('periodo-label').textContent = `${fmtD(dataInicio)} até ${fmtD(dataFim)}`;
+} else {
+  document.getElementById('periodo-label').textContent = periodoLabels[periodoAtual] || periodoAtual;
+}
+
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtN = v => Number(v).toLocaleString('pt-BR');
+const fmtPct = v => (v * 100).toFixed(1) + '%';
+
+function getTimeParam() {
+  if (dataInicio && dataFim) return `time_range=${encodeURIComponent(JSON.stringify({since:dataInicio,until:dataFim}))}`;
+  return `date_preset=${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}`;
+}
+
+function getPrevPeriod() {
+  if (dataInicio && dataFim) {
+    const d1 = new Date(dataInicio), d2 = new Date(dataFim);
+    const diff = Math.round((d2 - d1) / 86400000) + 1;
+    const ps = new Date(d1); ps.setDate(ps.getDate() - diff);
+    const pe = new Date(d1); pe.setDate(pe.getDate() - 1);
+    return { since: ps.toISOString().split('T')[0], until: pe.toISOString().split('T')[0] };
+  }
+  const hoje = new Date();
+  const dias = { last_7d: 7, last_14d: 14, last_30d: 30, today: 1, yesterday: 1 }[periodoAtual] || 7;
+  const pe = new Date(hoje); pe.setDate(pe.getDate() - dias);
+  const ps = new Date(pe); ps.setDate(ps.getDate() - dias);
+  return { since: ps.toISOString().split('T')[0], until: pe.toISOString().split('T')[0] };
+}
+
+async function fetchInsights(extraFields, timeParam) {
+  const fields = 'spend,impressions,clicks,reach,frequency,cpc,actions,action_values,cost_per_action_type';
+  const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=${fields}&${timeParam}&limit=500&access_token=${token}`;
+  const r = await fetch(url);
+  return r.json();
+}
+
+function parseMain(data) {
+  if (!data || !data.length) return null;
+  const d = data[0];
+  const gasto = parseFloat(d.spend || 0);
+  const impr = parseInt(d.impressions || 0);
+  const clicks = parseInt(d.clicks || 0);
+  const reach = parseInt(d.reach || 0);
+  const freq = parseFloat(d.frequency || 0);
+  const cpc = parseFloat(d.cpc || 0);
+  const cpaArr = d.cost_per_action_type || [];
+  const cpLpItem = cpaArr.find(a => a.action_type === 'landing_page_view') || cpaArr.find(a => a.action_type === 'omni_landing_page_view');
+  const cpLp = cpLpItem ? parseFloat(cpLpItem.value) : (clicks > 0 ? gasto / clicks : 0);
+  const actions = d.actions || [];
+  const actionValues = d.action_values || [];
+  const pedidos = parseInt((actions.find(a => a.action_type === 'purchase') || {value:0}).value);
+  const fat = parseFloat((actionValues.find(a => a.action_type === 'purchase') || {value:0}).value);
+  const addCart = parseInt((actions.find(a => a.action_type === 'add_to_cart') || {value:0}).value);
+  const checkout = parseInt((actions.find(a => a.action_type === 'initiate_checkout') || {value:0}).value);
+  const pageView = parseInt((actions.find(a => a.action_type === 'landing_page_view') || {value:0}).value);
+  const viewContent = parseInt((actions.find(a => a.action_type === 'view_content') || {value:0}).value);
+  const cpr = pedidos > 0 ? gasto / pedidos : 0;
+  const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+  const ctr = impr > 0 ? clicks / impr : 0;
+  const ticket = pedidos > 0 ? fat / pedidos : 0;
+  return { gasto, impr, clicks, reach, freq, pedidos, fat, addCart, checkout, pageView, viewContent, cpr, roas, ctr, ticket, cpc, cpLp };
+}
+
+function renderMetrics(m, prev) {
+  function delta(curr, prevVal, higher_is_better = true) {
+    if (!prevVal || prevVal === 0) return '';
+    const pct = ((curr - prevVal) / prevVal * 100);
+    const up = pct > 0;
+    const good = higher_is_better ? up : !up;
+    return `<span class="comp-delta ${good ? 'delta-up' : 'delta-down'}">${up ? '+' : ''}${pct.toFixed(1)}%</span>`;
+  }
+
+  const roasColor = m.roas >= 10 ? 'green' : m.roas >= 3 ? '' : m.roas >= 1.5 ? 'amber' : 'red';
+
+  return `
+  <div class="metrics-row">
+    <div class="mc"><div class="mc-label">💰 Investido</div><div class="mc-val">${fmt(m.gasto)}</div>${prev ? `<div class="mc-sub">${delta(m.gasto, prev.gasto, false)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">📦 Pedidos</div><div class="mc-val">${fmtN(m.pedidos)}</div>${prev ? `<div class="mc-sub">${delta(m.pedidos, prev.pedidos)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">🛒 Faturamento</div><div class="mc-val green">${fmt(m.fat)}</div>${prev ? `<div class="mc-sub">${delta(m.fat, prev.fat)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">🎫 Ticket médio</div><div class="mc-val green">${m.ticket > 0 ? fmt(m.ticket) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.ticket, prev.ticket)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">📉 CPR</div><div class="mc-val">${m.cpr > 0 ? fmt(m.cpr) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.cpr, prev.cpr, false)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">🚀 ROAS</div><div class="mc-val ${roasColor}">${m.roas > 0 ? m.roas.toFixed(2) + 'x' : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.roas, prev.roas)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">👁 Alcance</div><div class="mc-val">${fmtN(m.reach)}</div></div>
+    <div class="mc"><div class="mc-label">🔁 Frequência</div><div class="mc-val">${m.freq > 0 ? m.freq.toFixed(2) + 'x' : '—'}</div></div>
+    <div class="mc"><div class="mc-label">💵 Custo por clique</div><div class="mc-val">${m.cpc > 0 ? fmt(m.cpc) : '—'}</div></div>
+    <div class="mc"><div class="mc-label">📄 Custo por LP</div><div class="mc-val">${m.cpLp > 0 ? fmt(m.cpLp) : '—'}</div></div>
+  </div>`;
+}
+
+function renderFunil(m) {
+  const steps = [
+    { label: 'Impressões', val: m.impr, color: '#3b82f6' },
+    { label: 'Cliques no link', val: m.clicks, color: '#6366f1' },
+    { label: 'Página de destino', val: m.pageView, color: '#8b5cf6' },
+    { label: 'Ver conteúdo', val: m.viewContent, color: '#a78bfa' },
+    { label: 'Add ao carrinho', val: m.addCart, color: '#f59e0b' },
+    { label: 'Início de compra', val: m.checkout, color: '#f97316' },
+    { label: 'Compras', val: m.pedidos, color: '#10b981' },
+  ].filter(s => s.val > 0);
+
+  const max = steps[0]?.val || 1;
+  return `
+  <div class="section">
+    <div class="section-title">🔽 Funil de Conversão</div>
+    <div class="funil-wrap">
+      ${steps.map((s, i) => {
+        const pct = max > 0 ? (s.val / max * 100) : 0;
+        const convPct = i > 0 && steps[i-1].val > 0 ? (s.val / steps[i-1].val * 100).toFixed(1) + '%' : '—';
+        return `<div class="funil-step">
+          <div class="funil-label">${s.label}</div>
+          <div class="funil-bar-bg">
+            <div class="funil-bar-fill" style="width:${pct}%;background:${s.color};">${fmtN(s.val)}</div>
+          </div>
+          <div class="funil-val">${fmtN(s.val)}</div>
+          <div class="funil-pct">${i > 0 ? convPct : '100%'}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderDailyChart(dailyData) {
+  const labels = dailyData.map(d => new Date(d.date_start+'T12:00:00').toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'}));
+  const gastos = dailyData.map(d => parseFloat(d.spend || 0));
+  const pedidos = dailyData.map(d => parseInt((d.actions||[]).find(a => a.action_type==='purchase')?.value || 0));
+  const roas = dailyData.map((d, i) => {
+    const fat = parseFloat((d.action_values||[]).find(a => a.action_type==='purchase')?.value || 0);
+    return gastos[i] > 0 ? (fat / gastos[i]) : 0;
+  });
+
+  const id1 = 'chart-diario-' + Date.now();
+  const id2 = 'chart-roas-' + Date.now();
+
+  setTimeout(() => {
+    const ctx1 = document.getElementById(id1)?.getContext('2d');
+    if (ctx1) new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Investido (R$)', data: gastos, backgroundColor: 'rgba(59,130,246,.7)', yAxisID: 'y' },
+          { label: 'Pedidos', data: pedidos, type: 'line', borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,.1)', tension: .3, yAxisID: 'y1', pointRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#6b7280' }, grid: { color: '#1e2130' } },
+          y: { ticks: { color: '#6b7280', callback: v => 'R$'+v }, grid: { color: '#1e2130' } },
+          y1: { position: 'right', ticks: { color: '#34d399' }, grid: { display: false } }
+        }
+      }
+    });
+
+    const ctx2 = document.getElementById(id2)?.getContext('2d');
+    if (ctx2) new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ label: 'ROAS', data: roas, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)', tension: .3, fill: true, pointRadius: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#6b7280' }, grid: { color: '#1e2130' } },
+          y: { ticks: { color: '#6b7280', callback: v => v.toFixed(1)+'x' }, grid: { color: '#1e2130' } }
+        }
+      }
+    });
+  }, 100);
+
+  return `
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-title">📅 Investimento & Pedidos por Dia</div>
+      <div class="chart-wrap"><canvas id="${id1}"></canvas></div>
+    </div>
+    <div class="section">
+      <div class="section-title">🚀 ROAS por Dia</div>
+      <div class="chart-wrap"><canvas id="${id2}"></canvas></div>
+    </div>
+  </div>`;
+}
+
+function renderBreakdown(ageData, genderData, regionData) {
+  function tableRows(data, keyField, sortField = 'spend') {
+    return data
+      .sort((a, b) => parseFloat(b[sortField]||0) - parseFloat(a[sortField]||0))
+      .slice(0, 8)
+      .map(d => {
+        const gasto = parseFloat(d.spend || 0);
+        const pedidos = parseInt((d.actions||[]).find(a => a.action_type==='purchase')?.value || 0);
+        const fat = parseFloat((d.action_values||[]).find(a => a.action_type==='purchase')?.value || 0);
+        const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+        const cpr = pedidos > 0 ? gasto / pedidos : 0;
+        const roasColor = roas >= 10 ? '#34d399' : roas >= 3 ? '#60a5fa' : roas >= 1.5 ? '#fbbf24' : roas > 0 ? '#f87171' : '#6b7280';
+        const keyLabels = { male: 'Masculino', female: 'Feminino', unknown: 'Não informado' };
+        const key = keyLabels[d[keyField]] || d[keyField];
+        return `<tr>
+          <td style="color:#e8e8e8;font-weight:500;">${key}</td>
+          <td>${fmt(gasto)}</td>
+          <td>${pedidos > 0 ? fmtN(pedidos) : '—'}</td>
+          <td style="color:#34d399;">${fat > 0 ? fmt(fat) : '—'}</td>
+          <td>${cpr > 0 ? fmt(cpr) : '—'}</td>
+          <td style="color:${roasColor};font-weight:600;">${roas > 0 ? roas.toFixed(2)+'x' : '—'}</td>
+        </tr>`;
+      }).join('');
+  }
+
+  return `
+  <div class="grid-3">
+    <div class="section">
+      <div class="section-title">👤 Por Faixa Etária</div>
+      <table><thead><tr><th>Idade</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
+      <tbody>${tableRows(ageData, 'age')}</tbody></table>
+    </div>
+    <div class="section">
+      <div class="section-title">⚧ Por Gênero</div>
+      <table><thead><tr><th>Gênero</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
+      <tbody>${tableRows(genderData, 'gender')}</tbody></table>
+    </div>
+    <div class="section">
+      <div class="section-title">📍 Por Região</div>
+      <table><thead><tr><th>Região</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
+      <tbody>${tableRows(regionData, 'region')}</tbody></table>
+    </div>
+  </div>`;
+}
+
+function renderComparativo(curr, prev) {
+  if (!prev) return '';
+
+  function row(label, currVal, prevVal, fmt_fn, higherBetter = true) {
+    const delta = prevVal > 0 ? ((currVal - prevVal) / prevVal * 100) : 0;
+    const up = delta > 0;
+    const good = higherBetter ? up : !up;
+    const cls = Math.abs(delta) < 0.5 ? 'delta-neutral' : good ? 'delta-up' : 'delta-down';
+    return `<div class="comp-row">
+      <span class="comp-label">${label}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="comp-val">${fmt_fn(currVal)}</span>
+        ${Math.abs(delta) > 0.1 ? `<span class="comp-delta ${cls}">${up?'+':''}${delta.toFixed(1)}%</span>` : ''}
+      </div>
+    </div>`;
+  }
+
+  return `
+  <div class="section">
+    <div class="section-title">📊 Comparativo com Período Anterior</div>
+    <div class="comparativo-wrap">
+      <div class="comp-card">
+        <div class="comp-card-title">Período atual</div>
+        ${row('Investido', curr.gasto, prev.gasto, fmt, false)}
+        ${row('Pedidos', curr.pedidos, prev.pedidos, fmtN)}
+        ${row('Faturamento', curr.fat, prev.fat, fmt)}
+        ${row('Ticket médio', curr.ticket, prev.ticket, fmt)}
+        ${row('ROAS', curr.roas, prev.roas, v => v.toFixed(2)+'x')}
+        ${row('CPR', curr.cpr, prev.cpr, fmt, false)}
+        ${row('Alcance', curr.reach, prev.reach, fmtN)}
+        ${row('Frequência', curr.freq, prev.freq, v => v.toFixed(2)+'x', false)}
+      </div>
+      <div class="comp-card">
+        <div class="comp-card-title">Período anterior</div>
+        <div class="comp-row"><span class="comp-label">Investido</span><span class="comp-val">${fmt(prev.gasto)}</span></div>
+        <div class="comp-row"><span class="comp-label">Pedidos</span><span class="comp-val">${fmtN(prev.pedidos)}</span></div>
+        <div class="comp-row"><span class="comp-label">Faturamento</span><span class="comp-val">${fmt(prev.fat)}</span></div>
+        <div class="comp-row"><span class="comp-label">Ticket médio</span><span class="comp-val">${prev.ticket > 0 ? fmt(prev.ticket) : '—'}</span></div>
+        <div class="comp-row"><span class="comp-label">ROAS</span><span class="comp-val">${prev.roas > 0 ? prev.roas.toFixed(2)+'x' : '—'}</span></div>
+        <div class="comp-row"><span class="comp-label">CPR</span><span class="comp-val">${prev.cpr > 0 ? fmt(prev.cpr) : '—'}</span></div>
+        <div class="comp-row"><span class="comp-label">Alcance</span><span class="comp-val">${fmtN(prev.reach)}</span></div>
+        <div class="comp-row"><span class="comp-label">Frequência</span><span class="comp-val">${prev.freq > 0 ? prev.freq.toFixed(2)+'x' : '—'}</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function carregar() {
+  if (!token) {
+    document.getElementById('main-content').innerHTML = '<div class="loading">Token não encontrado. Volte ao dashboard e salve o token.</div>';
+    return;
+  }
+
+  try {
+    const timeParam = getTimeParam();
+    const prev = getPrevPeriod();
+    const prevTimeParam = `time_range=${encodeURIComponent(JSON.stringify(prev))}`;
+
+    // Buscar todos os dados em paralelo
+    const [mainRes, dailyRes, prevRes, ageRes, genderRes, regionRes] = await Promise.all([
+      fetchInsights('', timeParam),
+      fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&time_increment=1&limit=90&access_token=${token}`).then(r=>r.json()),
+      fetchInsights('', prevTimeParam),
+      fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&breakdowns=age&limit=100&access_token=${token}`).then(r=>r.json()),
+      fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&breakdowns=gender&limit=100&access_token=${token}`).then(r=>r.json()),
+      fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&breakdowns=region&limit=100&access_token=${token}`).then(r=>r.json()),
+    ]);
+
+    const curr = parseMain(mainRes.data);
+    const prevM = parseMain(prevRes.data);
+    const daily = dailyRes.data || [];
+
+    if (!curr) {
+      document.getElementById('main-content').innerHTML = '<div class="loading">Sem dados para este período.</div>';
+      return;
+    }
+
+    document.getElementById('main-content').innerHTML =
+      renderMetrics(curr, prevM) +
+      renderFunil(curr) +
+      (daily.length > 1 ? renderDailyChart(daily) : '') +
+      renderComparativo(curr, prevM) +
+      renderBreakdown(ageRes.data || [], genderRes.data || [], regionRes.data || []);
+
+  } catch(e) {
+    document.getElementById('main-content').innerHTML = `<div class="loading">Erro: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+function exportarPDF() {
+  window.print();
+}
+
+function exportarHTML() {
+  // Converter canvas (gráficos) para imagens antes de exportar
+  document.querySelectorAll('canvas').forEach(canvas => {
+    try {
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png');
+      img.style.width = '100%';
+      img.style.borderRadius = '8px';
+      canvas.parentNode.replaceChild(img, canvas);
+    } catch(e) {}
+  });
+
+  const conteudo = document.getElementById('main-content').innerHTML;
+  const bmTitulo = document.getElementById('bm-title').textContent;
+  const periodoTxt = document.getElementById('periodo-label').textContent;
+
+  const htmlCompleto = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise — ${bmNome}</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>
+<style>
+${document.querySelector('style').textContent}
+body { background: #0f1117; }
+</style>
+</head>
+<body>
+<div class="header" style="position:static;">
+  <div class="logo">📊 Análise Gestor <span style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;">Monaco Agency</span></div>
+  <span style="background:#1e2130;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;font-size:12px;color:#9ca3af;">${periodoTxt}</span>
+</div>
+<div class="container">
+  <div class="bm-header">
+    <div>
+      <div class="bm-title">${bmTitulo}</div>
+      <div class="bm-id">${accountId}</div>
+    </div>
+  </div>
+  <div id="main-content">${conteudo}</div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([htmlCompleto], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  const nome = bmTitulo.replace(/[^a-zA-Z0-9]/g, '_');
+  const periodo = periodoTxt.replace(/[^a-zA-Z0-9]/g, '_');
+  a.href = URL.createObjectURL(blob);
+  a.download = `analise_${nome}_${periodo}.html`;
+  a.click();
+}
+
+carregar();
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saldos — Monaco Agency</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #dc2626; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.back-btn:hover { background: #262a3a; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; transition: all .15s; }
+.btn:hover { background: #262a3a; }
+.btn-primary { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.btn-primary:hover { background: #2563eb; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.sc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
+.sc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.sc-val { font-size: 22px; font-weight: 700; }
+.sc-val.red { color: #f87171; }
+.sc-val.amber { color: #fbbf24; }
+.sc-val.green { color: #34d399; }
+.sc-val.white { color: #fff; }
+.filters { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.search-box { display: flex; align-items: center; gap: 8px; background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; flex: 1; min-width: 200px; }
+.search-box input { background: transparent; border: none; color: #e8e8e8; font-size: 13px; outline: none; width: 100%; }
+select { background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #c8c8c8; outline: none; }
+.table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 16px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; background: #111318; border-bottom: 1px solid #2a2d3a; }
+td { padding: 11px 16px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #1a1e2a; }
+.nome-cell { font-weight: 500; color: #fff; }
+.id-cell { font-size: 11px; color: #4b5563; margin-top: 2px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 500; }
+.badge-red { background: rgba(248,113,113,.15); color: #f87171; }
+.badge-amber { background: rgba(251,191,36,.15); color: #fbbf24; }
+.badge-green { background: rgba(52,211,153,.15); color: #34d399; }
+.badge-gray { background: rgba(107,114,128,.15); color: #6b7280; }
+.bar-wrap { width: 100px; height: 4px; background: #2a2d3a; border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 8px; }
+.bar-fill { height: 100%; border-radius: 2px; }
+.saldo-val { font-weight: 600; font-size: 14px; }
+.saldo-val.red { color: #f87171; }
+.saldo-val.amber { color: #fbbf24; }
+.saldo-val.green { color: #34d399; }
+.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.last-upd { font-size: 12px; color: #4b5563; }
+.progress-row { display: flex; align-items: center; gap: 8px; }
+.limit-val { font-size: 11px; color: #4b5563; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">💰 Saldos BMs <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="last-upd" id="last-upd">—</span>
+    <button class="btn btn-primary" onclick="carregarSaldos()" id="btn-atualizar">⟳ Atualizar</button>
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="summary">
+    <div class="sc"><div class="sc-label">Total de BMs</div><div class="sc-val white" id="s-total">—</div></div>
+    <div class="sc"><div class="sc-label">🔴 Crítico (&lt;R$50)</div><div class="sc-val red" id="s-critico">—</div></div>
+    <div class="sc"><div class="sc-label">🟡 Baixo (&lt;R$100)</div><div class="sc-val amber" id="s-baixo">—</div></div>
+    <div class="sc"><div class="sc-label">🟢 OK (&gt;R$100)</div><div class="sc-val green" id="s-ok">—</div></div>
+    <div class="sc"><div class="sc-label">Limite crítico</div><div class="sc-val white" id="s-limite-crit">R$ 50</div></div>
+    <div class="sc"><div class="sc-label">Limite baixo</div><div class="sc-val white" id="s-limite-baixo">R$ 100</div></div>
+  </div>
+
+  <div class="filters">
+    <div class="search-box">🔍 <input type="text" id="busca" placeholder="Buscar BM..." oninput="filtrar()"></div>
+    <select id="filtro-status" onchange="filtrar()">
+      <option value="">Todos os status</option>
+      <option value="critico">🔴 Crítico</option>
+      <option value="baixo">🟡 Baixo</option>
+      <option value="ok">🟢 OK</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>BM / Conta</th>
+          <th>Saldo disponível</th>
+          <th>Limite de gasto</th>
+          <th>Utilização</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="5" class="loading">Clique em <strong>Atualizar</strong> para carregar os saldos</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+const token = localStorage.getItem(TOKEN_KEY);
+
+const LIMITE_CRITICO = 50;
+const LIMITE_BAIXO = 100;
+
+document.getElementById('s-limite-crit').textContent = 'R$ ' + LIMITE_CRITICO;
+document.getElementById('s-limite-baixo').textContent = 'R$ ' + LIMITE_BAIXO;
+
+const CONTAS = [
+  { nome: 'CA - ROSA SUL NOVA', id: 'act_2523170184768797', tipo: 'food' },
+  { nome: 'CA1 - Doces Mania', id: 'act_105301940058633', tipo: 'outros' },
+  { nome: 'CA RJK SHOP', id: 'act_297417165372711', tipo: 'outros' },
+  { nome: 'CA - Miotto Construtora', id: 'act_213109970735074', tipo: 'outros' },
+  { nome: 'CA - ICGP', id: 'act_360815898753195', tipo: 'outros' },
+  { nome: 'CA - Miotto Backup', id: 'act_533683308259417', tipo: 'outros' },
+  { nome: 'CA - Monaco Agency', id: 'act_732966175219099', tipo: 'outros' },
+  { nome: 'Dia de Pizza - Dourados', id: 'act_723575425785405', tipo: 'food' },
+  { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food' },
+  { nome: 'BRUNA MACHADO - DOTCON', id: 'act_1102427261426373', tipo: 'outros' },
+  { nome: 'CA - AMK Estética', id: 'act_590117117342811', tipo: 'outros' },
+  { nome: 'Ótica Scherer', id: 'act_1179077680434286', tipo: 'food' },
+  { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food' },
+  { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food' },
+  { nome: 'CA - Facilita cell', id: 'act_1288527439639093', tipo: 'outros' },
+  { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food' },
+  { nome: 'CA - Bella Capri Uberlândia', id: 'act_2379679152502158', tipo: 'food' },
+  { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food' },
+  { nome: 'JS - UNIFORME', id: 'act_1452225369942067', tipo: 'outros' },
+  { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food' },
+  { nome: 'Berlim Pizzaria', id: 'act_836447545843342', tipo: 'food' },
+  { nome: 'A FAVORITA', id: 'act_969681458906352', tipo: 'food' },
+  { nome: 'CA - BRAVA PIZZA', id: 'act_4279801688941861', tipo: 'food' },
+  { nome: 'Pavão Lanchonete', id: 'act_1759603645448352', tipo: 'food' },
+  { nome: 'SH Tijolos', id: 'act_3858259327816511', tipo: 'outros' },
+  { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food' },
+];
+
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+let dadosSaldos = [];
+
+function getStatus(saldo) {
+  if (saldo <= LIMITE_CRITICO) return 'critico';
+  if (saldo <= LIMITE_BAIXO) return 'baixo';
+  return 'ok';
+}
+
+async function carregarSaldos() {
+  if (!token) {
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="5" class="loading">Token não encontrado. Volte ao dashboard e salve o token.</td></tr>';
+    return;
+  }
+
+  const btn = document.getElementById('btn-atualizar');
+  btn.innerHTML = '<span class="spin">⟳</span> Carregando...';
+  btn.disabled = true;
+  document.getElementById('tbody').innerHTML = `<tr><td colspan="5" class="loading"><span class="spin">⟳</span> Consultando ${CONTAS.length} contas...</td></tr>`;
+
+  dadosSaldos = [];
+
+  for (const conta of CONTAS) {
+    try {
+      const url = `https://graph.facebook.com/${API_VERSION}/${conta.id}?fields=name,balance,spend_cap,amount_spent,account_status&access_token=${token}`;
+      const r = await fetch(url);
+      const d = await r.json();
+
+      if (d.error) {
+        dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, status: 'critico', erro: true });
+        continue;
+      }
+
+      const rawSC = parseInt(d.spend_cap || 0);
+      const rawAS = parseInt(d.amount_spent || 0);
+      const rawBal = parseInt(d.balance || 0);
+      const spendCap = rawSC / 100;
+      const amountSpent = rawAS / 100;
+      const saldo = rawSC > 0 ? spendCap - amountSpent : rawBal / 100;
+      const pctUsado = spendCap > 0 ? Math.min((amountSpent / spendCap) * 100, 100) : 0;
+
+      dadosSaldos.push({
+        ...conta,
+        saldo,
+        spendCap,
+        amountSpent,
+        pctUsado,
+        status: getStatus(saldo),
+        erro: false,
+      });
+    } catch (e) {
+      dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, status: 'critico', erro: true });
+    }
+  }
+
+  // Atualizar cards
+  const critico = dadosSaldos.filter(d => d.status === 'critico').length;
+  const baixo = dadosSaldos.filter(d => d.status === 'baixo').length;
+  const ok = dadosSaldos.filter(d => d.status === 'ok').length;
+  document.getElementById('s-total').textContent = dadosSaldos.length;
+  document.getElementById('s-critico').textContent = critico;
+  document.getElementById('s-baixo').textContent = baixo;
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('last-upd').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+
+  btn.innerHTML = '⟳ Atualizar';
+  btn.disabled = false;
+
+  filtrar();
+}
+
+function filtrar() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const filtroStatus = document.getElementById('filtro-status').value;
+
+  let dados = dadosSaldos.filter(d => {
+    return (!busca || d.nome.toLowerCase().includes(busca))
+      && (!filtroStatus || d.status === filtroStatus);
+  });
+
+  // Ordenar: critico > baixo > ok, dentro de cada grupo por saldo crescente
+  const ordem = { critico: 0, baixo: 1, ok: 2 };
+  dados.sort((a, b) => {
+    if (ordem[a.status] !== ordem[b.status]) return ordem[a.status] - ordem[b.status];
+    return a.saldo - b.saldo;
+  });
+
+  const tbody = document.getElementById('tbody');
+
+  if (!dados.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Nenhuma conta encontrada</td></tr>';
+    return;
+  }
+
+  const barColor = { critico: '#f87171', baixo: '#fbbf24', ok: '#34d399' };
+  const badgeMap = {
+    critico: '<span class="badge badge-red">🔴 Crítico</span>',
+    baixo: '<span class="badge badge-amber">🟡 Baixo</span>',
+    ok: '<span class="badge badge-green">🟢 OK</span>',
+  };
+
+  tbody.innerHTML = dados.map(d => {
+    const pct = d.spendCap > 0 ? Math.min(d.pctUsado, 100) : 0;
+    const cor = barColor[d.status];
+    const saldoClass = d.status === 'critico' ? 'red' : d.status === 'baixo' ? 'amber' : 'green';
+
+    return `<tr>
+      <td>
+        <div class="nome-cell">${d.nome}</div>
+        <div class="id-cell">${d.id}</div>
+      </td>
+      <td>
+        <span class="saldo-val ${saldoClass}">${fmt(d.saldo)}</span>
+      </td>
+      <td style="color:#9ca3af;">
+        ${d.spendCap > 0 ? fmt(d.spendCap) : '—'}
+      </td>
+      <td>
+        ${d.spendCap > 0 ? `
+          <div class="progress-row">
+            <div class="bar-wrap" style="width:120px;">
+              <div class="bar-fill" style="width:${pct}%;background:${cor};"></div>
+            </div>
+            <span class="limit-val">${pct.toFixed(0)}% usado</span>
+          </div>
+          <div style="font-size:11px;color:#4b5563;margin-top:3px;">${fmt(d.amountSpent)} gasto</div>
+        ` : '<span style="color:#4b5563">—</span>'}
+      </td>
+      <td>${badgeMap[d.status] || ''}</td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

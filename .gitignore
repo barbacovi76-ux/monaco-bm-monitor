@@ -1,0 +1,8 @@
+﻿config.json
+auditoria_dados.json
+*.pyc
+__pycache__/
+.env
+*.log
+bm_monitor_final.zip
+alertas_enviados.json
