@@ -1,4 +1,4 @@
-"""
+﻿"""
 Monitor de Saldo de BMs do Meta
 Consulta saldo via API do Meta e dispara alertas via WhatsApp (Evolution API)
 """
@@ -28,8 +28,29 @@ ALERTAS_LOG = Path(__file__).parent / "alertas_enviados.json"
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def carregar_config() -> dict:
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        return json.load(f)
+    import os
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    # GitHub Actions — usar variaveis de ambiente
+    return {
+        "meta": {
+            "api_version": "v19.0",
+            "contas": [{"nome": "Monaco", "account_id": "", "access_token": os.getenv("META_TOKEN", "")}]
+        },
+        "alertas": {
+            "limite_critico": 50,
+            "limite_baixo": 100,
+            "horario_verificacao": "12:00",
+            "alertar_uma_vez_por_dia": True
+        },
+        "whatsapp": {
+            "api_url": os.getenv("WPP_API_URL", "http://localhost:8080"),
+            "api_key": os.getenv("WPP_API_KEY", "minhaChave123"),
+            "instancia": os.getenv("WPP_INSTANCIA", "meu-whatsapp"),
+            "numeros_destino": [os.getenv("GRUPO_OPERACOES", "")]
+        }
+    }
 
 
 def carregar_alertas_enviados() -> dict:
@@ -537,4 +558,5 @@ def rodar_loop():
 
 if __name__ == "__main__":
     rodar_loop()
+
 
