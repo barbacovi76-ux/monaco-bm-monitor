@@ -119,6 +119,7 @@
       <button class="btn-aplicar" onclick="aplicarDataPersonalizada()">Aplicar</button>
     </div>
     <span id="periodo" style="font-size:12px;color:#6b7280;"></span>
+    <button onclick="abrirEncerramentos()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #f59e0b;background:rgba(245,158,11,.15);color:#fbbf24;font-weight:500;">&#9200; Encerramentos</button>
     <a href="relatorio_semanal.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #7c3aed;background:rgba(124,58,237,.15);color:#a78bfa;text-decoration:none;font-weight:500;">📋 Rel. Semanal</a>
     <a href="saldos_dash.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #dc2626;background:rgba(220,38,38,.15);color:#f87171;text-decoration:none;font-weight:500;">💰 Saldos</a>
     <a href="agente.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;text-decoration:none;font-weight:500;">🤖 BOB</a>
@@ -543,6 +544,110 @@ async function verificarEncerramentos() {
   document.getElementById('enc-card').classList.add('show');
 }
 
+var _encDados = [];
+var _encDias = 7;
+
+async function abrirEncerramentos() {
+  document.getElementById('modal-enc').classList.add('open');
+  document.getElementById('modal-enc-loading').style.display = 'block';
+  document.getElementById('modal-enc-list').style.display = 'none';
+  document.getElementById('modal-enc-empty').style.display = 'none';
+
+  const tok = localStorage.getItem('monaco_meta_token');
+  if (!tok) {
+    document.getElementById('modal-enc-loading').textContent = 'Token nao encontrado.';
+    return;
+  }
+
+  const API = 'v19.0';
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  _encDados = [];
+
+  const CONTAS_ENC = [
+    {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
+    {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
+    {nome:'IH Campo Grande', id:'act_1131240581799095'},
+    {nome:'Mollinari', id:'act_459274303920372'},
+    {nome:'MrGabs', id:'act_728296823243425'},
+    {nome:'IH Dourados', id:'act_831936562721815'},
+    {nome:'Bella Capri', id:'act_2379679152502158'},
+    {nome:'Villa Grano', id:'act_909424425271250'},
+    {nome:'Brados', id:'act_972023765779926'},
+    {nome:'Berlim', id:'act_836447545843342'},
+    {nome:'A Favorita', id:'act_969681458906352'},
+    {nome:'Brava Pizza', id:'act_4279801688941861'},
+    {nome:'Pavao', id:'act_1759603645448352'},
+    {nome:'Fornalha', id:'act_1618084519451450'},
+    {nome:'Otica Scherer', id:'act_1179077680434286'},
+  ];
+
+  for (const conta of CONTAS_ENC) {
+    try {
+      const r = await fetch('https://graph.facebook.com/' + API + '/' + conta.id + '/campaigns?fields=name,status,effective_status,stop_time,adsets{name,status,effective_status,end_time}&limit=50&access_token=' + tok);
+      const d = await r.json();
+      for (const camp of (d.data || [])) {
+        if (camp.stop_time) {
+          const dt = new Date(camp.stop_time); dt.setHours(0,0,0,0);
+          const dias = Math.round((dt - hoje) / 86400000);
+          if (dias >= 0) _encDados.push({bm: conta.nome, nome: camp.name, tipo: 'Campanha', dias, status: camp.effective_status || camp.status, data: dt.toLocaleDateString('pt-BR')});
+        }
+        for (const conj of ((camp.adsets || {}).data || [])) {
+          if (conj.end_time) {
+            const dt = new Date(conj.end_time); dt.setHours(0,0,0,0);
+            const dias = Math.round((dt - hoje) / 86400000);
+            if (dias >= 0) _encDados.push({bm: conta.nome, nome: conj.name, tipo: 'Conjunto', dias, status: conj.effective_status || conj.status, data: dt.toLocaleDateString('pt-BR')});
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  _encDados.sort((a,b) => a.dias - b.dias);
+  document.getElementById('modal-enc-loading').style.display = 'none';
+  renderEncDados(_encDias);
+}
+
+function filtrarDias(dias, btn) {
+  _encDias = dias;
+  document.querySelectorAll('#modal-enc .btn').forEach(b => { b.style.background = '#1e2130'; b.style.color = '#c8c8c8'; b.style.borderColor = '#2a2d3a'; });
+  btn.style.background = '#fbbf24'; btn.style.color = '#000'; btn.style.borderColor = '#fbbf24';
+  renderEncDados(dias);
+}
+
+function renderEncDados(dias) {
+  const filtrado = _encDados.filter(i => dias === 999 || i.dias <= dias);
+  const list = document.getElementById('modal-enc-list');
+  const empty = document.getElementById('modal-enc-empty');
+
+  if (!filtrado.length) {
+    list.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.style.display = 'block';
+  list.innerHTML = filtrado.map(i => {
+    const cor = i.dias <= 2 ? '#f87171' : i.dias <= 7 ? '#fbbf24' : '#60a5fa';
+    const bg = i.dias <= 2 ? 'rgba(248,113,113,.08)' : i.dias <= 7 ? 'rgba(251,191,36,.08)' : 'rgba(96,165,250,.08)';
+    const label = i.dias === 0 ? 'Hoje!' : i.dias === 1 ? 'Amanha!' : i.dias + ' dias';
+    const statusBadge = i.status === 'ACTIVE' ? '<span style="background:rgba(52,211,153,.15);color:#34d399;padding:2px 7px;border-radius:99px;font-size:10px;">Ativo</span>' : '<span style="background:rgba(107,114,128,.15);color:#6b7280;padding:2px 7px;border-radius:99px;font-size:10px;">Pausado</span>';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:' + bg + ';border-left:3px solid ' + cor + ';border-radius:8px;padding:10px 14px;margin-bottom:8px;flex-wrap:wrap;gap:8px;">' +
+      '<div><div style="font-size:13px;font-weight:500;color:#fff;">' + i.nome + '</div>' +
+      '<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + i.bm + ' &mdash; Encerra em ' + i.data + '</div></div>' +
+      '<div style="display:flex;align-items:center;gap:8px;">' + statusBadge +
+      '<span style="background:#1e2130;color:#9ca3af;padding:2px 7px;border-radius:4px;font-size:10px;">' + i.tipo + '</span>' +
+      '<span style="background:rgba(0,0,0,.3);color:' + cor + ';padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;">' + label + '</span>' +
+      '</div></div>';
+  }).join('');
+}
+
+function fecharEncerramentos(e) {
+  if (!e || e.target === document.getElementById('modal-enc')) {
+    document.getElementById('modal-enc').classList.remove('open');
+  }
+}
+
 function salvarToken() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) { alert('Cole o token primeiro!'); return; }
@@ -586,6 +691,26 @@ button, a, select, input { display: none !important; }
 ${metricsHTML}
 <br>
 ${tableHTML}
+
+<!-- Modal Encerramentos -->
+<div class="modal-overlay" id="modal-enc" onclick="fecharEncerramentos(event)" style="z-index:150;">
+  <div class="modal" style="max-width:700px;max-height:80vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      &#9200; Campanhas &amp; Conjuntos com Data de Encerramento
+      <button class="modal-close" onclick="fecharEncerramentos()">&#10005;</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button onclick="filtrarDias(7, this)" class="btn" style="font-size:12px;padding:4px 12px;background:#fbbf24;color:#000;border-color:#fbbf24;">7 dias</button>
+      <button onclick="filtrarDias(15, this)" class="btn" style="font-size:12px;padding:4px 12px;">15 dias</button>
+      <button onclick="filtrarDias(30, this)" class="btn" style="font-size:12px;padding:4px 12px;">30 dias</button>
+      <button onclick="filtrarDias(999, this)" class="btn" style="font-size:12px;padding:4px 12px;">Todos</button>
+    </div>
+    <div id="modal-enc-loading" style="text-align:center;padding:32px;color:#4b5563;"><span class="spin">&#8987;</span> Buscando...</div>
+    <div id="modal-enc-list" style="overflow-y:auto;flex:1;display:none;"></div>
+    <div id="modal-enc-empty" style="text-align:center;padding:32px;color:#34d399;display:none;">&#10003; Nenhum encerramento no periodo selecionado!</div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
