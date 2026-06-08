@@ -548,7 +548,10 @@ var _encDados = [];
 var _encDias = 7;
 
 async function abrirEncerramentos() {
-  document.getElementById('modal-enc').classList.add('open');
+  var modal = document.getElementById('modal-enc');
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
   document.getElementById('modal-enc-loading').style.display = 'block';
   document.getElementById('modal-enc-list').style.display = 'none';
   document.getElementById('modal-enc-empty').style.display = 'none';
