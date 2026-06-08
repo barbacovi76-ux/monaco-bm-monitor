@@ -84,6 +84,17 @@
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 300; display: none; }
   .toast.ok { background: #059669; color: #fff; }
   .toast.err { background: #dc2626; color: #fff; }
+  .encerramentos-card { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: none; }
+  .encerramentos-card.show { display: block; }
+  .encerramentos-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+  .enc-item { display: flex; align-items: center; justify-content: space-between; background: #111318; border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+  .enc-item.critico { border-left: 3px solid #f87171; }
+  .enc-item.atencao { border-left: 3px solid #fbbf24; }
+  .enc-nome { color: #e8e8e8; font-weight: 500; }
+  .enc-bm { color: #6b7280; font-size: 11px; }
+  .enc-dias-red { background: rgba(248,113,113,.15); color: #f87171; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .enc-dias-amber { background: rgba(251,191,36,.15); color: #fbbf24; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .enc-tipo { background: #1e2130; color: #9ca3af; padding: 2px 7px; border-radius: 4px; font-size: 10px; }
 </style>
 </head>
 <body>
@@ -123,6 +134,15 @@
     <label>Access Token Meta:</label>
     <input type="password" id="token-input" placeholder="Cole seu token aqui (EAAxx...)">
     <button class="btn btn-blue" onclick="salvarToken()">Salvar token</button>
+  </div>
+
+  <!-- Card encerramentos -->
+  <div class="encerramentos-card" id="enc-card">
+    <div class="encerramentos-title">
+      <span>&#9200; Campanhas &amp; Conjuntos Encerrando em Breve</span>
+      <span id="enc-count" style="font-size:11px;color:#6b7280;"></span>
+    </div>
+    <div id="enc-list"></div>
   </div>
 
   <div class="metrics">
@@ -460,6 +480,67 @@ function abrirDetalhe(id, nome) {
     url += `&since=${dataInicio}&until=${dataFim}`;
   }
   window.open(url, '_blank');
+}
+
+
+async function verificarEncerramentos() {
+  const tok = localStorage.getItem('monaco_meta_token');
+  if (!tok) return;
+  const API = 'v19.0';
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const itens = [];
+  const CONTAS_VER = [
+    {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
+    {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
+    {nome:'IH Campo Grande', id:'act_1131240581799095'},
+    {nome:'Mollinari', id:'act_459274303920372'},
+    {nome:'MrGabs', id:'act_728296823243425'},
+    {nome:'IH Dourados', id:'act_831936562721815'},
+    {nome:'Bella Capri', id:'act_2379679152502158'},
+    {nome:'Villa Grano', id:'act_909424425271250'},
+    {nome:'Brados', id:'act_972023765779926'},
+    {nome:'Berlim', id:'act_836447545843342'},
+    {nome:'A Favorita', id:'act_969681458906352'},
+    {nome:'Brava Pizza', id:'act_4279801688941861'},
+    {nome:'Pavao', id:'act_1759603645448352'},
+    {nome:'Fornalha', id:'act_1618084519451450'},
+    {nome:'Otica Scherer', id:'act_1179077680434286'},
+  ];
+  for (const conta of CONTAS_VER) {
+    try {
+      const r = await fetch('https://graph.facebook.com/' + API + '/' + conta.id + '/campaigns?fields=name,status,effective_status,stop_time,adsets{name,status,effective_status,end_time}&limit=50&access_token=' + tok);
+      const d = await r.json();
+      for (const camp of (d.data || [])) {
+        if (camp.stop_time) {
+          const dt = new Date(camp.stop_time); dt.setHours(0,0,0,0);
+          const dias = Math.round((dt - hoje) / 86400000);
+          if (dias >= 0 && dias <= 7) itens.push({bm: conta.nome, nome: camp.name, tipo: 'Campanha', dias, critico: dias <= 2});
+        }
+        for (const conj of ((camp.adsets || {}).data || [])) {
+          if (conj.end_time) {
+            const dt = new Date(conj.end_time); dt.setHours(0,0,0,0);
+            const dias = Math.round((dt - hoje) / 86400000);
+            if (dias >= 0 && dias <= 7) itens.push({bm: conta.nome, nome: conj.name, tipo: 'Conjunto', dias, critico: dias <= 2});
+          }
+        }
+      }
+    } catch(e) {}
+  }
+  if (!itens.length) return;
+  itens.sort((a,b) => a.dias - b.dias);
+  const criticos = itens.filter(i => i.critico).length;
+  document.getElementById('enc-count').textContent = itens.length + ' item(s) — ' + criticos + ' critico(s)';
+  document.getElementById('enc-count').style.color = criticos > 0 ? '#f87171' : '#fbbf24';
+  document.getElementById('enc-list').innerHTML = itens.map(i =>
+    '<div class="enc-item ' + (i.critico ? 'critico' : 'atencao') + '">' +
+    '<div><div class="enc-nome">' + i.nome + '</div><div class="enc-bm">' + i.bm + '</div></div>' +
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+    '<span class="enc-tipo">' + i.tipo + '</span>' +
+    '<span class="' + (i.critico ? 'enc-dias-red' : 'enc-dias-amber') + '">' +
+    (i.dias === 0 ? 'Hoje!' : i.dias === 1 ? 'Amanha!' : i.dias + ' dias') + '</span>' +
+    '</div></div>'
+  ).join('');
+  document.getElementById('enc-card').classList.add('show');
 }
 
 function salvarToken() {
