@@ -1,4 +1,4 @@
-﻿"""
+"""
 Monitor de Saldo de BMs do Meta
 Consulta saldo via API do Meta e dispara alertas via WhatsApp (Evolution API)
 """
@@ -50,7 +50,7 @@ def carregar_config() -> dict:
                 {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Pavão", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
-       ]
+            ]
         },
         "alertas": {
             "limite_critico": 50,
@@ -86,10 +86,6 @@ def fmt_brl(valor: float) -> str:
 # ── API do Meta ──────────────────────────────────────────────────────────────
 
 def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | None:
-    """
-    Consulta saldo e limite de gasto de uma conta de anúncios do Meta.
-    Retorna dict com name, balance, spend_cap ou None em caso de erro.
-    """
     url = f"https://graph.facebook.com/{api_version}/{account_id}"
     params = {
         "fields": "name,balance,spend_cap,amount_spent,currency,account_status",
@@ -104,13 +100,10 @@ def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | Non
             log.error(f"Erro API Meta [{account_id}]: {data['error'].get('message')}")
             return None
 
-        # A API retorna valores em centavos
         raw_balance = int(data.get("balance", 0))
         raw_spend_cap = int(data.get("spend_cap", 0))
         raw_amount_spent = int(data.get("amount_spent", 0))
 
-        # balance retorna apenas o saldo residual do dia (não o total real)
-        # O saldo real é: spend_cap - amount_spent
         spend_cap = raw_spend_cap / 100
         amount_spent = raw_amount_spent / 100
 
@@ -136,10 +129,6 @@ def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | Non
 # ── WhatsApp (Evolution API) ─────────────────────────────────────────────────
 
 def enviar_whatsapp(cfg_wpp: dict, numero: str, mensagem: str) -> bool:
-    """
-    Envia mensagem via Evolution API.
-    Adapte o endpoint se usar Z-API ou outra solução.
-    """
     url = f"{cfg_wpp['api_url']}/message/sendText/{cfg_wpp['instancia']}"
     headers = {
         "apikey": cfg_wpp["api_key"],
@@ -210,7 +199,6 @@ def verificar_e_alertar():
         balance = conta["balance"]
         log.info(f"  Saldo: {fmt_brl(balance)}")
 
-        # Determinar nível do alerta
         if balance <= limite_critico:
             nivel = "critico"
             limite_ref = limite_critico
@@ -219,20 +207,17 @@ def verificar_e_alertar():
             limite_ref = limite_baixo
         else:
             log.info(f"  Status: OK ✓")
-            # Resetar flag do dia se saldo voltou ao normal
             if account_id in alertas_enviados:
                 del alertas_enviados[account_id]
                 salvar_alertas_enviados(alertas_enviados)
             continue
 
-        # Verificar deduplicação
         if uma_vez_por_dia:
             ultimo = alertas_enviados.get(account_id, {})
             if ultimo.get("data") == hoje and ultimo.get("nivel") == nivel:
                 log.info(f"  Alerta já enviado hoje para {nome} ({nivel}) — pulando")
                 continue
 
-        # Montar e enviar alertas
         mensagem = montar_mensagem(conta, nivel, limite_ref)
         log.info(f"  🔔 Disparando alerta [{nivel.upper()}] para {len(numeros)} número(s)")
 
@@ -256,7 +241,6 @@ def verificar_e_alertar():
 
 
 def consultar_insights(account_id: str, token: str, api_version: str, since: str, until: str) -> dict:
-    """Consulta métricas de performance de uma conta para um período."""
     url = f"https://graph.facebook.com/{api_version}/{account_id}/insights"
     params = {
         "fields": "spend,actions,action_values",
@@ -283,15 +267,13 @@ def consultar_insights(account_id: str, token: str, api_version: str, since: str
 
 
 def enviar_relatorio_segunda():
-    """Gera e envia o relatório de final de semana (sex/sab/dom) toda segunda às 09h."""
     cfg = carregar_config()
     token = cfg["meta"]["contas"][0]["access_token"]
     api_version = cfg["meta"]["api_version"]
     cfg_wpp = cfg["whatsapp"]
 
-    # Calcular sexta, sabado e domingo anteriores
     hoje = date.today()
-    domingo = hoje - timedelta(days=1)   # ontem = domingo
+    domingo = hoje - timedelta(days=1)
     sabado  = hoje - timedelta(days=2)
     sexta   = hoje - timedelta(days=3)
     since = sexta.strftime("%Y-%m-%d")
@@ -308,12 +290,12 @@ def enviar_relatorio_segunda():
     criticos = []
     sem_dados = []
 
+    outros = ["act_297417165372711","act_213109970735074","act_360815898753195",
+              "act_533683308259417","act_732966175219099","act_1102427261426373",
+              "act_590117117342811","act_1288527439639093","act_1452225369942067",
+              "act_3858259327816511","act_105301940058633"]
+
     for conta in cfg["meta"]["contas"]:
-        # Só food (exclui contas de outros segmentos)
-        outros = ["act_297417165372711","act_213109970735074","act_360815898753195",
-                  "act_533683308259417","act_732966175219099","act_1102427261426373",
-                  "act_590117117342811","act_1288527439639093","act_1452225369942067",
-                  "act_3858259327816511","act_105301940058633"]
         if conta["account_id"] in outros:
             continue
 
@@ -389,28 +371,30 @@ def enviar_relatorio_segunda():
 
 
 def rodar_agente_automatico():
-    """Analisa todas as campanhas das BMs food e envia alertas críticos/atenção no grupo."""
     cfg = carregar_config()
     token = cfg["meta"]["contas"][0]["access_token"]
     api_version = cfg["meta"]["api_version"]
     cfg_wpp = cfg["whatsapp"]
     grupo = cfg_wpp["numeros_destino"][0]
 
-CONTAS_FOOD = [
-    ("Rosa Sul Nova", "act_2523170184768797"),
-    ("Dia de Pizza Dourados", "act_723575425785405"),
-    ("IH Campo Grande", "act_1131240581799095"),
-    ("Mollinari", "act_459274303920372"),
-    ("MrGabs", "act_728296823243425"),
-    ("IH Dourados", "act_831936562721815"),
-    ("Villa Grano", "act_909424425271250"),
-    ("Brados", "act_972023765779926"),
-    ("Berlim", "act_836447545843342"),
-    ("A Favorita", "act_969681458906352"),
-    ("Brava Pizza", "act_4279801688941861"),
-    ("Pavão", "act_1759603645448352"),
-    ("Fornalha", "act_1618084519451450"),
-]
+    CONTAS_FOOD = [
+        ("CA - ROSA SUL NOVA", "act_2523170184768797"),
+        ("Dia de Pizza - Dourados", "act_723575425785405"),
+        ("IH CAMPO GRANDE MS", "act_1131240581799095"),
+        ("Mollinari Pizzaria", "act_459274303920372"),
+        ("MrGabs", "act_728296823243425"),
+        ("IH DOURADOS", "act_831936562721815"),
+        ("CA - Bella Capri Uberlândia", "act_2379679152502158"),
+        ("Villa Grano Pizzaria", "act_909424425271250"),
+        ("Brados Pizzaria", "act_972023765779926"),
+        ("Berlim Pizzaria", "act_836447545843342"),
+        ("A FAVORITA", "act_969681458906352"),
+        ("CA - BRAVA PIZZA", "act_4279801688941861"),
+        ("Pavão Lanchonete", "act_1759603645448352"),
+        ("Fornalha Pizzaria", "act_1618084519451450"),
+        ("Ótica Scherer", "act_1179077680434286"),
+    ]
+
     log.info("🤖 BOB iniciado — analisando campanhas...")
 
     alertas_criticos = []
@@ -440,13 +424,11 @@ CONTAS_FOOD = [
                 ads = camp.get("ads", {}).get("data", [])
                 ads_ativos = [a for a in ads if a.get("effective_status") == "ACTIVE"]
 
-                # Dias restantes
                 dias_rest = None
                 if camp.get("stop_time"):
                     stop = datetime.fromisoformat(camp["stop_time"].replace("Z", "+00:00")).date()
                     dias_rest = (stop - hoje).days
 
-                # Orçamento
                 lifetime = float(camp.get("lifetime_budget", 0)) / 100
                 remaining = float(camp.get("budget_remaining", 0)) / 100
                 pct_gasto = ((lifetime - remaining) / lifetime * 100) if lifetime > 0 else 0
@@ -461,7 +443,6 @@ CONTAS_FOOD = [
                     "ads_ativos": len(ads_ativos),
                 }
 
-                # Classificar alertas
                 if status == "ACTIVE":
                     if gasto > 0 and pedidos == 0:
                         camp_info["motivo"] = "🚨 Gasto sem retorno"
@@ -569,5 +550,3 @@ def rodar_loop():
 
 if __name__ == "__main__":
     rodar_loop()
-
-
