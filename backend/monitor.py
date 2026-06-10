@@ -50,7 +50,8 @@ def carregar_config() -> dict:
                 {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Pavão", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
-            ]
+       ]
+        },
         "alertas": {
             "limite_critico": 50,
             "limite_baixo": 100,
