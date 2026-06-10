@@ -36,8 +36,21 @@ def carregar_config() -> dict:
     return {
         "meta": {
             "api_version": "v19.0",
-            "contas": [{"nome": "Monaco", "account_id": "", "access_token": os.getenv("META_TOKEN", "")}]
-        },
+            "contas": [
+                {"nome": "Rosa Sul Nova", "account_id": "act_2523170184768797", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Dia de Pizza Dourados", "account_id": "act_723575425785405", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "IH Campo Grande", "account_id": "act_1131240581799095", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Mollinari", "account_id": "act_459274303920372", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "MrGabs", "account_id": "act_728296823243425", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "IH Dourados", "account_id": "act_831936562721815", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Villa Grano", "account_id": "act_909424425271250", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Brados", "account_id": "act_972023765779926", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Berlim", "account_id": "act_836447545843342", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "A Favorita", "account_id": "act_969681458906352", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Pavão", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
+            ]
         "alertas": {
             "limite_critico": 50,
             "limite_baixo": 100,
