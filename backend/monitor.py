@@ -382,24 +382,21 @@ def rodar_agente_automatico():
     cfg_wpp = cfg["whatsapp"]
     grupo = cfg_wpp["numeros_destino"][0]
 
-    CONTAS_FOOD = [
-    ("CA - ROSA SUL NOVA", "act_2523170184768797"),
-    ("Dia de Pizza - Dourados", "act_723575425785405"),
-    ("IH CAMPO GRANDE MS", "act_1131240581799095"),
-    ("Mollinari Pizzaria", "act_459274303920372"),
-    ("MrGabs", "act_728296823243425"),
-    ("IH DOURADOS", "act_831936562721815"),
-    ("CA - Bella Capri Uberlândia", "act_2379679152502158"),
-    ("Villa Grano Pizzaria", "act_909424425271250"),
-    ("Brados Pizzaria", "act_972023765779926"),
-    ("Berlim Pizzaria", "act_836447545843342"),
-    ("A FAVORITA", "act_969681458906352"),
-    ("CA - BRAVA PIZZA", "act_4279801688941861"),
-    ("Pavão Lanchonete", "act_1759603645448352"),
-    ("Fornalha Pizzaria", "act_1618084519451450"),
-    ("Ótica Scherer", "act_1179077680434286"),
+    CONTAS_FOOD ="contas": [
+    {"nome": "Rosa Sul Nova", "account_id": "act_2523170184768797", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Dia de Pizza Dourados", "account_id": "act_723575425785405", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "IH Campo Grande", "account_id": "act_1131240581799095", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Mollinari", "account_id": "act_459274303920372", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "MrGabs", "account_id": "act_728296823243425", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "IH Dourados", "account_id": "act_831936562721815", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Villa Grano", "account_id": "act_909424425271250", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Brados", "account_id": "act_972023765779926", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Berlim", "account_id": "act_836447545843342", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "A Favorita", "account_id": "act_969681458906352", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Pavão", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
+    {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
 ]
-
     log.info("🤖 BOB iniciado — analisando campanhas...")
 
     alertas_criticos = []
