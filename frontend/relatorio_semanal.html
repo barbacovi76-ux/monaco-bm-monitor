@@ -314,7 +314,7 @@ function montarMensagem(d) {
   var periodo = formatData(s.sexta).slice(0,5) + ' - ' + formatData(s.quinta).slice(0,5);
   var roas = d.roas > 0 ? d.roas.toFixed(2) : '0';
   var cpr = d.cpr > 0 ? fmt(d.cpr) : 'R$ 0,00';
-  return 'Mano BOB informa:\n\nOla pessoal! Excelente semana a todos! \n\nSegue o resumo das campanhas de Meta Ads\nPeriodo: ' + periodo + '\n\nPedidos: ' + fmtN(d.pedidos) + '\nFaturamento: ' + fmt(d.fat) + '\nValor investido: ' + fmt(d.gasto) + '\nCusto por compra: ' + cpr + '\nROAS: ' + roas + '\n\nSeguimos firmes na evolucao do projeto, com foco total em performance e melhoria continua.\nDesejo a todos um excelente final de semana!';
+  return '🤖 Mano BOB informa:\n\nOla pessoal! Excelente semana a todos!\n\n📊 *' + d.nome + '*\nSegue o resumo das campanhas de Meta Ads\nPeriodo: ' + periodo + '\n\n📦 Pedidos: ' + fmtN(d.pedidos) + '\n🛒 Faturamento: ' + fmt(d.fat) + '\n💰 Valor investido: ' + fmt(d.gasto) + '\n📉 Custo por compra: ' + cpr + '\n🚀 ROAS: ' + roas + '\n\nSeguimos firmes na evolucao do projeto, com foco total em performance e melhoria continua.\nDesejo a todos um excelente final de semana!';
 }
 
 function filtrar() {
