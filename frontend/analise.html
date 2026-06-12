@@ -80,6 +80,9 @@ tr:hover td { background: #1a1e2a; }
   <div class="logo">📊 Análise Gestor <span>Monaco Agency</span></div>
   <div style="display:flex;gap:8px;align-items:center;">
     <span class="periodo-badge" id="periodo-label">Carregando...</span>
+    <button onclick="enviarResumoWpp()" id="btn-enviar-wpp" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;">
+      📤 Enviar no grupo
+    </button>
     <button onclick="exportarHTML()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">
       💾 Salvar HTML
     </button>
@@ -105,6 +108,8 @@ tr:hover td { background: #1a1e2a; }
 
 </div>
 
+<div class="toast" id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;z-index:300;display:none;"></div>
+
 <script>
 const TOKEN_KEY = 'monaco_meta_token';
 const API_VERSION = 'v19.0';
@@ -115,6 +120,13 @@ const periodoAtual = params.get('periodo') || 'last_7d';
 const dataInicio = params.get('since') || '';
 const dataFim = params.get('until') || '';
 const token = localStorage.getItem(TOKEN_KEY);
+
+const WPP_URL = 'https://evolution-api-production-2227.up.railway.app';
+const WPP_KEY = 'monaco123';
+const WPP_INSTANCIA = 'teste';
+const GRUPO_OPERACOES = '120363403884174816@g.us';
+
+let metricsAtuais = null;
 
 document.getElementById('bm-title').textContent = bmNome;
 document.getElementById('bm-id').textContent = accountId;
@@ -411,7 +423,6 @@ async function carregar() {
     const prev = getPrevPeriod();
     const prevTimeParam = `time_range=${encodeURIComponent(JSON.stringify(prev))}`;
 
-    // Buscar todos os dados em paralelo
     const [mainRes, dailyRes, prevRes, ageRes, genderRes, regionRes] = await Promise.all([
       fetchInsights('', timeParam),
       fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&time_increment=1&limit=90&access_token=${token}`).then(r=>r.json()),
@@ -422,6 +433,7 @@ async function carregar() {
     ]);
 
     const curr = parseMain(mainRes.data);
+    metricsAtuais = curr;
     const prevM = parseMain(prevRes.data);
     const daily = dailyRes.data || [];
 
@@ -443,12 +455,60 @@ async function carregar() {
   }
 }
 
+function showToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = tipo === 'ok' ? '#059669' : '#dc2626';
+  t.style.color = '#fff';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 3000);
+}
+
+async function enviarResumoWpp() {
+  if (!metricsAtuais) { showToast('Carregue a análise primeiro!', 'err'); return; }
+  const m = metricsAtuais;
+  const periodoTxt = document.getElementById('periodo-label').textContent;
+  const roas = m.roas > 0 ? m.roas.toFixed(2) : '0';
+  const cpr = m.cpr > 0 ? fmt(m.cpr) : 'R$ 0,00';
+
+  const mensagem = '🤖 Mano BOB informa:\n\n' +
+    '📊 Análise — ' + bmNome + '\n' +
+    'Período: ' + periodoTxt + '\n\n' +
+    '📦 Pedidos: ' + fmtN(m.pedidos) + '\n' +
+    '🛒 Faturamento: ' + fmt(m.fat) + '\n' +
+    '💰 Investido: ' + fmt(m.gasto) + '\n' +
+    '📉 CPR: ' + cpr + '\n' +
+    '🚀 ROAS: ' + roas + '\n' +
+    '🎫 Ticket médio: ' + (m.ticket > 0 ? fmt(m.ticket) : '—') + '\n' +
+    '👁 Alcance: ' + fmtN(m.reach);
+
+  const btn = document.getElementById('btn-enviar-wpp');
+  btn.textContent = '⏳ Enviando...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(`${WPP_URL}/message/sendText/${WPP_INSTANCIA}`, {
+      method: 'POST',
+      headers: { 'apikey': WPP_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number: GRUPO_OPERACOES, textMessage: { text: mensagem } })
+    });
+    if (r.ok) {
+      btn.textContent = '✅ Enviado!';
+      showToast('Resumo enviado para o grupo!', 'ok');
+      setTimeout(() => { btn.textContent = '📤 Enviar no grupo'; btn.disabled = false; }, 3000);
+    } else { throw new Error(r.status); }
+  } catch(e) {
+    btn.textContent = '❌ Erro';
+    showToast('Erro ao enviar resumo', 'err');
+    setTimeout(() => { btn.textContent = '📤 Enviar no grupo'; btn.disabled = false; }, 3000);
+  }
+}
+
 function exportarPDF() {
   window.print();
 }
 
 function exportarHTML() {
-  // Converter canvas (gráficos) para imagens antes de exportar
   document.querySelectorAll('canvas').forEach(canvas => {
     try {
       const img = document.createElement('img');
