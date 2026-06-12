@@ -4,10 +4,11 @@ Consulta saldo via API do Meta e dispara alertas via WhatsApp (Evolution API)
 """
 
 import json
+import os
+import random
 import time
 import logging
 import requests
-import random
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
