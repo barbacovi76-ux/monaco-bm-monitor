@@ -7,6 +7,7 @@ import json
 import time
 import logging
 import requests
+import random
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
@@ -510,6 +511,67 @@ def rodar_agente_automatico():
     else:
         log.error("❌ BOB: falha ao enviar relatório")
 
+def gerar_frase_motivacional() -> str:
+    """Gera uma frase motivacional única via IA (Claude). Fallback para frase fixa se falhar."""
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
+    fallback = "Só vive o extraordinário quem arrisca o ordinário. Bora fechar o dia com tudo!"
+
+    if not anthropic_key:
+        return fallback
+
+    try:
+        r = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": anthropic_key,
+                "anthropic-version": "2023-06-01",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 150,
+                "messages": [{
+                    "role": "user",
+                    "content": (
+                        "Crie UMA frase motivacional curta (max 2 linhas) sobre empreendedorismo, "
+                        "tráfego pago, vendas ou performance, no estilo 'só vive o extraordinário "
+                        "quem arrisca'. Responda APENAS com a frase, sem aspas, sem explicação."
+                    )
+                }]
+            },
+            timeout=20,
+        )
+        r.raise_for_status()
+        data = r.json()
+        frase = data["content"][0]["text"].strip()
+        return frase if frase else fallback
+    except Exception as e:
+        log.error(f"Erro ao gerar frase via IA: {e}")
+        return fallback
+
+
+def enviar_motivacional():
+    cfg = carregar_config()
+    cfg_wpp = cfg["whatsapp"]
+    grupo = cfg_wpp["numeros_destino"][0]
+
+    frase = gerar_frase_motivacional()
+    agora = datetime.now().strftime("%d/%m/%Y")
+
+    mensagem = (
+        f"🤖 BOB cita:\n\n"
+        f"🔥 Bora time, vamos fechar o dia com tudo!\n\n"
+        f"_{frase}_\n\n"
+        f"💪 Que hoje seja um dia de grandes resultados!\n"
+        f"📅 {agora}"
+    )
+
+    log.info("☀️ Enviando mensagem motivacional do dia")
+    ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
+    if ok:
+        log.info("✅ Mensagem motivacional enviada!")
+    else:
+        log.error("❌ Falha ao enviar mensagem motivacional")
 
 def rodar_loop():
     cfg = carregar_config()
