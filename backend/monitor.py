@@ -576,28 +576,39 @@ def enviar_motivacional():
 def rodar_loop():
     cfg = carregar_config()
     horario_alvo = cfg["alertas"].get("horario_verificacao", "12:00")
+    horario_motivacional = "07:00"
 
     log.info("🚀 Monitor de BMs iniciado")
-    log.info(f"   Horário de verificação: {horario_alvo} (diário)")
+    log.info(f"   Horário de verificação saldo: {horario_alvo} (diário)")
+    log.info(f"   Horário motivacional: {horario_motivacional} (diário)")
     log.info(f"   Contas monitoradas: {len(cfg['meta']['contas'])}")
     log.info(f"   Limite crítico: {fmt_brl(cfg['alertas']['limite_critico'])}")
     log.info(f"   Limite baixo: {fmt_brl(cfg['alertas']['limite_baixo'])}")
     log.info("")
 
-    ultimo_dia_executado = None
+    ultimo_dia_saldo = None
+    ultimo_dia_motivacional = None
 
     while True:
         agora = datetime.now()
         hora_atual = agora.strftime("%H:%M")
         hoje = agora.date()
 
-        if hora_atual == horario_alvo and ultimo_dia_executado != hoje:
-            ultimo_dia_executado = hoje
+        if hora_atual == horario_motivacional and ultimo_dia_motivacional != hoje:
+            ultimo_dia_motivacional = hoje
+            try:
+                enviar_motivacional()
+            except Exception as e:
+                log.exception(f"Erro ao enviar motivacional: {e}")
+
+        if hora_atual == horario_alvo and ultimo_dia_saldo != hoje:
+            ultimo_dia_saldo = hoje
             try:
                 verificar_e_alertar()
             except Exception as e:
                 log.exception(f"Erro inesperado na verificação: {e}")
-        else:
+
+        if hora_atual != horario_alvo and hora_atual != horario_motivacional:
             h, m = map(int, horario_alvo.split(":"))
             proximo = agora.replace(hour=h, minute=m, second=0, microsecond=0)
             if proximo <= agora:
@@ -605,7 +616,7 @@ def rodar_loop():
             falta = proximo - agora
             horas = int(falta.total_seconds() // 3600)
             minutos = int((falta.total_seconds() % 3600) // 60)
-            log.info(f"⏳ Próxima verificação às {horario_alvo} (faltam {horas}h {minutos}min)")
+            log.info(f"⏳ Próxima verificação de saldo às {horario_alvo} (faltam {horas}h {minutos}min)")
 
         time.sleep(60)
 
