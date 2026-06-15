@@ -28,7 +28,6 @@
   .search-box input { background: transparent; border: none; color: #e8e8e8; font-size: 13px; outline: none; width: 100%; }
   .search-box input::placeholder { color: #4b5563; }
   select { background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #c8c8c8; cursor: pointer; outline: none; }
-  select:focus { border-color: #3b82f6; }
   .table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 12px 16px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; background: #111318; border-bottom: 1px solid #2a2d3a; cursor: pointer; white-space: nowrap; }
@@ -43,7 +42,6 @@
   .badge-amber { background: rgba(251,191,36,.15); color: #fbbf24; }
   .badge-red { background: rgba(248,113,113,.15); color: #f87171; }
   .badge-gray { background: rgba(107,114,128,.15); color: #6b7280; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
   .bar-wrap { width: 100px; height: 4px; background: #2a2d3a; border-radius: 2px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 2px; transition: width .4s; }
   .loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
@@ -52,10 +50,7 @@
   .config-bar { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .config-bar label { font-size: 12px; color: #6b7280; white-space: nowrap; }
   .config-bar input { background: #0f1117; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #e8e8e8; outline: none; flex: 1; min-width: 300px; }
-  .config-bar input:focus { border-color: #3b82f6; }
   .tag-ok { background: rgba(52,211,153,.1); color: #34d399; font-size: 12px; padding: 4px 10px; border-radius: 6px; }
-  .period-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #6b7280; }
-  .progress-label { font-size: 10px; color: #4b5563; margin-top: 3px; }
   .periodo-btns { display: flex; gap: 4px; background: #111318; border: 1px solid #2a2d3a; border-radius: 8px; padding: 3px; }
   .periodo-btn { padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; background: transparent; color: #6b7280; transition: all .15s; white-space: nowrap; }
   .periodo-btn:hover { color: #c8c8c8; }
@@ -63,16 +58,13 @@
   .date-picker-wrap { display:none; align-items:center; gap:8px; background:#111318; border:1px solid #2a2d3a; border-radius:8px; padding:4px 10px; }
   .date-picker-wrap.show { display:flex; }
   .date-picker-wrap input[type=date] { background:#1e2130; border:1px solid #2a2d3a; border-radius:6px; padding:4px 8px; font-size:12px; color:#e8e8e8; outline:none; cursor:pointer; }
-  .date-picker-wrap input[type=date]:focus { border-color:#3b82f6; }
   .date-picker-wrap span { font-size:12px; color:#6b7280; }
   .date-picker-wrap .btn-aplicar { padding:4px 12px; font-size:12px; background:#3b82f6; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-  .date-picker-wrap .btn-aplicar:hover { background:#2563eb; }
   .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; }
   .modal-overlay.open { display:flex; }
   .modal { background:#161a24; border:1px solid #2a2d3a; border-radius:14px; padding:24px; width:90%; max-width:520px; }
   .modal-title { font-size:15px; font-weight:600; color:#fff; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
   .modal-close { background:none; border:none; color:#6b7280; font-size:20px; cursor:pointer; line-height:1; }
-  .modal-close:hover { color:#fff; }
   .relatorio-box { background:#0f1117; border:1px solid #2a2d3a; border-radius:8px; padding:16px; font-size:13px; color:#e8e8e8; line-height:1.8; white-space:pre-wrap; font-family:'Segoe UI', sans-serif; max-height:400px; overflow-y:auto; }
   .btn-green { background:#059669; color:#fff; border-color:#059669; }
   .btn-green:hover { background:#047857; }
@@ -95,14 +87,13 @@
   .enc-dias-red { background: rgba(248,113,113,.15); color: #f87171; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
   .enc-dias-amber { background: rgba(251,191,36,.15); color: #fbbf24; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
   .enc-tipo { background: #1e2130; color: #9ca3af; padding: 2px 7px; border-radius: 4px; font-size: 10px; }
+  .progress-label { font-size: 10px; color: #4b5563; margin-top: 3px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo">
-    📊 Performance BMs <span>Monaco Agency</span>
-  </div>
+  <div class="logo">📊 Performance BMs <span>Monaco Agency</span></div>
   <div class="header-right">
     <div class="periodo-btns">
       <button class="periodo-btn" onclick="setPeriodo('today')">Hoje</button>
@@ -119,7 +110,7 @@
       <button class="btn-aplicar" onclick="aplicarDataPersonalizada()">Aplicar</button>
     </div>
     <span id="periodo" style="font-size:12px;color:#6b7280;"></span>
-    <button onclick="abrirEncerramentos()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #f59e0b;background:rgba(245,158,11,.15);color:#fbbf24;font-weight:500;">&#9200; Encerramentos</button>
+    <button onclick="abrirEncerramentos()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #f59e0b;background:rgba(245,158,11,.15);color:#fbbf24;font-weight:500;">⏰ Encerramentos</button>
     <a href="relatorio_semanal.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #7c3aed;background:rgba(124,58,237,.15);color:#a78bfa;text-decoration:none;font-weight:500;">📋 Rel. Semanal</a>
     <a href="saldos_dash.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #dc2626;background:rgba(220,38,38,.15);color:#f87171;text-decoration:none;font-weight:500;">💰 Saldos</a>
     <a href="agente.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;text-decoration:none;font-weight:500;">🤖 BOB</a>
@@ -137,10 +128,9 @@
     <button class="btn btn-blue" onclick="salvarToken()">Salvar token</button>
   </div>
 
-  <!-- Card encerramentos -->
   <div class="encerramentos-card" id="enc-card">
     <div class="encerramentos-title">
-      <span>&#9200; Campanhas &amp; Conjuntos Encerrando em Breve</span>
+      <span>⏰ Campanhas &amp; Conjuntos Encerrando em Breve</span>
       <span id="enc-count" style="font-size:11px;color:#6b7280;"></span>
     </div>
     <div id="enc-list"></div>
@@ -159,9 +149,7 @@
   </div>
 
   <div class="controls">
-    <div class="search-box">
-      🔍 <input type="text" id="busca" placeholder="Buscar BM..." oninput="filtrar()">
-    </div>
+    <div class="search-box">🔍 <input type="text" id="busca" placeholder="Buscar BM..." oninput="filtrar()"></div>
     <select id="filtro-tipo" onchange="filtrar()">
       <option value="">Todos os segmentos</option>
       <option value="food">🍕 Food</option>
@@ -190,17 +178,17 @@
         <tr>
           <th>BM / Conta</th>
           <th>Status</th>
-          <th onclick="setSortCol('gasto')" data-col="gasto" style="cursor:pointer;">Gasto<span class="sort-arrow"> ↓</span></th>
-          <th onclick="setSortCol('pedidos')" data-col="pedidos" style="cursor:pointer;">📦 Pedidos<span class="sort-arrow"> ↕</span></th>
-          <th onclick="setSortCol('faturamento')" data-col="faturamento" style="cursor:pointer;">🛒 Faturamento<span class="sort-arrow"> ↕</span></th>
-          <th onclick="setSortCol('cpr')" data-col="cpr" style="cursor:pointer;">📉 CPR<span class="sort-arrow"> ↕</span></th>
-          <th onclick="setSortCol('roas')" data-col="roas" style="cursor:pointer;">🚀 ROAS<span class="sort-arrow"> ↕</span></th>
+          <th onclick="setSortCol('gasto')" data-col="gasto">Gasto<span class="sort-arrow"> ↓</span></th>
+          <th onclick="setSortCol('pedidos')" data-col="pedidos">📦 Pedidos<span class="sort-arrow"> ↕</span></th>
+          <th onclick="setSortCol('faturamento')" data-col="faturamento">🛒 Faturamento<span class="sort-arrow"> ↕</span></th>
+          <th onclick="setSortCol('cpr')" data-col="cpr">📉 CPR<span class="sort-arrow"> ↕</span></th>
+          <th onclick="setSortCol('roas')" data-col="roas">🚀 ROAS<span class="sort-arrow"> ↕</span></th>
           <th>Progresso</th>
           <th>Enviar</th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="7" class="loading">Cole o token e clique em "Carregar dados"</td></tr>
+        <tr><td colspan="9" class="loading">Cole o token e clique em "Carregar dados"</td></tr>
       </tbody>
     </table>
   </div>
@@ -214,46 +202,32 @@ let dataInicio = null;
 let dataFim = null;
 const periodoLabel = { today: 'Hoje', yesterday: 'Ontem', last_7d: 'Últimos 7 dias', last_14d: 'Últimos 14 dias', last_30d: 'Últimos 30 dias' };
 
-function toggleCustomDate() {
-  const wrap = document.getElementById('custom-date-wrap');
-  const btn = document.getElementById('btn-custom');
-  wrap.classList.toggle('show');
-  if (wrap.classList.contains('show')) {
-    btn.classList.add('ativo');
-    // Preencher datas padrão (últimos 7 dias)
-    const hoje = new Date();
-    const ini = new Date(hoje - 6*86400000);
-    document.getElementById('data-fim').value = hoje.toISOString().split('T')[0];
-    document.getElementById('data-inicio').value = ini.toISOString().split('T')[0];
-  } else {
-    btn.classList.remove('ativo');
-  }
-}
+const WPP_URL = 'https://evolution-api-production-2227.up.railway.app';
+const WPP_KEY = 'monaco123';
+const WPP_INSTANCIA = 'teste';
 
-function aplicarDataPersonalizada() {
-  const ini = document.getElementById('data-inicio').value;
-  const fim = document.getElementById('data-fim').value;
-  if (!ini || !fim) { alert('Selecione as duas datas!'); return; }
-  if (ini > fim) { alert('A data de início deve ser anterior à data fim!'); return; }
-  dataInicio = ini;
-  dataFim = fim;
-  periodoAtual = 'custom';
-  document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
-  document.getElementById('btn-custom').classList.add('ativo');
-  const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
-  document.getElementById('periodo').textContent = `${fmtDate(ini)} até ${fmtDate(fim)}`;
-  carregarDados();
-}
+const GRUPOS_WPP = {
+  'act_3379098802257981': '120363403884174816@g.us',
+  'act_2523170184768797': '120363403884174816@g.us',
+  'act_218943216626025':  '120363403884174816@g.us',
+  'act_723575425785405':  '120363403884174816@g.us',
+  'act_626472496317271':  '120363403884174816@g.us',
+  'act_1131240581799095': '120363403884174816@g.us',
+  'act_459274303920372':  '120363403884174816@g.us',
+  'act_728296823243425':  '120363403884174816@g.us',
+  'act_831936562721815':  '120363403884174816@g.us',
+  'act_1632381294729040': '120363403884174816@g.us',
+  'act_909424425271250':  '120363403884174816@g.us',
+  'act_972023765779926':  '120363403884174816@g.us',
+  'act_836447545843342':  '120363403884174816@g.us',
+  'act_1166398428853886': '120363403884174816@g.us',
+  'act_969681458906352':  '120363403884174816@g.us',
+  'act_4279801688941861': '120363403884174816@g.us',
+  'act_933386533018776':  '120363403884174816@g.us',
+  'act_1759603645448352': '120363403884174816@g.us',
+  'act_1618084519451450': '120363403884174816@g.us',
+};
 
-function setPeriodo(p) {
-  periodoAtual = p;
-  dataInicio = null;
-  dataFim = null;
-  document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
-  event.target.classList.add('ativo');
-  document.getElementById('custom-date-wrap').classList.remove('show');
-  if (dadosCarregados.length) carregarDados();
-}
 const API_VERSION = 'v19.0';
 
 const CONTAS = [
@@ -268,12 +242,10 @@ const CONTAS = [
   { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food' },
   { nome: 'BRUNA MACHADO - DOTCON', id: 'act_1102427261426373', tipo: 'outros' },
   { nome: 'CA - AMK Estética', id: 'act_590117117342811', tipo: 'outros' },
-  { nome: 'Ótica Scherer', id: 'act_1179077680434286', tipo: 'food' },
   { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food' },
   { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food' },
   { nome: 'CA - Facilita cell', id: 'act_1288527439639093', tipo: 'outros' },
   { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food' },
-  { nome: 'CA - Bella Capri Uberlândia', id: 'act_2379679152502158', tipo: 'food' },
   { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food' },
   { nome: 'JS - UNIFORME', id: 'act_1452225369942067', tipo: 'outros' },
   { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food' },
@@ -285,16 +257,73 @@ const CONTAS = [
   { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food' },
 ];
 
+const CONTAS_ENC = [
+  {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
+  {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
+  {nome:'IH Campo Grande', id:'act_1131240581799095'},
+  {nome:'Mollinari', id:'act_459274303920372'},
+  {nome:'MrGabs', id:'act_728296823243425'},
+  {nome:'IH Dourados', id:'act_831936562721815'},
+  {nome:'Villa Grano', id:'act_909424425271250'},
+  {nome:'Brados', id:'act_972023765779926'},
+  {nome:'Berlim', id:'act_836447545843342'},
+  {nome:'A Favorita', id:'act_969681458906352'},
+  {nome:'Brava Pizza', id:'act_4279801688941861'},
+  {nome:'Pavao', id:'act_1759603645448352'},
+  {nome:'Fornalha', id:'act_1618084519451450'},
+];
+
 let dadosCarregados = [];
 let sortCol = 'gasto';
 let sortDir = 'desc';
+var _encDados = [];
+var _encDias = 7;
 
 const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtN = v => v.toLocaleString('pt-BR');
 
-function getStatus(gasto, resultado, cpr) {
+function toggleCustomDate() {
+  const wrap = document.getElementById('custom-date-wrap');
+  const btn = document.getElementById('btn-custom');
+  wrap.classList.toggle('show');
+  if (wrap.classList.contains('show')) {
+    btn.classList.add('ativo');
+    const hoje = new Date();
+    const ini = new Date(hoje - 6*86400000);
+    document.getElementById('data-fim').value = hoje.toISOString().split('T')[0];
+    document.getElementById('data-inicio').value = ini.toISOString().split('T')[0];
+  } else {
+    btn.classList.remove('ativo');
+  }
+}
+
+function aplicarDataPersonalizada() {
+  const ini = document.getElementById('data-inicio').value;
+  const fim = document.getElementById('data-fim').value;
+  if (!ini || !fim) { alert('Selecione as duas datas!'); return; }
+  dataInicio = ini;
+  dataFim = fim;
+  periodoAtual = 'custom';
+  document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('btn-custom').classList.add('ativo');
+  const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
+  document.getElementById('periodo').textContent = fmtDate(ini) + ' até ' + fmtDate(fim);
+  carregarDados();
+}
+
+function setPeriodo(p) {
+  periodoAtual = p;
+  dataInicio = null;
+  dataFim = null;
+  document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('ativo'));
+  event.target.classList.add('ativo');
+  document.getElementById('custom-date-wrap').classList.remove('show');
+  if (dadosCarregados.length) carregarDados();
+}
+
+function getStatus(gasto, pedidos, cpr) {
   if (gasto === 0) return 'gray';
-  if (resultado === 0) return 'red';
+  if (pedidos === 0) return 'red';
   if (cpr <= 15) return 'green';
   if (cpr <= 40) return 'amber';
   return 'red';
@@ -308,7 +337,7 @@ function statusBadge(s) {
     gray:  ['badge-gray',  '● Sem dados'],
   };
   const [cls, txt] = map[s];
-  return `<span class="badge ${cls}">${txt}</span>`;
+  return '<span class="badge ' + cls + '">' + txt + '</span>';
 }
 
 function barColor(s) {
@@ -321,29 +350,25 @@ function getToken() {
 
 async function carregarDados() {
   const token = getToken();
-  if (!token) {
-    alert('Cole o Access Token do Meta e clique em Salvar token primeiro!');
-    return;
-  }
+  if (!token) { alert('Cole o Access Token do Meta e clique em Salvar token primeiro!'); return; }
 
   const btn = document.getElementById('btn-load');
   btn.textContent = '⏳ Carregando...';
   btn.disabled = true;
 
-  document.getElementById('tbody').innerHTML = `<tr><td colspan="7" class="loading"><span class="spin">⟳</span> Consultando ${CONTAS.length} contas na API do Meta...</td></tr>`;
+  document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">⟳</span> Consultando ' + CONTAS.length + ' contas na API do Meta...</td></tr>';
 
   const resultados = [];
 
   for (const conta of CONTAS) {
     try {
-      let insightsUrl;
+      let url;
       if (periodoAtual === 'custom' && dataInicio && dataFim) {
-        const timeRange = encodeURIComponent(JSON.stringify({since: dataInicio, until: dataFim}));
-        insightsUrl = `https://graph.facebook.com/${API_VERSION}/${conta.id}/insights?fields=spend,impressions,clicks,actions,action_values,cost_per_action_type&time_range=${timeRange}&access_token=${token}`;
+        const tr = encodeURIComponent(JSON.stringify({since: dataInicio, until: dataFim}));
+        url = 'https://graph.facebook.com/' + API_VERSION + '/' + conta.id + '/insights?fields=spend,impressions,clicks,actions,action_values&time_range=' + tr + '&access_token=' + token;
       } else {
-        insightsUrl = `https://graph.facebook.com/${API_VERSION}/${conta.id}/insights?fields=spend,impressions,clicks,actions,action_values,cost_per_action_type&date_preset=${periodoAtual}&access_token=${token}`;
+        url = 'https://graph.facebook.com/' + API_VERSION + '/' + conta.id + '/insights?fields=spend,impressions,clicks,actions,action_values&date_preset=' + periodoAtual + '&access_token=' + token;
       }
-      const url = insightsUrl;
       const r = await fetch(url);
       const d = await r.json();
 
@@ -352,32 +377,25 @@ async function carregarDados() {
         const gasto = parseFloat(ins.spend || 0);
         const impr = parseInt(ins.impressions || 0);
         const clicks = parseInt(ins.clicks || 0);
-        const ctr = impr > 0 ? (clicks / impr * 100) : 0;
-
         const actions = ins.actions || [];
-        // Usar apenas 'purchase' para evitar duplicação (omni_purchase, offsite etc. são o mesmo evento)
+        const actionValues = ins.action_values || [];
         const compraItem = actions.find(a => a.action_type === 'purchase');
         const pedidos = compraItem ? parseInt(compraItem.value || 0) : 0;
-
-        const actionValues = ins.action_values || [];
         const fatItem = actionValues.find(a => a.action_type === 'purchase');
         const faturamento = fatItem ? parseFloat(fatItem.value || 0) : 0;
-
         const cpr = pedidos > 0 && gasto > 0 ? gasto / pedidos : 0;
-
         const roas = gasto > 0 && faturamento > 0 ? faturamento / gasto : 0;
-
-        resultados.push({ ...conta, gasto: gasto||0, impr: impr||0, clicks: clicks||0, ctr: ctr||0, pedidos: pedidos||0, faturamento: faturamento||0, cpr: cpr||0, roas: roas||0, tipo: conta.tipo || 'food', status: getStatus(gasto, pedidos, cpr) });
+        resultados.push({ ...conta, gasto, impr, clicks, pedidos, faturamento, cpr, roas, status: getStatus(gasto, pedidos, cpr) });
       } else {
-        resultados.push({ ...conta, gasto: 0, impr: 0, clicks: 0, ctr: 0, resultado: 0, cpr: 0, status: 'gray' });
+        resultados.push({ ...conta, gasto: 0, impr: 0, clicks: 0, pedidos: 0, faturamento: 0, cpr: 0, roas: 0, status: 'gray' });
       }
-    } catch (e) {
-      resultados.push({ ...conta, gasto: 0, impr: 0, clicks: 0, ctr: 0, resultado: 0, cpr: 0, status: 'gray' });
+    } catch(e) {
+      resultados.push({ ...conta, gasto: 0, impr: 0, clicks: 0, pedidos: 0, faturamento: 0, cpr: 0, roas: 0, status: 'gray' });
     }
   }
 
   dadosCarregados = resultados;
-  document.getElementById('periodo').textContent = `${periodoLabel[periodoAtual]} — atualizado ${new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('periodo').textContent = (periodoLabel[periodoAtual] || periodoAtual) + ' — atualizado ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
   btn.textContent = '⟳ Atualizar';
   btn.disabled = false;
   atualizarMetrics();
@@ -390,15 +408,14 @@ function atualizarMetrics() {
   document.getElementById('m-green').textContent = d.filter(x => x.status === 'green').length;
   document.getElementById('m-amber').textContent = d.filter(x => x.status === 'amber').length;
   document.getElementById('m-red').textContent = d.filter(x => x.status === 'red' || x.status === 'gray').length;
-  const totalGasto = d.reduce((s, x) => s + x.gasto, 0);
+  const totalGasto = d.reduce((s, x) => s + (isNaN(x.gasto) ? 0 : x.gasto), 0);
   const totalPedidos = d.reduce((s, x) => s + (isNaN(x.pedidos) ? 0 : x.pedidos), 0);
   const totalFat = d.reduce((s, x) => s + (isNaN(x.faturamento) ? 0 : x.faturamento), 0);
-  const totalGasto2 = d.reduce((s, x) => s + (isNaN(x.gasto) ? 0 : x.gasto), 0);
-  const cprMedio = totalPedidos > 0 ? totalGasto2 / totalPedidos : 0;
-  const roasMedio = totalGasto2 > 0 && totalFat > 0 ? totalFat / totalGasto2 : 0;
+  const cprMedio = totalPedidos > 0 ? totalGasto / totalPedidos : 0;
+  const roasMedio = totalGasto > 0 && totalFat > 0 ? totalFat / totalGasto : 0;
   document.getElementById('m-pedidos').textContent = fmtN(totalPedidos);
   document.getElementById('m-faturamento').textContent = fmt(totalFat);
-  document.getElementById('m-gasto').textContent = fmt(totalGasto2);
+  document.getElementById('m-gasto').textContent = fmt(totalGasto);
   document.getElementById('m-cpr').textContent = cprMedio > 0 ? fmt(cprMedio) : '—';
   document.getElementById('m-roas').textContent = roasMedio > 0 ? roasMedio.toFixed(2) + 'x' : '—';
   const roasEl = document.getElementById('m-roas');
@@ -413,7 +430,6 @@ function setSortCol(col) {
     sortDir = 'desc';
   }
   document.getElementById('ordenar').value = col;
-  // Atualizar setas nos headers
   document.querySelectorAll('th[data-col]').forEach(th => {
     const c = th.getAttribute('data-col');
     th.querySelector('.sort-arrow').textContent = c === sortCol ? (sortDir === 'desc' ? ' ↓' : ' ↑') : ' ↕';
@@ -424,15 +440,14 @@ function setSortCol(col) {
 function filtrar() {
   const busca = document.getElementById('busca').value.toLowerCase();
   const filtroStatus = document.getElementById('filtro-status').value;
+  const filtroTipo = document.getElementById('filtro-tipo').value;
   sortCol = document.getElementById('ordenar').value;
 
-  const filtroTipo = document.getElementById('filtro-tipo').value;
-
-  let dados = dadosCarregados.filter(d => {
-    return d.nome.toLowerCase().includes(busca)
-      && (!filtroStatus || d.status === filtroStatus)
-      && (!filtroTipo || d.tipo === filtroTipo);
-  });
+  let dados = dadosCarregados.filter(d =>
+    d.nome.toLowerCase().includes(busca) &&
+    (!filtroStatus || d.status === filtroStatus) &&
+    (!filtroTipo || d.tipo === filtroTipo)
+  );
 
   const dir = sortDir === 'asc' ? 1 : -1;
   dados.sort((a, b) => {
@@ -448,145 +463,50 @@ function filtrar() {
   const tbody = document.getElementById('tbody');
 
   if (!dados.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Nenhuma conta encontrada</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="loading">Nenhuma conta encontrada</td></tr>';
     return;
   }
 
   tbody.innerHTML = dados.map(d => {
     const pct = Math.round((d.gasto / maxGasto) * 100);
     const cor = barColor(d.status);
-    return `<tr>
-      <td>
-        <div class="bm-nome" title="${d.nome}" onclick="abrirDetalhe('${d.id}', '${d.nome.replace(/'/g, '')}')" style="cursor:pointer;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color=''">${d.nome} <span style="font-size:10px;color:#3b82f6;">↗</span></div>
-        <div class="bm-id">${d.id} <span style="color:${d.tipo==='food'?'#f97316':'#6b7280'};font-size:10px;margin-left:4px;">${d.tipo==='food'?'🍕 food':'🏢 outros'}</span></div>
-      </td>
-      <td>${statusBadge(d.status)}</td>
-      <td style="font-weight:500;">${d.gasto > 0 ? fmt(d.gasto) : '<span style="color:#374151">—</span>'}</td>
-      <td>${d.pedidos > 0 ? `<strong>${fmtN(d.pedidos)}</strong>` : '<span style="color:#374151">0</span>'}</td>
-      <td style="color:#34d399;">${d.faturamento > 0 ? fmt(d.faturamento) : '<span style="color:#374151">—</span>'}</td>
-      <td>${d.cpr > 0 ? fmt(d.cpr) : '<span style="color:#374151">—</span>'}</td>
-      <td style="font-weight:600; color:${d.roas >= 3 ? '#34d399' : d.roas >= 1.5 ? '#fbbf24' : d.roas > 0 ? '#f87171' : '#374151'}">${d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—'}</td>
-      <td>
-        <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${cor};"></div></div>
-        <div class="progress-label">${pct}% do top</div>
-      </td>
-      <td><button class="btn-enviar" onclick="enviarResultado(this, '${d.id}')">📤 Enviar</button></td>
-    </tr>`;
+    return '<tr>' +
+      '<td><div class="bm-nome" title="' + d.nome + '" onclick="abrirDetalhe(\'' + d.id + '\', \'' + d.nome.replace(/'/g, '') + '\')" style="cursor:pointer;" onmouseover="this.style.color=\'#3b82f6\'" onmouseout="this.style.color=\'\'">' + d.nome + ' <span style="font-size:10px;color:#3b82f6;">↗</span></div>' +
+      '<div class="bm-id">' + d.id + ' <span style="color:' + (d.tipo==='food'?'#f97316':'#6b7280') + ';font-size:10px;margin-left:4px;">' + (d.tipo==='food'?'🍕 food':'🏢 outros') + '</span></div></td>' +
+      '<td>' + statusBadge(d.status) + '</td>' +
+      '<td style="font-weight:500;">' + (d.gasto > 0 ? fmt(d.gasto) : '<span style="color:#374151">—</span>') + '</td>' +
+      '<td>' + (d.pedidos > 0 ? '<strong>' + fmtN(d.pedidos) + '</strong>' : '<span style="color:#374151">0</span>') + '</td>' +
+      '<td style="color:#34d399;">' + (d.faturamento > 0 ? fmt(d.faturamento) : '<span style="color:#374151">—</span>') + '</td>' +
+      '<td>' + (d.cpr > 0 ? fmt(d.cpr) : '<span style="color:#374151">—</span>') + '</td>' +
+      '<td style="font-weight:600;color:' + (d.roas >= 3 ? '#34d399' : d.roas >= 1.5 ? '#fbbf24' : d.roas > 0 ? '#f87171' : '#374151') + '">' + (d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—') + '</td>' +
+      '<td><div class="bar-wrap"><div class="bar-fill" style="width:' + pct + '%;background:' + cor + ';"></div></div><div class="progress-label">' + pct + '% do top</div></td>' +
+      '<td><button class="btn-enviar" onclick="enviarResultado(this, \'' + d.id + '\')">📤 Enviar</button></td>' +
+      '</tr>';
   }).join('');
 }
 
 function abrirDetalhe(id, nome) {
-  let url = `detalhe.html?id=${id}&nome=${encodeURIComponent(nome)}&periodo=${periodoAtual}`;
-  if (periodoAtual === 'custom' && dataInicio && dataFim) {
-    url += `&since=${dataInicio}&until=${dataFim}`;
-  }
+  let url = 'detalhe.html?id=' + id + '&nome=' + encodeURIComponent(nome) + '&periodo=' + periodoAtual;
+  if (periodoAtual === 'custom' && dataInicio && dataFim) url += '&since=' + dataInicio + '&until=' + dataFim;
   window.open(url, '_blank');
 }
-
-
-async function verificarEncerramentos() {
-  const tok = localStorage.getItem('monaco_meta_token');
-  if (!tok) return;
-  const API = 'v19.0';
-  const hoje = new Date(); hoje.setHours(0,0,0,0);
-  const itens = [];
-  const CONTAS_VER = [
-    {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
-    {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
-    {nome:'IH Campo Grande', id:'act_1131240581799095'},
-    {nome:'Mollinari', id:'act_459274303920372'},
-    {nome:'MrGabs', id:'act_728296823243425'},
-    {nome:'IH Dourados', id:'act_831936562721815'},
-    {nome:'Bella Capri', id:'act_2379679152502158'},
-    {nome:'Villa Grano', id:'act_909424425271250'},
-    {nome:'Brados', id:'act_972023765779926'},
-    {nome:'Berlim', id:'act_836447545843342'},
-    {nome:'A Favorita', id:'act_969681458906352'},
-    {nome:'Brava Pizza', id:'act_4279801688941861'},
-    {nome:'Pavao', id:'act_1759603645448352'},
-    {nome:'Fornalha', id:'act_1618084519451450'},
-    {nome:'Otica Scherer', id:'act_1179077680434286'},
-  ];
-  for (const conta of CONTAS_VER) {
-    try {
-      const r = await fetch('https://graph.facebook.com/' + API + '/' + conta.id + '/campaigns?fields=name,status,effective_status,stop_time,adsets{name,status,effective_status,end_time}&limit=50&access_token=' + tok);
-      const d = await r.json();
-      for (const camp of (d.data || [])) {
-        if (camp.stop_time) {
-          const dt = new Date(camp.stop_time); dt.setHours(0,0,0,0);
-          const dias = Math.round((dt - hoje) / 86400000);
-          if (dias >= 0 && dias <= 7) itens.push({bm: conta.nome, nome: camp.name, tipo: 'Campanha', dias, critico: dias <= 2});
-        }
-        for (const conj of ((camp.adsets || {}).data || [])) {
-          if (conj.end_time) {
-            const dt = new Date(conj.end_time); dt.setHours(0,0,0,0);
-            const dias = Math.round((dt - hoje) / 86400000);
-            if (dias >= 0 && dias <= 7) itens.push({bm: conta.nome, nome: conj.name, tipo: 'Conjunto', dias, critico: dias <= 2});
-          }
-        }
-      }
-    } catch(e) {}
-  }
-  if (!itens.length) return;
-  itens.sort((a,b) => a.dias - b.dias);
-  const criticos = itens.filter(i => i.critico).length;
-  document.getElementById('enc-count').textContent = itens.length + ' item(s) — ' + criticos + ' critico(s)';
-  document.getElementById('enc-count').style.color = criticos > 0 ? '#f87171' : '#fbbf24';
-  document.getElementById('enc-list').innerHTML = itens.map(i =>
-    '<div class="enc-item ' + (i.critico ? 'critico' : 'atencao') + '">' +
-    '<div><div class="enc-nome">' + i.nome + '</div><div class="enc-bm">' + i.bm + '</div></div>' +
-    '<div style="display:flex;align-items:center;gap:8px;">' +
-    '<span class="enc-tipo">' + i.tipo + '</span>' +
-    '<span class="' + (i.critico ? 'enc-dias-red' : 'enc-dias-amber') + '">' +
-    (i.dias === 0 ? 'Hoje!' : i.dias === 1 ? 'Amanha!' : i.dias + ' dias') + '</span>' +
-    '</div></div>'
-  ).join('');
-  document.getElementById('enc-card').classList.add('show');
-}
-
-var _encDados = [];
-var _encDias = 7;
 
 async function abrirEncerramentos() {
   var modal = document.getElementById('modal-enc');
   modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
   document.getElementById('modal-enc-loading').style.display = 'block';
   document.getElementById('modal-enc-list').style.display = 'none';
   document.getElementById('modal-enc-empty').style.display = 'none';
 
   const tok = localStorage.getItem('monaco_meta_token');
-  if (!tok) {
-    document.getElementById('modal-enc-loading').textContent = 'Token nao encontrado.';
-    return;
-  }
+  if (!tok) { document.getElementById('modal-enc-loading').textContent = 'Token nao encontrado.'; return; }
 
-  const API = 'v19.0';
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   _encDados = [];
 
-  const CONTAS_ENC = [
-    {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
-    {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
-    {nome:'IH Campo Grande', id:'act_1131240581799095'},
-    {nome:'Mollinari', id:'act_459274303920372'},
-    {nome:'MrGabs', id:'act_728296823243425'},
-    {nome:'IH Dourados', id:'act_831936562721815'},
-    {nome:'Bella Capri', id:'act_2379679152502158'},
-    {nome:'Villa Grano', id:'act_909424425271250'},
-    {nome:'Brados', id:'act_972023765779926'},
-    {nome:'Berlim', id:'act_836447545843342'},
-    {nome:'A Favorita', id:'act_969681458906352'},
-    {nome:'Brava Pizza', id:'act_4279801688941861'},
-    {nome:'Pavao', id:'act_1759603645448352'},
-    {nome:'Fornalha', id:'act_1618084519451450'},
-    {nome:'Otica Scherer', id:'act_1179077680434286'},
-  ];
-
   for (const conta of CONTAS_ENC) {
     try {
-      const r = await fetch('https://graph.facebook.com/' + API + '/' + conta.id + '/campaigns?fields=name,status,effective_status,stop_time,adsets{name,status,effective_status,end_time}&limit=50&access_token=' + tok);
+      const r = await fetch('https://graph.facebook.com/' + API_VERSION + '/' + conta.id + '/campaigns?fields=name,status,effective_status,stop_time,adsets{name,status,effective_status,end_time}&limit=50&access_token=' + tok);
       const d = await r.json();
       for (const camp of (d.data || [])) {
         if (camp.stop_time) {
@@ -612,7 +532,7 @@ async function abrirEncerramentos() {
 
 function filtrarDias(dias, btn) {
   _encDias = dias;
-  document.querySelectorAll('#modal-enc .btn').forEach(b => { b.style.background = '#1e2130'; b.style.color = '#c8c8c8'; b.style.borderColor = '#2a2d3a'; });
+  document.querySelectorAll('#modal-enc .btn-enc-filtro').forEach(b => { b.style.background = '#1e2130'; b.style.color = '#c8c8c8'; b.style.borderColor = '#2a2d3a'; });
   btn.style.background = '#fbbf24'; btn.style.color = '#000'; btn.style.borderColor = '#fbbf24';
   renderEncDados(dias);
 }
@@ -621,24 +541,18 @@ function renderEncDados(dias) {
   const filtrado = _encDados.filter(i => dias === 999 || i.dias <= dias);
   const list = document.getElementById('modal-enc-list');
   const empty = document.getElementById('modal-enc-empty');
-
-  if (!filtrado.length) {
-    list.style.display = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-
+  if (!filtrado.length) { list.style.display = 'none'; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   list.style.display = 'block';
   list.innerHTML = filtrado.map(i => {
     const cor = i.dias <= 2 ? '#f87171' : i.dias <= 7 ? '#fbbf24' : '#60a5fa';
     const bg = i.dias <= 2 ? 'rgba(248,113,113,.08)' : i.dias <= 7 ? 'rgba(251,191,36,.08)' : 'rgba(96,165,250,.08)';
     const label = i.dias === 0 ? 'Hoje!' : i.dias === 1 ? 'Amanha!' : i.dias + ' dias';
-    const statusBadge = i.status === 'ACTIVE' ? '<span style="background:rgba(52,211,153,.15);color:#34d399;padding:2px 7px;border-radius:99px;font-size:10px;">Ativo</span>' : '<span style="background:rgba(107,114,128,.15);color:#6b7280;padding:2px 7px;border-radius:99px;font-size:10px;">Pausado</span>';
+    const sb = i.status === 'ACTIVE' ? '<span style="background:rgba(52,211,153,.15);color:#34d399;padding:2px 7px;border-radius:99px;font-size:10px;">Ativo</span>' : '<span style="background:rgba(107,114,128,.15);color:#6b7280;padding:2px 7px;border-radius:99px;font-size:10px;">Pausado</span>';
     return '<div style="display:flex;align-items:center;justify-content:space-between;background:' + bg + ';border-left:3px solid ' + cor + ';border-radius:8px;padding:10px 14px;margin-bottom:8px;flex-wrap:wrap;gap:8px;">' +
       '<div><div style="font-size:13px;font-weight:500;color:#fff;">' + i.nome + '</div>' +
-      '<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + i.bm + ' &mdash; Encerra em ' + i.data + '</div></div>' +
-      '<div style="display:flex;align-items:center;gap:8px;">' + statusBadge +
+      '<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + i.bm + ' — Encerra em ' + i.data + '</div></div>' +
+      '<div style="display:flex;align-items:center;gap:8px;">' + sb +
       '<span style="background:#1e2130;color:#9ca3af;padding:2px 7px;border-radius:4px;font-size:10px;">' + i.tipo + '</span>' +
       '<span style="background:rgba(0,0,0,.3);color:' + cor + ';padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;">' + label + '</span>' +
       '</div></div>';
@@ -647,7 +561,7 @@ function renderEncDados(dias) {
 
 function fecharEncerramentos(e) {
   if (!e || e.target === document.getElementById('modal-enc')) {
-    document.getElementById('modal-enc').classList.remove('open');
+    document.getElementById('modal-enc').style.display = 'none';
   }
 }
 
@@ -658,110 +572,44 @@ function salvarToken() {
   document.getElementById('config-bar').innerHTML = '<span class="tag-ok">✓ Token salvo! Clique em "Carregar dados".</span>';
 }
 
-function exportarHTML() {
-  const titulo = document.querySelector('.title')?.textContent || 'Performance BMs';
-  const periodo = document.getElementById('periodo')?.textContent || '';
-  const metricsHTML = document.getElementById('metrics')?.outerHTML || '';
-  const tableHTML = document.querySelector('.table-wrap')?.outerHTML || '';
-  const styles = Array.from(document.styleSheets).map(s => {
-    try { return Array.from(s.cssRules).map(r => r.cssText).join('\n'); } catch(e) { return ''; }
-  }).join('\n');
-
-  const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Performance BMs — Monaco Agency</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; padding: 24px; }
-${styles}
-button, a, select, input { display: none !important; }
-.header { display: none; }
-.controls { display: none; }
-.export-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-.export-title { font-size: 16px; font-weight: 600; color: #fff; }
-.export-meta { font-size: 12px; color: #6b7280; }
-</style>
-</head>
-<body>
-<div class="export-header">
-  <div>
-    <div class="export-title">📊 Performance BMs — Monaco Agency</div>
-    <div class="export-meta">${periodo} | Gerado em ${new Date().toLocaleString('pt-BR')}</div>
-  </div>
-</div>
-${metricsHTML}
-<br>
-${tableHTML}
-
-
-
-
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const a = document.createElement('a');
-  const data = new Date().toISOString().split('T')[0];
-  a.href = URL.createObjectURL(blob);
-  a.download = `performance_bms_${data}.html`;
-  a.click();
-}
-
-// Mapa de BM → grupo WhatsApp (preencher com IDs reais de cada pizzaria)
-// Por enquanto todos apontam para o grupo Monaco - Operações para teste
-const GRUPOS_WPP = {
-  'act_3379098802257981': '120363403884174816@g.us', // CA- BISTROGOURMETPIZZARIA
-  'act_2523170184768797': '120363403884174816@g.us', // CA - ROSA SUL NOVA
-  'act_218943216626025':  '120363403884174816@g.us', // Bistro Gourmet Foods
-  'act_723575425785405':  '120363403884174816@g.us', // Dia de Pizza - Dourados
-  'act_626472496317271':  '120363403884174816@g.us', // CA2- BISTROGOURMETPIZZARIA
-  'act_1131240581799095': '120363403884174816@g.us', // IH CAMPO GRANDE MS
-  'act_1179077680434286': '120363403884174816@g.us', // Ótica Scherer
-  'act_459274303920372':  '120363403884174816@g.us', // Mollinari Pizzaria
-  'act_728296823243425':  '120363403884174816@g.us', // MrGabs
-  'act_831936562721815':  '120363403884174816@g.us', // IH DOURADOS
-  'act_1632381294729040': '120363403884174816@g.us', // CA - Facilita cell 2
-  'act_2379679152502158': '120363403884174816@g.us', // CA - Bella Capri Uberlândia
-  'act_909424425271250':  '120363403884174816@g.us', // Villa Grano Pizzaria
-  'act_972023765779926':  '120363403884174816@g.us', // Brados Pizzaria
-  'act_836447545843342':  '120363403884174816@g.us', // Berlim Pizzaria
-  'act_1166398428853886': '120363403884174816@g.us', // ALHO DOURADO
-  'act_969681458906352':  '120363403884174816@g.us', // A FAVORITA
-  'act_4279801688941861': '120363403884174816@g.us', // CA - BRAVA PIZZA
-  'act_933386533018776':  '120363403884174816@g.us', // Duba lanches
-  'act_1759603645448352': '120363403884174816@g.us', // Pavão Lanchonete
-  'act_1618084519451450': '120363403884174816@g.us', // Fornalha Pizzaria
-};
-
-const WPP_URL = 'http://localhost:8080';
-const WPP_KEY = 'minhaChave123';
-const WPP_INSTANCIA = 'meu-whatsapp';
-
 function showToast(msg, tipo) {
   const t = document.getElementById('toast-envio');
   t.textContent = msg;
-  t.className = `toast ${tipo}`;
+  t.className = 'toast ' + tipo;
   t.style.display = 'block';
   setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+function getPeriodoLabel() {
+  const hoje = new Date();
+  if (periodoAtual === 'custom' && dataInicio && dataFim) {
+    const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
+    return fmtDate(dataInicio) + ' - ' + fmtDate(dataFim);
+  }
+  const labels = {
+    today: hoje.toLocaleDateString('pt-BR'),
+    yesterday: new Date(hoje - 86400000).toLocaleDateString('pt-BR'),
+    last_7d: new Date(hoje - 6*86400000).toLocaleDateString('pt-BR') + ' - ' + hoje.toLocaleDateString('pt-BR'),
+    last_14d: new Date(hoje - 13*86400000).toLocaleDateString('pt-BR') + ' - ' + hoje.toLocaleDateString('pt-BR'),
+    last_30d: new Date(hoje - 29*86400000).toLocaleDateString('pt-BR') + ' - ' + hoje.toLocaleDateString('pt-BR'),
+  };
+  return labels[periodoAtual] || '';
 }
 
 async function enviarResultado(btn, accountId) {
   const d = dadosCarregados.find(x => x.id === accountId);
   if (!d) { showToast('Conta não encontrada!', 'err'); return; }
-
   const grupoId = GRUPOS_WPP[accountId];
   if (!grupoId) { showToast('Grupo WhatsApp não configurado para esta BM!', 'err'); return; }
 
   const periodo = getPeriodoLabel();
-  const msg = `Bom dia, pessoal! Excelente semana a todos! 😊\n\nSegue o resumo das campanhas de Meta Ads\nPeríodo: ${periodo}\n\n📦 Pedidos: ${fmtN(d.pedidos)}\n🛒 Faturamento: ${fmt(d.faturamento)}\n💰 Valor investido: ${fmt(d.gasto)}\n📉 Custo por compra: ${d.cpr > 0 ? fmt(d.cpr) : '—'}\n🚀 ROAS: ${d.roas > 0 ? d.roas.toFixed(2) : '—'}`;
+  const msg = '🤖 Mano BOB informa:\n\nOla pessoal! Excelente semana a todos!\n\n📊 ' + d.nome + '\nSegue o resumo das campanhas de Meta Ads\nPeriodo: ' + periodo + '\n\n📦 Pedidos: ' + fmtN(d.pedidos) + '\n🛒 Faturamento: ' + fmt(d.faturamento) + '\n💰 Valor investido: ' + fmt(d.gasto) + '\n📉 Custo por compra: ' + (d.cpr > 0 ? fmt(d.cpr) : '—') + '\n🚀 ROAS: ' + (d.roas > 0 ? d.roas.toFixed(2) : '—');
 
   btn.classList.add('enviando');
   btn.textContent = '⏳';
 
   try {
-    const r = await fetch(`${WPP_URL}/message/sendText/${WPP_INSTANCIA}`, {
+    const r = await fetch(WPP_URL + '/message/sendText/' + WPP_INSTANCIA, {
       method: 'POST',
       headers: { 'apikey': WPP_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ number: grupoId, textMessage: { text: msg } })
@@ -770,44 +618,18 @@ async function enviarResultado(btn, accountId) {
       btn.classList.remove('enviando');
       btn.classList.add('enviado');
       btn.textContent = '✅ Enviado';
-      showToast(`✅ Mensagem enviada para ${d.nome}!`, 'ok');
+      showToast('Mensagem enviada para ' + d.nome + '!', 'ok');
       setTimeout(() => { btn.classList.remove('enviado'); btn.textContent = '📤 Enviar'; }, 4000);
-    } else {
-      throw new Error('Erro ' + r.status);
-    }
-  } catch (e) {
+    } else { throw new Error('Erro ' + r.status); }
+  } catch(e) {
     btn.classList.remove('enviando');
     btn.textContent = '📤 Enviar';
-    showToast(`❌ Erro ao enviar para ${d.nome}: ${e.message}`, 'err');
+    showToast('Erro ao enviar para ' + d.nome, 'err');
   }
-}
-
-const savedToken = localStorage.getItem(TOKEN_KEY);
-if (savedToken) {
-  document.getElementById('config-bar').innerHTML = '<span class="tag-ok">✓ Token salvo. Clique em "Carregar dados".</span>';
-}
-
-function getPeriodoLabel() {
-  const hoje = new Date();
-  if (periodoAtual === 'custom' && dataInicio && dataFim) {
-    const fmtDate = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
-    return `${fmtDate(dataInicio)} - ${fmtDate(dataFim)}`;
-  }
-  const labels = {
-    today: hoje.toLocaleDateString('pt-BR'),
-    yesterday: new Date(hoje - 86400000).toLocaleDateString('pt-BR'),
-    last_7d: `${new Date(hoje - 6*86400000).toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')}`,
-    last_14d: `${new Date(hoje - 13*86400000).toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')}`,
-    last_30d: `${new Date(hoje - 29*86400000).toLocaleDateString('pt-BR')} - ${hoje.toLocaleDateString('pt-BR')}`,
-  };
-  return labels[periodoAtual] || '';
 }
 
 function abrirRelatorio() {
-  if (!dadosCarregados.length) {
-    alert('Carregue os dados primeiro!');
-    return;
-  }
+  if (!dadosCarregados.length) { alert('Carregue os dados primeiro!'); return; }
   const d = dadosCarregados;
   const totalGasto = d.reduce((s, x) => s + x.gasto, 0);
   const totalPedidos = d.reduce((s, x) => s + x.pedidos, 0);
@@ -816,28 +638,9 @@ function abrirRelatorio() {
   const totalClicks = d.reduce((s, x) => s + x.clicks, 0);
   const cprMedio = totalPedidos > 0 ? totalGasto / totalPedidos : 0;
   const roasMedio = totalGasto > 0 && totalFat > 0 ? totalFat / totalGasto : 0;
-
   const periodo = getPeriodoLabel();
 
-  const texto = `Olá pessoal, segue abaixo um resumo com os principais dados e atividades da semana!
-
-🎯 Resultados da Última Semana <DATA> :${periodo}
-
-Valor investido: <INV>
-${fmt(totalGasto)}
-Visualizações no cardápio: <PAGEVIEW>
-${fmtN(totalImpr)}
-Carrinhos adicionados: <CART>
-${fmtN(totalClicks)}
-Compras: <VEND>
-${fmtN(totalPedidos)}
-Valor vendido: <FAT>
-${fmt(totalFat)}
-ROAS: <ROAS>
-${roasMedio.toFixed(2)}
-
-Seguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.
-Desejo a todos um excelente final de semana! 🚀`;
+  const texto = 'Ola pessoal, segue abaixo um resumo com os principais dados e atividades da semana!\n\n🎯 Resultados: ' + periodo + '\n\nValor investido: ' + fmt(totalGasto) + '\nVisualizacoes: ' + fmtN(totalImpr) + '\nCliques: ' + fmtN(totalClicks) + '\nPedidos: ' + fmtN(totalPedidos) + '\nFaturamento: ' + fmt(totalFat) + '\nROAS: ' + roasMedio.toFixed(2) + '\n\nSeguimos firmes na evolucao do projeto, com foco total em performance e melhoria continua.\nDesejo a todos um excelente final de semana!';
 
   document.getElementById('relatorio-texto').textContent = texto;
   document.getElementById('modal-relatorio').classList.add('open');
@@ -855,23 +658,40 @@ function copiarRelatorio() {
     setTimeout(() => { toast.style.display = 'none'; }, 2500);
   });
 }
+
+function exportarHTML() {
+  const metricsHTML = document.querySelector('.metrics')?.outerHTML || '';
+  const tableHTML = document.querySelector('.table-wrap')?.outerHTML || '';
+  const periodo = document.getElementById('periodo')?.textContent || '';
+  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Performance BMs</title></head><body style="background:#0f1117;color:#e8e8e8;font-family:sans-serif;padding:24px;"><h2 style="margin-bottom:16px;">Performance BMs — Monaco Agency</h2><p style="color:#6b7280;margin-bottom:20px;">' + periodo + '</p>' + metricsHTML + '<br>' + tableHTML + '</body></html>';
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'performance_bms_' + new Date().toISOString().split('T')[0] + '.html';
+  a.click();
+}
+
+const savedToken = localStorage.getItem(TOKEN_KEY);
+if (savedToken) {
+  document.getElementById('config-bar').innerHTML = '<span class="tag-ok">✓ Token salvo. Clique em "Carregar dados".</span>';
+}
 </script>
 
 <div id="modal-enc" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:150;align-items:center;justify-content:center;" onclick="if(event.target===this)fecharEncerramentos()">
   <div style="background:#161a24;border:1px solid #2a2d3a;border-radius:14px;padding:24px;width:90%;max-width:700px;max-height:80vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span style="font-size:15px;font-weight:600;color:#fff;">&#9200; Campanhas e Conjuntos com Encerramento</span>
-      <button onclick="fecharEncerramentos()" style="background:none;border:none;color:#6b7280;font-size:22px;cursor:pointer;line-height:1;">&#10005;</button>
+      <span style="font-size:15px;font-weight:600;color:#fff;">⏰ Campanhas e Conjuntos com Encerramento</span>
+      <button onclick="fecharEncerramentos()" style="background:none;border:none;color:#6b7280;font-size:22px;cursor:pointer;line-height:1;">✕</button>
     </div>
     <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
-      <button id="enc-btn-7" onclick="filtrarDias(7,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #fbbf24;background:#fbbf24;color:#000;">7 dias</button>
-      <button id="enc-btn-15" onclick="filtrarDias(15,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">15 dias</button>
-      <button id="enc-btn-30" onclick="filtrarDias(30,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">30 dias</button>
-      <button id="enc-btn-999" onclick="filtrarDias(999,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">Todos</button>
+      <button class="btn-enc-filtro" onclick="filtrarDias(7,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #fbbf24;background:#fbbf24;color:#000;">7 dias</button>
+      <button class="btn-enc-filtro" onclick="filtrarDias(15,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">15 dias</button>
+      <button class="btn-enc-filtro" onclick="filtrarDias(30,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">30 dias</button>
+      <button class="btn-enc-filtro" onclick="filtrarDias(999,this)" style="padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">Todos</button>
     </div>
-    <div id="modal-enc-loading" style="text-align:center;padding:32px;color:#4b5563;font-size:14px;">&#8987; Buscando campanhas...</div>
+    <div id="modal-enc-loading" style="text-align:center;padding:32px;color:#4b5563;font-size:14px;">⏳ Buscando campanhas...</div>
     <div id="modal-enc-list" style="overflow-y:auto;flex:1;display:none;"></div>
-    <div id="modal-enc-empty" style="text-align:center;padding:32px;color:#34d399;display:none;">&#10003; Nenhum encerramento no periodo selecionado!</div>
+    <div id="modal-enc-empty" style="text-align:center;padding:32px;color:#34d399;display:none;">✓ Nenhum encerramento no periodo selecionado!</div>
   </div>
 </div>
 
@@ -882,12 +702,13 @@ function copiarRelatorio() {
       <button class="modal-close" onclick="fecharModal()">✕</button>
     </div>
     <div class="relatorio-box" id="relatorio-texto"></div>
-    <div style="display:flex; gap:8px; margin-top:16px;">
+    <div style="display:flex;gap:8px;margin-top:16px;">
       <button class="btn btn-green" style="flex:1;" onclick="copiarRelatorio()">📋 Copiar para WhatsApp</button>
       <button class="btn" onclick="fecharModal()">Fechar</button>
     </div>
   </div>
 </div>
+
 <div class="copied-toast" id="toast">✓ Copiado! Cole no WhatsApp</div>
 <div class="toast" id="toast-envio"></div>
 </body>
