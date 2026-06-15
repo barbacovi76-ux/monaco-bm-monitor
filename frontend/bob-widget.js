@@ -1,6 +1,5 @@
 (function() {
   const TOKEN_KEY = 'monaco_meta_token';
-  const ANTHROPIC_KEY = 'monaco_anthropic_key';
   const API_VERSION = 'v19.0';
 
   const CONTAS = [
@@ -22,6 +21,7 @@
   const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const fmtN = v => Number(v).toLocaleString('pt-BR');
 
+  // ── CSS ───────────────────────────────────────────────────────────
   const style = document.createElement('style');
   style.textContent = `
     #bob-fab { position:fixed; bottom:24px; right:24px; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#059669,#3b82f6); border:none; cursor:pointer; font-size:26px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(5,150,105,.4); z-index:9998; transition:transform .2s; }
@@ -39,17 +39,13 @@
     #bob-close { background:none; border:none; color:#6b7280; font-size:18px; cursor:pointer; }
     #bob-close:hover { color:#fff; }
 
-    #bob-cfg { background:#0f1117; border-bottom:1px solid #2a2d3a; padding:10px 14px; display:flex; gap:8px; flex-shrink:0; }
-    #bob-cfg input { background:#1e2130; border:1px solid #2a2d3a; border-radius:6px; padding:6px 10px; font-size:12px; color:#e8e8e8; outline:none; flex:1; }
-    #bob-cfg button { padding:6px 12px; border-radius:6px; font-size:12px; background:#059669; color:#fff; border:none; cursor:pointer; white-space:nowrap; }
-
     #bob-msgs { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; }
     #bob-msgs::-webkit-scrollbar { width:4px; }
     #bob-msgs::-webkit-scrollbar-thumb { background:#2a2d3a; border-radius:2px; }
 
     .bm { display:flex; gap:8px; }
     .bm.user { flex-direction:row-reverse; }
-    .bb { max-width:82%; padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.6; word-break:break-word; }
+    .bb { max-width:82%; padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.7; word-break:break-word; }
     .bm.user .bb { background:#1d4ed8; color:#fff; border-bottom-right-radius:3px; }
     .bm.bot .bb { background:#1e2130; border:1px solid #2a2d3a; color:#e8e8e8; border-bottom-left-radius:3px; }
     .bav { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; margin-top:2px; }
@@ -65,18 +61,20 @@
     .bchip { padding:4px 10px; border-radius:99px; font-size:11px; background:#111318; border:1px solid #2a2d3a; color:#9ca3af; cursor:pointer; transition:all .15s; white-space:nowrap; }
     .bchip:hover { border-color:#059669; color:#34d399; }
 
-    #bob-bottom { padding:10px 14px 14px; border-top:1px solid #2a2d3a; flex-shrink:0; }
-    #bob-row { display:flex; gap:8px; margin-top:8px; }
+    #bob-bottom { padding:10px 14px 14px; border-top:1px solid #2a2d3a; flex-shrink:0; margin-top:8px; }
+    #bob-row { display:flex; gap:8px; }
     #bob-input { flex:1; background:#111318; border:1px solid #2a2d3a; border-radius:8px; padding:8px 12px; font-size:13px; color:#e8e8e8; outline:none; }
     #bob-input:focus { border-color:#059669; }
     #bob-send { width:38px; height:38px; border-radius:50%; border:none; cursor:pointer; font-size:16px; background:#059669; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     #bob-send:hover { background:#047857; }
+    #bob-no-token { padding:10px 14px; font-size:12px; color:#f87171; background:rgba(248,113,113,.08); border-bottom:1px solid #2a2d3a; text-align:center; display:none; flex-shrink:0; }
   `;
   document.head.appendChild(style);
 
+  // ── HTML ──────────────────────────────────────────────────────────
   const wrap = document.createElement('div');
   wrap.innerHTML = `
-    <button id="bob-fab" title="Falar com BOB">🤖</button>
+    <button id="bob-fab" title="BOB — Assistente">🤖</button>
     <div id="bob-panel">
       <div id="bob-header">
         <div class="bh-left">
@@ -85,20 +83,17 @@
         </div>
         <button id="bob-close">✕</button>
       </div>
-      <div id="bob-cfg">
-        <input type="password" id="bob-ak" placeholder="Anthropic API Key (sk-ant-...)">
-        <button onclick="window._bobSalvar()">Salvar</button>
-      </div>
+      <div id="bob-no-token">⚠️ Salve o token do Meta primeiro para eu buscar os dados!</div>
       <div id="bob-msgs">
         <div class="bm bot"><div class="bav">🤖</div><div class="bb">Oi! Sou o BOB 👋<br>Pergunte sobre desempenho, saldos, encerramentos ou qualquer dado das campanhas!</div></div>
       </div>
       <div id="bob-chips">
-        <span class="bchip" onclick="window._bobCmd('Desempenho geral últimos 7 dias')">📊 Geral 7d</span>
-        <span class="bchip" onclick="window._bobCmd('Campanhas críticas com ROAS baixo')">🚨 Críticas</span>
-        <span class="bchip" onclick="window._bobCmd('Saldo das contas')">💰 Saldos</span>
-        <span class="bchip" onclick="window._bobCmd('Campanhas encerrando em breve')">⏰ Encerram</span>
-        <span class="bchip" onclick="window._bobCmd('Top performers da semana')">🏆 Top BMs</span>
-        <span class="bchip" onclick="window._bobCmd('Desempenho últimos 30 dias')">📅 30 dias</span>
+        <span class="bchip" onclick="window._bobCmd('geral7d')">📊 Geral 7d</span>
+        <span class="bchip" onclick="window._bobCmd('criticas')">🚨 Críticas</span>
+        <span class="bchip" onclick="window._bobCmd('saldos')">💰 Saldos</span>
+        <span class="bchip" onclick="window._bobCmd('encerramentos')">⏰ Encerram</span>
+        <span class="bchip" onclick="window._bobCmd('top')">🏆 Top BMs</span>
+        <span class="bchip" onclick="window._bobCmd('geral30d')">📅 30 dias</span>
       </div>
       <div id="bob-bottom">
         <div id="bob-row">
@@ -114,30 +109,36 @@
 
   document.getElementById('bob-fab').onclick = () => {
     document.getElementById('bob-panel').classList.toggle('open');
+    if (!localStorage.getItem(TOKEN_KEY)) {
+      document.getElementById('bob-no-token').style.display = 'block';
+    }
     scroll();
   };
   document.getElementById('bob-close').onclick = () => {
     document.getElementById('bob-panel').classList.remove('open');
   };
 
-  window._bobSalvar = () => {
-    const ak = document.getElementById('bob-ak').value.trim();
-    if (ak) localStorage.setItem(ANTHROPIC_KEY, ak);
-    document.getElementById('bob-cfg').style.display = 'none';
-  };
-
-  if (localStorage.getItem(ANTHROPIC_KEY)) {
-    document.getElementById('bob-cfg').style.display = 'none';
-  }
-
   window._bobEnviar = () => {
     const txt = document.getElementById('bob-input').value.trim();
     if (!txt || processando) return;
     document.getElementById('bob-input').value = '';
-    processar(txt);
+    interpretarTexto(txt);
   };
 
   window._bobCmd = (cmd) => processar(cmd);
+
+  function interpretarTexto(txt) {
+    const t = txt.toLowerCase();
+    if (t.includes('saldo') || t.includes('recarga')) return processar('saldos');
+    if (t.includes('encerr') || t.includes('prazo') || t.includes('venc')) return processar('encerramentos');
+    if (t.includes('critica') || t.includes('crítica') || t.includes('roas baixo') || t.includes('sem result')) return processar('criticas');
+    if (t.includes('top') || t.includes('melhor') || t.includes('performer')) return processar('top');
+    if (t.includes('30 dia') || t.includes('mês') || t.includes('mes')) return processar('geral30d');
+    if (t.includes('14 dia')) return processar('geral14d');
+    if (t.includes('ontem')) return processar('geralyesterday');
+    if (t.includes('hoje')) return processar('geraltoday');
+    return processar('geral7d');
+  }
 
   function addMsg(tipo, html) {
     const el = document.createElement('div');
@@ -153,7 +154,8 @@
     setTimeout(() => { el.scrollTop = el.scrollHeight; }, 60);
   }
 
-  async function buscarDados(preset) {
+  // ── Buscar dados ──────────────────────────────────────────────────
+  async function buscarInsights(preset) {
     const token = localStorage.getItem(TOKEN_KEY) || '';
     if (!token) return null;
     const res = [];
@@ -205,7 +207,7 @@
           if (camp.stop_time) {
             const dt = new Date(camp.stop_time); dt.setHours(0,0,0,0);
             const dias = Math.round((dt - hoje) / 86400000);
-            if (dias >= 0 && dias <= 14) itens.push({ bm: c.nome, camp: camp.name, dias });
+            if (dias >= 0 && dias <= 14) itens.push({ bm: c.nome, camp: camp.name, dias, status: camp.effective_status });
           }
         }
       } catch(e) {}
@@ -213,80 +215,153 @@
     return itens.sort((a,b) => a.dias - b.dias);
   }
 
-  async function processar(texto) {
-    if (processando) return;
-    processando = true;
-    addMsg('user', texto);
-    const loading = addMsg('bot', '<div class="bdots"><span></span><span></span><span></span></div>');
+  // ── Montar respostas ──────────────────────────────────────────────
+  function montarRelatorio(dados, periodo) {
+    const tg = dados.reduce((s,d) => s+d.gasto, 0);
+    const tp = dados.reduce((s,d) => s+d.pedidos, 0);
+    const tf = dados.reduce((s,d) => s+d.fat, 0);
+    const rm = tg > 0 && tf > 0 ? tf/tg : 0;
+    const cm = tp > 0 ? tg/tp : 0;
 
-    const cmd = texto.toLowerCase();
-    let preset = 'last_7d';
-    if (cmd.includes('30 dias') || cmd.includes('mês') || cmd.includes('mes')) preset = 'last_30d';
-    else if (cmd.includes('14 dias')) preset = 'last_14d';
-    else if (cmd.includes('ontem')) preset = 'yesterday';
-    else if (cmd.includes('hoje')) preset = 'today';
+    let html = `📊 <strong>Relatório — ${periodo}</strong><br><br>`;
+    html += `💰 Investido: <strong>${fmt(tg)}</strong><br>`;
+    html += `📦 Pedidos: <strong>${fmtN(tp)}</strong><br>`;
+    html += `🛒 Faturamento: <strong>${fmt(tf)}</strong><br>`;
+    html += `🚀 ROAS médio: <strong>${rm.toFixed(2)}x</strong><br>`;
+    html += `📉 CPR médio: <strong>${cm > 0 ? fmt(cm) : '—'}</strong><br><br>`;
 
-    let dados = null, saldos = null, encerramentos = null;
-
-    if (cmd.includes('saldo') || cmd.includes('recarga')) {
-      saldos = await buscarSaldos();
-    } else if (cmd.includes('encerr') || cmd.includes('prazo') || cmd.includes('venc')) {
-      encerramentos = await buscarEncerramentos();
-    } else {
-      dados = await buscarDados(preset);
-    }
-
-    let ctx = `Você é o BOB, assistente de tráfego pago da Monaco Agency. Responda em português brasileiro, de forma direta e objetiva. Use no máximo 250 palavras. Use emojis com moderação.\n\nPergunta: "${texto}"\n\n`;
-
-    if (dados) {
-      const tg = dados.reduce((s,d) => s+d.gasto, 0);
-      const tp = dados.reduce((s,d) => s+d.pedidos, 0);
-      const tf = dados.reduce((s,d) => s+d.fat, 0);
-      const rm = tg > 0 && tf > 0 ? tf/tg : 0;
-      const cm = tp > 0 ? tg/tp : 0;
-      ctx += `RESUMO GERAL (${preset}): investido=${fmt(tg)}, pedidos=${fmtN(tp)}, faturamento=${fmt(tf)}, ROAS=${rm.toFixed(2)}x, CPR=${fmt(cm)}\n\nDETALHE POR BM:\n`;
-      dados.filter(d => d.gasto > 0).sort((a,b) => b.roas - a.roas).forEach(d => {
-        const status = d.roas >= 3 ? '✅' : d.roas >= 1.5 ? '⚠️' : d.pedidos === 0 ? '🚨' : '🔴';
-        ctx += `${status} ${d.nome}: ${fmt(d.gasto)} invest, ${d.pedidos} pedidos, ${fmt(d.fat)} fat, ROAS ${d.roas.toFixed(2)}x, CPR ${fmt(d.cpr)}\n`;
+    const comDados = dados.filter(d => d.gasto > 0).sort((a,b) => b.roas - a.roas);
+    if (comDados.length) {
+      html += `<strong>Por BM:</strong><br>`;
+      comDados.forEach(d => {
+        const ic = d.roas >= 3 ? '✅' : d.roas >= 1.5 ? '⚠️' : d.pedidos === 0 ? '🚨' : '🔴';
+        html += `${ic} ${d.nome}<br>&nbsp;&nbsp;${fmt(d.gasto)} | ${d.pedidos} pedidos | ROAS ${d.roas.toFixed(2)}x<br>`;
       });
-      const sem = dados.filter(d => d.gasto === 0).map(d => d.nome);
-      if (sem.length) ctx += `\nSem dados: ${sem.join(', ')}\n`;
+    }
+    const sem = dados.filter(d => d.gasto === 0);
+    if (sem.length) {
+      html += `<br>⚫ Sem dados: ${sem.map(d => d.nome).join(', ')}`;
+    }
+    return html;
+  }
+
+  function montarCriticas(dados) {
+    const criticas = dados.filter(d => d.gasto > 0 && (d.pedidos === 0 || d.roas < 1.5));
+    const atencao = dados.filter(d => d.gasto > 0 && d.roas >= 1.5 && d.roas < 3);
+
+    let html = `🚨 <strong>Análise de campanhas críticas</strong><br><br>`;
+
+    if (criticas.length) {
+      html += `🔴 <strong>Crítico (${criticas.length})</strong><br>`;
+      criticas.forEach(d => {
+        const motivo = d.pedidos === 0 ? 'Gasto sem retorno' : `ROAS crítico (${d.roas.toFixed(2)}x)`;
+        html += `• ${d.nome}<br>&nbsp;&nbsp;${motivo} | Investido: ${fmt(d.gasto)}<br>`;
+      });
+      html += '<br>';
     }
 
-    if (saldos) {
-      ctx += `\nSALDOS:\n`;
-      saldos.forEach(s => ctx += `- ${s.nome}: ${fmt(s.saldo)}\n`);
+    if (atencao.length) {
+      html += `⚠️ <strong>Atenção (${atencao.length})</strong><br>`;
+      atencao.forEach(d => {
+        html += `• ${d.nome}<br>&nbsp;&nbsp;ROAS ${d.roas.toFixed(2)}x | CPR ${fmt(d.cpr)}<br>`;
+      });
+      html += '<br>';
     }
 
-    if (encerramentos) {
-      ctx += `\nENCERRAMENTOS (próx 14 dias):\n`;
-      if (!encerramentos.length) ctx += 'Nenhum.\n';
-      else encerramentos.forEach(e => ctx += `- ${e.bm} / ${e.camp}: ${e.dias === 0 ? 'HOJE' : 'em '+e.dias+' dia(s)'}\n`);
+    if (!criticas.length && !atencao.length) {
+      html += `✅ Nenhuma campanha crítica no momento! Tudo saudável.`;
+    } else {
+      html += `Total: ${criticas.length} crítica(s) | ${atencao.length} atenção`;
     }
+    return html;
+  }
 
-    const ak = localStorage.getItem(ANTHROPIC_KEY) || '';
-    if (!ak) {
-      loading.remove();
-      addMsg('bot', '⚠️ Configure a Anthropic API Key no campo acima para eu poder responder!');
-      processando = false;
-      document.getElementById('bob-cfg').style.display = 'flex';
+  function montarTop(dados) {
+    const top = dados.filter(d => d.gasto > 0 && d.roas > 0).sort((a,b) => b.roas - a.roas).slice(0, 5);
+    let html = `🏆 <strong>Top Performers (últimos 7 dias)</strong><br><br>`;
+    if (!top.length) return html + 'Sem dados disponíveis.';
+    top.forEach((d, i) => {
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '⭐';
+      html += `${medal} <strong>${d.nome}</strong><br>&nbsp;&nbsp;ROAS ${d.roas.toFixed(2)}x | ${d.pedidos} pedidos | ${fmt(d.fat)} fat<br>`;
+    });
+    return html;
+  }
+
+  // ── Processar comando ─────────────────────────────────────────────
+  async function processar(cmd) {
+    if (processando) return;
+
+    const token = localStorage.getItem(TOKEN_KEY) || '';
+    if (!token) {
+      addMsg('bot', '⚠️ Salve o token do Meta primeiro na barra de configuração da dashboard!');
       return;
     }
 
+    processando = true;
+
+    // Label para o usuário
+    const labels = {
+      geral7d: 'Desempenho geral — 7 dias',
+      geral14d: 'Desempenho geral — 14 dias',
+      geral30d: 'Desempenho geral — 30 dias',
+      geraltoday: 'Desempenho de hoje',
+      geralyesterday: 'Desempenho de ontem',
+      criticas: 'Campanhas críticas',
+      top: 'Top performers',
+      saldos: 'Saldo das contas',
+      encerramentos: 'Encerramentos próximos',
+    };
+    addMsg('user', labels[cmd] || cmd);
+    const loading = addMsg('bot', '<div class="bdots"><span></span><span></span><span></span></div>');
+
     try {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'x-api-key': ak, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 500, messages: [{ role: 'user', content: ctx }] })
-      });
-      if (!r.ok) throw new Error(r.status);
-      const data = await r.json();
-      const resposta = data.content[0].text.trim();
+      let resposta = '';
+
+      if (cmd === 'saldos') {
+        const saldos = await buscarSaldos();
+        if (!saldos) throw new Error('sem token');
+        let html = `💰 <strong>Saldo das contas</strong><br><br>`;
+        const ordenados = saldos.sort((a,b) => a.saldo - b.saldo);
+        ordenados.forEach(s => {
+          const ic = s.saldo <= 50 ? '🔴' : s.saldo <= 100 ? '⚠️' : '✅';
+          html += `${ic} ${s.nome}: <strong>${fmt(s.saldo)}</strong><br>`;
+        });
+        resposta = html;
+
+      } else if (cmd === 'encerramentos') {
+        const itens = await buscarEncerramentos();
+        if (!itens) throw new Error('sem token');
+        let html = `⏰ <strong>Encerramentos próximos (14 dias)</strong><br><br>`;
+        if (!itens.length) {
+          html += '✅ Nenhuma campanha encerrando nos próximos 14 dias!';
+        } else {
+          itens.forEach(i => {
+            const ic = i.dias === 0 ? '🔴' : i.dias <= 2 ? '🔴' : i.dias <= 7 ? '⚠️' : '📅';
+            const label = i.dias === 0 ? 'HOJE' : i.dias === 1 ? 'amanhã' : `em ${i.dias} dias`;
+            html += `${ic} <strong>${i.bm}</strong><br>&nbsp;&nbsp;${i.camp} — encerra ${label}<br>`;
+          });
+        }
+        resposta = html;
+
+      } else {
+        // Insights
+        const presetMap = { geral7d:'last_7d', geral14d:'last_14d', geral30d:'last_30d', geraltoday:'today', geralyesterday:'yesterday', criticas:'last_7d', top:'last_7d' };
+        const periodoMap = { geral7d:'7 dias', geral14d:'14 dias', geral30d:'30 dias', geraltoday:'Hoje', geralyesterday:'Ontem', criticas:'7 dias', top:'7 dias' };
+        const preset = presetMap[cmd] || 'last_7d';
+        const dados = await buscarInsights(preset);
+        if (!dados) throw new Error('sem token');
+
+        if (cmd === 'criticas') resposta = montarCriticas(dados);
+        else if (cmd === 'top') resposta = montarTop(dados);
+        else resposta = montarRelatorio(dados, periodoMap[cmd] || '7 dias');
+      }
+
       loading.remove();
-      addMsg('bot', resposta.replace(/\n/g, '<br>'));
+      addMsg('bot', resposta);
+
     } catch(e) {
       loading.remove();
-      addMsg('bot', '❌ Erro ao conectar com a IA. Verifique a API Key.');
+      addMsg('bot', '❌ Erro ao buscar dados. Verifique o token do Meta.');
     }
 
     processando = false;
