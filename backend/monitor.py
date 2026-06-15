@@ -12,7 +12,6 @@ import requests
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
-# ── Configuração de log ──────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -27,14 +26,10 @@ CONFIG_PATH = Path(__file__).parent / "config.json"
 ALERTAS_LOG = Path(__file__).parent / "alertas_enviados.json"
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
-
 def carregar_config() -> dict:
-    import os
     if CONFIG_PATH.exists():
         with open(CONFIG_PATH, encoding="utf-8") as f:
             return json.load(f)
-    # GitHub Actions — usar variaveis de ambiente
     return {
         "meta": {
             "api_version": "v19.0",
@@ -50,14 +45,14 @@ def carregar_config() -> dict:
                 {"nome": "Berlim", "account_id": "act_836447545843342", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "A Favorita", "account_id": "act_969681458906352", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Pavão", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "Pavao", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
             ]
         },
         "alertas": {
             "limite_critico": 50,
             "limite_baixo": 100,
-            "horario_verificacao": "12:00",
+            "horario_verificacao": "15:00",
             "alertar_uma_vez_por_dia": True
         },
         "whatsapp": {
@@ -85,98 +80,61 @@ def fmt_brl(valor: float) -> str:
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-# ── API do Meta ──────────────────────────────────────────────────────────────
-
 def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | None:
     url = f"https://graph.facebook.com/{api_version}/{account_id}"
-    params = {
-        "fields": "name,balance,spend_cap,amount_spent,currency,account_status",
-        "access_token": token,
-    }
+    params = {"fields": "name,balance,spend_cap,amount_spent,currency,account_status", "access_token": token}
     try:
         r = requests.get(url, params=params, timeout=15)
         r.raise_for_status()
         data = r.json()
-
         if "error" in data:
             log.error(f"Erro API Meta [{account_id}]: {data['error'].get('message')}")
             return None
-
         raw_balance = int(data.get("balance", 0))
         raw_spend_cap = int(data.get("spend_cap", 0))
         raw_amount_spent = int(data.get("amount_spent", 0))
-
         spend_cap = raw_spend_cap / 100
         amount_spent = raw_amount_spent / 100
-
-        if spend_cap > 0 and amount_spent >= 0:
-            balance = spend_cap - amount_spent
-        else:
-            balance = raw_balance / 100
-
-        return {
-            "account_id": account_id,
-            "nome": data.get("name", account_id),
-            "balance": balance,
-            "spend_cap": spend_cap,
-            "currency": data.get("currency", "BRL"),
-            "status": data.get("account_status", 1),
-        }
-
+        balance = (spend_cap - amount_spent) if spend_cap > 0 else raw_balance / 100
+        return {"account_id": account_id, "nome": data.get("name", account_id), "balance": balance, "spend_cap": spend_cap, "currency": data.get("currency", "BRL"), "status": data.get("account_status", 1)}
     except requests.exceptions.RequestException as e:
         log.error(f"Falha ao consultar [{account_id}]: {e}")
         return None
 
 
-# ── WhatsApp (Evolution API) ─────────────────────────────────────────────────
-
 def enviar_whatsapp(cfg_wpp: dict, numero: str, mensagem: str) -> bool:
     url = f"{cfg_wpp['api_url']}/message/sendText/{cfg_wpp['instancia']}"
-    headers = {
-        "apikey": cfg_wpp["api_key"],
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "number": numero,
-        "textMessage": {"text": mensagem},
-    }
+    headers = {"apikey": cfg_wpp["api_key"], "Content-Type": "application/json"}
+    payload = {"number": numero, "textMessage": {"text": mensagem}}
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=15)
         r.raise_for_status()
-        log.info(f"✅ Alerta enviado para {numero}")
+        log.info(f"Mensagem enviada para {numero}")
         return True
     except requests.exceptions.RequestException as e:
         log.error(f"Falha ao enviar WhatsApp para {numero}: {e}")
         return False
 
 
-def montar_mensagem(conta: dict, nivel: str, limite: float) -> str:
-    emoji = "🚨" if nivel == "critico" else "⚠️"
-    label = "CRÍTICO" if nivel == "critico" else "BAIXO"
+def montar_mensagem_saldo(conta: dict, nivel: str, limite: float) -> str:
+    emoji = "Alerta CRITICO" if nivel == "critico" else "Alerta BAIXO"
     linhas = [
-        f"{emoji} *Alerta de Saldo {label}*",
+        f"Alerta de Saldo — {emoji}",
         "",
-        f"📊 *BM:* {conta['nome']}",
-        f"💰 *Saldo atual:* {fmt_brl(conta['balance'])}",
-        f"📉 *Limite de alerta:* {fmt_brl(limite)}",
+        f"BM: {conta['nome']}",
+        f"Saldo atual: {fmt_brl(conta['balance'])}",
+        f"Limite de alerta: {fmt_brl(limite)}",
     ]
     if conta["spend_cap"] > 0:
-        linhas.append(f"🔝 *Limite de gasto:* {fmt_brl(conta['spend_cap'])}")
-    linhas += [
-        "",
-        "_Recarregue o saldo para evitar interrupções nas campanhas._",
-        f"🕐 {datetime.now().strftime('%d/%m/%Y %H:%M')}",
-    ]
+        linhas.append(f"Limite de gasto: {fmt_brl(conta['spend_cap'])}")
+    linhas += ["", "Recarregue o saldo para evitar interrupcoes nas campanhas.", f"Horario: {datetime.now().strftime('%d/%m/%Y %H:%M')}"]
     return "\n".join(linhas)
 
-
-# ── Lógica principal ─────────────────────────────────────────────────────────
 
 def verificar_e_alertar():
     cfg = carregar_config()
     alertas_enviados = carregar_alertas_enviados()
     hoje = str(date.today())
-
     limite_critico = cfg["alertas"]["limite_critico"]
     limite_baixo = cfg["alertas"]["limite_baixo"]
     uma_vez_por_dia = cfg["alertas"]["alertar_uma_vez_por_dia"]
@@ -184,23 +142,19 @@ def verificar_e_alertar():
     cfg_wpp = cfg["whatsapp"]
     numeros = cfg_wpp["numeros_destino"]
 
-    log.info(f"=== Iniciando verificação — {datetime.now().strftime('%d/%m/%Y %H:%M')} ===")
+    log.info(f"=== Verificacao de saldo — {datetime.now().strftime('%d/%m/%Y %H:%M')} ===")
 
     for conta_cfg in cfg["meta"]["contas"]:
         account_id = conta_cfg["account_id"]
         token = conta_cfg["access_token"]
         nome = conta_cfg["nome"]
-
         log.info(f"Consultando: {nome} ({account_id})")
         conta = consultar_saldo(account_id, token, api_version)
-
         if conta is None:
             log.warning(f"Pulando {nome} — erro na consulta")
             continue
-
         balance = conta["balance"]
         log.info(f"  Saldo: {fmt_brl(balance)}")
-
         if balance <= limite_critico:
             nivel = "critico"
             limite_ref = limite_critico
@@ -208,47 +162,32 @@ def verificar_e_alertar():
             nivel = "baixo"
             limite_ref = limite_baixo
         else:
-            log.info(f"  Status: OK ✓")
+            log.info(f"  Status: OK")
             if account_id in alertas_enviados:
                 del alertas_enviados[account_id]
                 salvar_alertas_enviados(alertas_enviados)
             continue
-
         if uma_vez_por_dia:
             ultimo = alertas_enviados.get(account_id, {})
             if ultimo.get("data") == hoje and ultimo.get("nivel") == nivel:
-                log.info(f"  Alerta já enviado hoje para {nome} ({nivel}) — pulando")
+                log.info(f"  Alerta ja enviado hoje para {nome} — pulando")
                 continue
-
-        mensagem = montar_mensagem(conta, nivel, limite_ref)
-        log.info(f"  🔔 Disparando alerta [{nivel.upper()}] para {len(numeros)} número(s)")
-
+        mensagem = montar_mensagem_saldo(conta, nivel, limite_ref)
         enviou = False
         for numero in numeros:
             ok = enviar_whatsapp(cfg_wpp, numero, mensagem)
             if ok:
                 enviou = True
-
         if enviou:
-            alertas_enviados[account_id] = {
-                "data": hoje,
-                "nivel": nivel,
-                "balance": balance,
-                "hora": datetime.now().strftime("%H:%M"),
-                "nome": nome,
-            }
+            alertas_enviados[account_id] = {"data": hoje, "nivel": nivel, "balance": balance, "hora": datetime.now().strftime("%H:%M"), "nome": nome}
             salvar_alertas_enviados(alertas_enviados)
 
-    log.info("=== Verificação concluída ===\n")
+    log.info("=== Verificacao de saldo concluida ===\n")
 
 
 def consultar_insights(account_id: str, token: str, api_version: str, since: str, until: str) -> dict:
     url = f"https://graph.facebook.com/{api_version}/{account_id}/insights"
-    params = {
-        "fields": "spend,actions,action_values",
-        "time_range": f'{{"since":"{since}","until":"{until}"}}',
-        "access_token": token,
-    }
+    params = {"fields": "spend,actions,action_values", "time_range": f'{{"since":"{since}","until":"{until}"}}', "access_token": token}
     try:
         r = requests.get(url, params=params, timeout=15)
         r.raise_for_status()
@@ -268,110 +207,6 @@ def consultar_insights(account_id: str, token: str, api_version: str, since: str
     return {"gasto": 0, "pedidos": 0, "faturamento": 0, "cpr": 0, "roas": 0}
 
 
-def enviar_relatorio_segunda():
-    cfg = carregar_config()
-    token = cfg["meta"]["contas"][0]["access_token"]
-    api_version = cfg["meta"]["api_version"]
-    cfg_wpp = cfg["whatsapp"]
-
-    hoje = date.today()
-    domingo = hoje - timedelta(days=1)
-    sabado  = hoje - timedelta(days=2)
-    sexta   = hoje - timedelta(days=3)
-    since = sexta.strftime("%Y-%m-%d")
-    until = domingo.strftime("%Y-%m-%d")
-    periodo_label = f"{sexta.strftime('%d/%m/%Y')} até {domingo.strftime('%d/%m/%Y')}"
-
-    log.info(f"📊 Gerando relatório de final de semana ({periodo_label})")
-
-    total_gasto = 0
-    total_pedidos = 0
-    total_fat = 0
-    otimos = []
-    atencao = []
-    criticos = []
-    sem_dados = []
-
-    outros = ["act_297417165372711","act_213109970735074","act_360815898753195",
-              "act_533683308259417","act_732966175219099","act_1102427261426373",
-              "act_590117117342811","act_1288527439639093","act_1452225369942067",
-              "act_3858259327816511","act_105301940058633"]
-
-    for conta in cfg["meta"]["contas"]:
-        if conta["account_id"] in outros:
-            continue
-
-        ins = consultar_insights(conta["account_id"], token, api_version, since, until)
-        total_gasto += ins["gasto"]
-        total_pedidos += ins["pedidos"]
-        total_fat += ins["faturamento"]
-
-        nome = conta["nome"]
-        if ins["gasto"] == 0:
-            sem_dados.append(nome)
-        elif ins["roas"] >= 10 or ins["cpr"] <= 15:
-            otimos.append((nome, ins))
-        elif ins["roas"] >= 1.5 or ins["cpr"] <= 40:
-            atencao.append((nome, ins))
-        else:
-            criticos.append((nome, ins))
-
-    roas_medio = total_fat / total_gasto if total_gasto > 0 else 0
-    cpr_medio = total_gasto / total_pedidos if total_pedidos > 0 else 0
-
-    def fmt(v): return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-    linhas = [
-        f"📊 *Relatório de Final de Semana*",
-        f"Monaco Agency | {periodo_label}",
-        "",
-        f"━━━━━━━━━━━━━━━━━━━━",
-        f"💰 Investimento total: *{fmt(total_gasto)}*",
-        f"🛒 Faturamento total: *{fmt(total_fat)}*",
-        f"📦 Pedidos totais: *{total_pedidos}*",
-        f"🚀 ROAS médio: *{roas_medio:.2f}x*",
-        f"📉 CPR médio: *{fmt(cpr_medio)}*",
-        f"━━━━━━━━━━━━━━━━━━━━",
-        "",
-    ]
-
-    if otimos:
-        linhas.append("🏆 *TOP PERFORMERS*")
-        for nome, ins in sorted(otimos, key=lambda x: x[1]["roas"], reverse=True):
-            linhas.append(f"  ✅ {nome}")
-            linhas.append(f"      Pedidos: {ins['pedidos']} | Fat: {fmt(ins['faturamento'])} | ROAS: {ins['roas']:.2f}x | CPR: {fmt(ins['cpr'])}")
-        linhas.append("")
-
-    if atencao:
-        linhas.append("⚠️ *ATENÇÃO*")
-        for nome, ins in atencao:
-            linhas.append(f"  🟡 {nome}")
-            linhas.append(f"      Pedidos: {ins['pedidos']} | Fat: {fmt(ins['faturamento'])} | ROAS: {ins['roas']:.2f}x | CPR: {fmt(ins['cpr'])}")
-        linhas.append("")
-
-    if criticos:
-        linhas.append("🔴 *CRÍTICO / SEM RESULTADO*")
-        for nome, ins in criticos:
-            linhas.append(f"  ❌ {nome}")
-            linhas.append(f"      Gasto: {fmt(ins['gasto'])} | Pedidos: {ins['pedidos']} | ROAS: {ins['roas']:.2f}x")
-        linhas.append("")
-
-    if sem_dados:
-        linhas.append("⚫ *SEM DADOS NO PERÍODO*")
-        for nome in sem_dados:
-            linhas.append(f"  • {nome}")
-
-    mensagem = "\n".join(linhas)
-    grupo = cfg_wpp["numeros_destino"][0]
-
-    log.info(f"📤 Enviando relatório para {grupo}")
-    ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
-    if ok:
-        log.info("✅ Relatório de segunda enviado com sucesso!")
-    else:
-        log.error("❌ Falha ao enviar relatório de segunda")
-
-
 def rodar_agente_automatico():
     cfg = carregar_config()
     token = cfg["meta"]["contas"][0]["access_token"]
@@ -386,19 +221,16 @@ def rodar_agente_automatico():
         ("Mollinari Pizzaria", "act_459274303920372"),
         ("MrGabs", "act_728296823243425"),
         ("IH DOURADOS", "act_831936562721815"),
-        ("CA - Bella Capri Uberlândia", "act_2379679152502158"),
         ("Villa Grano Pizzaria", "act_909424425271250"),
         ("Brados Pizzaria", "act_972023765779926"),
         ("Berlim Pizzaria", "act_836447545843342"),
         ("A FAVORITA", "act_969681458906352"),
         ("CA - BRAVA PIZZA", "act_4279801688941861"),
-        ("Pavão Lanchonete", "act_1759603645448352"),
+        ("Pavao Lanchonete", "act_1759603645448352"),
         ("Fornalha Pizzaria", "act_1618084519451450"),
-        ("Ótica Scherer", "act_1179077680434286"),
     ]
 
-    log.info("🤖 BOB iniciado — analisando campanhas...")
-
+    log.info("BOB iniciado — analisando campanhas...")
     alertas_criticos = []
     alertas_atencao = []
     hoje = date.today()
@@ -425,126 +257,181 @@ def rodar_agente_automatico():
                 roas = fat / gasto if gasto > 0 and fat > 0 else 0
                 ads = camp.get("ads", {}).get("data", [])
                 ads_ativos = [a for a in ads if a.get("effective_status") == "ACTIVE"]
-
                 dias_rest = None
                 if camp.get("stop_time"):
                     stop = datetime.fromisoformat(camp["stop_time"].replace("Z", "+00:00")).date()
                     dias_rest = (stop - hoje).days
-
                 lifetime = float(camp.get("lifetime_budget", 0)) / 100
                 remaining = float(camp.get("budget_remaining", 0)) / 100
                 pct_gasto = ((lifetime - remaining) / lifetime * 100) if lifetime > 0 else 0
-
-                camp_info = {
-                    "bm": nome_bm,
-                    "camp": camp["name"],
-                    "gasto": gasto,
-                    "pedidos": pedidos,
-                    "roas": roas,
-                    "dias_rest": dias_rest,
-                    "ads_ativos": len(ads_ativos),
-                }
+                camp_info = {"bm": nome_bm, "camp": camp["name"], "gasto": gasto, "pedidos": pedidos, "roas": roas, "dias_rest": dias_rest, "ads_ativos": len(ads_ativos)}
 
                 if status == "ACTIVE":
                     if gasto > 0 and pedidos == 0:
-                        camp_info["motivo"] = "🚨 Gasto sem retorno"
+                        camp_info["motivo"] = "Gasto sem retorno"
                         alertas_criticos.append(camp_info)
                     elif gasto > 0 and roas < 1.5:
-                        camp_info["motivo"] = f"📉 ROAS crítico ({roas:.2f}x)"
+                        camp_info["motivo"] = f"ROAS critico ({roas:.2f}x)"
                         alertas_criticos.append(camp_info)
                     elif pct_gasto > 90:
-                        camp_info["motivo"] = f"💸 Orçamento {pct_gasto:.0f}% esgotado"
+                        camp_info["motivo"] = f"Orcamento {pct_gasto:.0f}% esgotado"
                         alertas_criticos.append(camp_info)
                     elif dias_rest is not None and 0 < dias_rest <= 2:
-                        camp_info["motivo"] = f"⏰ Encerra em {dias_rest} dia(s)"
+                        camp_info["motivo"] = f"Encerra em {dias_rest} dia(s)"
                         alertas_criticos.append(camp_info)
                     elif gasto > 0 and 1.5 <= roas < 3:
-                        camp_info["motivo"] = f"⚠️ ROAS abaixo do ideal ({roas:.2f}x)"
+                        camp_info["motivo"] = f"ROAS abaixo do ideal ({roas:.2f}x)"
                         alertas_atencao.append(camp_info)
                     elif pct_gasto > 70:
-                        camp_info["motivo"] = f"💰 Orçamento {pct_gasto:.0f}% gasto"
+                        camp_info["motivo"] = f"Orcamento {pct_gasto:.0f}% gasto"
                         alertas_atencao.append(camp_info)
                     elif dias_rest is not None and 2 < dias_rest <= 7:
-                        camp_info["motivo"] = f"📅 Encerra em {dias_rest} dias"
+                        camp_info["motivo"] = f"Encerra em {dias_rest} dias"
                         alertas_atencao.append(camp_info)
-
         except Exception as e:
             log.error(f"Erro agente [{nome_bm}]: {e}")
 
     if not alertas_criticos and not alertas_atencao:
-        log.info("✅ Agente: nenhum alerta encontrado — tudo saudável!")
+        log.info("BOB: nenhum alerta encontrado — tudo saudavel!")
         return
 
     agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
-    linhas = [
-        f"🤖 *Relatório do BOB — Agente de Tráfego*",
-        f"Monaco Agency | {agora_str}",
-        "",
-    ]
+    linhas = [f"🤖 Relatorio do BOB — Agente de Trafego", f"Monaco Agency | {agora_str}", ""]
 
     if alertas_criticos:
-        linhas.append(f"🔴 *CRÍTICO ({len(alertas_criticos)} alerta(s))*")
+        linhas.append(f"🔴 CRITICO ({len(alertas_criticos)} alerta(s))")
         for a in alertas_criticos:
-            linhas.append(f"  ❗ *{a['bm']}*")
-            linhas.append(f"  📢 {a['camp']}")
+            linhas.append(f"  {a['bm']}")
+            linhas.append(f"  {a['camp']}")
             linhas.append(f"  {a['motivo']}")
             if a['dias_rest'] is not None:
-                linhas.append(f"  ⏰ {a['dias_rest']} dia(s) para encerrar")
+                linhas.append(f"  Encerra em {a['dias_rest']} dia(s)")
             linhas.append("")
 
     if alertas_atencao:
-        linhas.append(f"⚠️ *ATENÇÃO ({len(alertas_atencao)} alerta(s))*")
+        linhas.append(f"⚠️ ATENCAO ({len(alertas_atencao)} alerta(s))")
         for a in alertas_atencao:
-            linhas.append(f"  ⚠ *{a['bm']}*")
-            linhas.append(f"  📢 {a['camp']}")
+            linhas.append(f"  {a['bm']}")
+            linhas.append(f"  {a['camp']}")
             linhas.append(f"  {a['motivo']}")
             if a['dias_rest'] is not None:
-                linhas.append(f"  ⏰ {a['dias_rest']} dia(s) para encerrar")
+                linhas.append(f"  Encerra em {a['dias_rest']} dia(s)")
             linhas.append("")
 
     linhas.append("━━━━━━━━━━━━━━━━━━━━")
-    linhas.append(f"Total: {len(alertas_criticos)} crítico(s) | {len(alertas_atencao)} atenção")
+    linhas.append(f"Total: {len(alertas_criticos)} critico(s) | {len(alertas_atencao)} atencao")
 
-    mensagem = "\n".join(linhas)
-    ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
+    ok = enviar_whatsapp(cfg_wpp, grupo, "\n".join(linhas))
     if ok:
-        log.info(f"✅ BOB: relatório enviado — {len(alertas_criticos)} críticos, {len(alertas_atencao)} atenção")
+        log.info(f"BOB: relatorio enviado")
     else:
-        log.error("❌ BOB: falha ao enviar relatório")
+        log.error("BOB: falha ao enviar relatorio")
+
+
+def verificar_encerramentos():
+    """Detecta campanhas que encerraram ontem ou encerram hoje e avisa no grupo."""
+    cfg = carregar_config()
+    token = cfg["meta"]["contas"][0]["access_token"]
+    api_version = cfg["meta"]["api_version"]
+    cfg_wpp = cfg["whatsapp"]
+    grupo = cfg_wpp["numeros_destino"][0]
+
+    CONTAS_MONITOR = [
+        ("Rosa Sul Nova", "act_2523170184768797"),
+        ("Dia de Pizza Dourados", "act_723575425785405"),
+        ("IH Campo Grande", "act_1131240581799095"),
+        ("Mollinari Pizzaria", "act_459274303920372"),
+        ("MrGabs", "act_728296823243425"),
+        ("IH Dourados", "act_831936562721815"),
+        ("Villa Grano Pizzaria", "act_909424425271250"),
+        ("Brados Pizzaria", "act_972023765779926"),
+        ("Berlim Pizzaria", "act_836447545843342"),
+        ("A Favorita", "act_969681458906352"),
+        ("Brava Pizza", "act_4279801688941861"),
+        ("Pavao Lanchonete", "act_1759603645448352"),
+        ("Fornalha Pizzaria", "act_1618084519451450"),
+    ]
+
+    hoje = datetime.utcnow().date()
+    ontem = hoje - timedelta(days=1)
+    encerradas = []
+    encerrando_hoje = []
+
+    log.info("Verificando encerramentos de campanhas...")
+
+    for nome_bm, account_id in CONTAS_MONITOR:
+        try:
+            url = (f"https://graph.facebook.com/{api_version}/{account_id}/campaigns"
+                   f"?fields=id,name,status,effective_status,stop_time"
+                   f"&limit=50&access_token={token}")
+            r = requests.get(url, timeout=20)
+            campanhas = r.json().get("data", [])
+            for camp in campanhas:
+                stop = camp.get("stop_time")
+                if not stop:
+                    continue
+                stop_date = datetime.fromisoformat(stop.replace("Z", "+00:00")).date()
+                item = {"bm": nome_bm, "camp": camp["name"], "data": stop_date.strftime("%d/%m/%Y")}
+                if stop_date == ontem:
+                    encerradas.append(item)
+                elif stop_date == hoje:
+                    encerrando_hoje.append(item)
+        except Exception as e:
+            log.error(f"Erro encerramentos [{nome_bm}]: {e}")
+
+    if not encerradas and not encerrando_hoje:
+        log.info("Nenhum encerramento detectado hoje.")
+        return
+
+    agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
+    linhas = [f"⏰ Alerta de Encerramentos — BOB", f"Monaco Agency | {agora_str}", ""]
+
+    if encerradas:
+        linhas.append(f"🔴 ENCERRADAS ONTEM ({len(encerradas)})")
+        for c in encerradas:
+            linhas.append(f"  ❌ {c['bm']}")
+            linhas.append(f"  📢 {c['camp']}")
+            linhas.append(f"  📅 Encerrou em {c['data']}")
+            linhas.append(f"  💡 Acao: duplicar ou criar nova campanha")
+            linhas.append("")
+
+    if encerrando_hoje:
+        linhas.append(f"⚠️ ENCERRAM HOJE ({len(encerrando_hoje)})")
+        for c in encerrando_hoje:
+            linhas.append(f"  ⚠️ {c['bm']}")
+            linhas.append(f"  📢 {c['camp']}")
+            linhas.append(f"  📅 Encerra hoje ({c['data']})")
+            linhas.append(f"  💡 Acao: renovar ou criar nova campanha")
+            linhas.append("")
+
+    linhas.append("━━━━━━━━━━━━━━━━━━━━")
+    linhas.append(f"Total: {len(encerradas)} encerrada(s) ontem | {len(encerrando_hoje)} encerrando hoje")
+
+    ok = enviar_whatsapp(cfg_wpp, grupo, "\n".join(linhas))
+    if ok:
+        log.info("Alerta de encerramentos enviado!")
+    else:
+        log.error("Falha ao enviar alerta de encerramentos")
+
 
 def gerar_frase_motivacional() -> str:
-    """Gera uma frase motivacional única via IA (Claude). Fallback para frase fixa se falhar."""
     anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
-    fallback = "Só vive o extraordinário quem arrisca o ordinário. Bora fechar o dia com tudo!"
-
+    fallback = "So vive o extraordinario quem arrisca o ordinario. Bora fechar o dia com tudo!"
     if not anthropic_key:
         return fallback
-
     try:
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": anthropic_key,
-                "anthropic-version": "2023-06-01",
-                "Content-Type": "application/json",
-            },
+            headers={"x-api-key": anthropic_key, "anthropic-version": "2023-06-01", "Content-Type": "application/json"},
             json={
                 "model": "claude-haiku-4-5-20251001",
                 "max_tokens": 150,
-                "messages": [{
-                    "role": "user",
-                    "content": (
-                        "Crie UMA frase motivacional curta (max 2 linhas) sobre empreendedorismo, "
-                        "tráfego pago, vendas ou performance, no estilo 'só vive o extraordinário "
-                        "quem arrisca'. Responda APENAS com a frase, sem aspas, sem explicação."
-                    )
-                }]
+                "messages": [{"role": "user", "content": "Crie UMA frase motivacional curta (max 2 linhas) sobre empreendedorismo, trafego pago, vendas ou performance, no estilo 'so vive o extraordinario quem arrisca'. Responda APENAS com a frase, sem aspas, sem explicacao."}]
             },
             timeout=20,
         )
         r.raise_for_status()
-        data = r.json()
-        frase = data["content"][0]["text"].strip()
+        frase = r.json()["content"][0]["text"].strip()
         return frase if frase else fallback
     except Exception as e:
         log.error(f"Erro ao gerar frase via IA: {e}")
@@ -555,43 +442,43 @@ def enviar_motivacional():
     cfg = carregar_config()
     cfg_wpp = cfg["whatsapp"]
     grupo = cfg_wpp["numeros_destino"][0]
-
     frase = gerar_frase_motivacional()
     agora = datetime.now().strftime("%d/%m/%Y")
-
-    mensagem = (
-        f"🤖 BOB cita:\n\n"
-        f"🔥 Bora time, vamos fechar o dia com tudo!\n\n"
-        f"_{frase}_\n\n"
-        f"💪 Que hoje seja um dia de grandes resultados!\n"
-        f"📅 {agora}"
-    )
-
-    log.info("☀️ Enviando mensagem motivacional do dia")
+    mensagem = f"🤖 BOB cita:\n\n🔥 Bora time, vamos fechar o dia com tudo!\n\n{frase}\n\n💪 Que hoje seja um dia de grandes resultados!\n📅 {agora}"
+    log.info("Enviando mensagem motivacional do dia")
     ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
     if ok:
-        log.info("✅ Mensagem motivacional enviada!")
+        log.info("Mensagem motivacional enviada!")
     else:
-        log.error("❌ Falha ao enviar mensagem motivacional")
+        log.error("Falha ao enviar mensagem motivacional")
+
 
 def rodar_loop():
     cfg = carregar_config()
-    horario_alvo = cfg["alertas"].get("horario_verificacao", "12:00")
-    horario_motivacional = "07:00"
+    horario_alvo = cfg["alertas"].get("horario_verificacao", "15:00")
 
-    log.info("🚀 Monitor de BMs iniciado")
-    log.info(f"   Horário de verificação saldo: {horario_alvo} (diário)")
-    log.info(f"   Horário motivacional: {horario_motivacional} (diário)")
-    log.info(f"   Contas monitoradas: {len(cfg['meta']['contas'])}")
-    log.info(f"   Limite crítico: {fmt_brl(cfg['alertas']['limite_critico'])}")
-    log.info(f"   Limite baixo: {fmt_brl(cfg['alertas']['limite_baixo'])}")
+    # Horarios em UTC (Railway usa UTC — BRT = UTC-3)
+    # 07:00 BRT = 10:00 UTC — motivacional
+    # 08:00 BRT = 11:00 UTC — encerramentos
+    # 12:00 BRT = 15:00 UTC — saldo (horario_alvo)
+    horario_motivacional  = "10:00"
+    horario_encerramentos = "11:00"
+
+    log.info("Monito de BMs iniciado")
+    log.info(f"  Motivacional:   {horario_motivacional} UTC (07:00 BRT)")
+    log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
+    log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
+    log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
+    log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
+    log.info(f"  Limite baixo:   {fmt_brl(cfg['alertas']['limite_baixo'])}")
     log.info("")
 
-    ultimo_dia_saldo = None
-    ultimo_dia_motivacional = None
+    ultimo_dia_motivacional  = None
+    ultimo_dia_encerramentos = None
+    ultimo_dia_saldo         = None
 
     while True:
-        agora = datetime.now()
+        agora = datetime.utcnow()
         hora_atual = agora.strftime("%H:%M")
         hoje = agora.date()
 
@@ -600,16 +487,23 @@ def rodar_loop():
             try:
                 enviar_motivacional()
             except Exception as e:
-                log.exception(f"Erro ao enviar motivacional: {e}")
+                log.exception(f"Erro motivacional: {e}")
+
+        if hora_atual == horario_encerramentos and ultimo_dia_encerramentos != hoje:
+            ultimo_dia_encerramentos = hoje
+            try:
+                verificar_encerramentos()
+            except Exception as e:
+                log.exception(f"Erro encerramentos: {e}")
 
         if hora_atual == horario_alvo and ultimo_dia_saldo != hoje:
             ultimo_dia_saldo = hoje
             try:
                 verificar_e_alertar()
             except Exception as e:
-                log.exception(f"Erro inesperado na verificação: {e}")
+                log.exception(f"Erro saldo: {e}")
 
-        if hora_atual != horario_alvo and hora_atual != horario_motivacional:
+        if hora_atual not in (horario_motivacional, horario_encerramentos, horario_alvo):
             h, m = map(int, horario_alvo.split(":"))
             proximo = agora.replace(hour=h, minute=m, second=0, microsecond=0)
             if proximo <= agora:
@@ -617,7 +511,7 @@ def rodar_loop():
             falta = proximo - agora
             horas = int(falta.total_seconds() // 3600)
             minutos = int((falta.total_seconds() % 3600) // 60)
-            log.info(f"⏳ Próxima verificação de saldo às {horario_alvo} (faltam {horas}h {minutos}min)")
+            log.info(f"Proxima verificacao de saldo em {horas}h {minutos}min")
 
         time.sleep(60)
 
