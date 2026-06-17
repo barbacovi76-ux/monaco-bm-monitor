@@ -101,7 +101,65 @@ def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | Non
         log.error(f"Falha ao consultar [{account_id}]: {e}")
         return None
 
+FRASES_MOTIVACIONAIS = [
+    "Só vive o extraordinário quem arrisca o ordinário.",
+    "O mercado não espera. Age agora ou fica para trás.",
+    "Cada campanha bem otimizada é dinheiro no bolso do cliente.",
+    "Resultado não acontece por acaso. Acontece por estratégia.",
+    "Quem não mede, não melhora. Quem não melhora, não cresce.",
+    "ROAS alto não é sorte. É trabalho inteligente todos os dias.",
+    "Empreender é transformar insegurança em ação.",
+    "O dinheiro flui para quem resolve problemas reais.",
+    "Cada lead é uma oportunidade. Não desperdice nenhuma.",
+    "Consistência vence talento quando o talento é inconsistente.",
+    "Seu cliente não compra produto. Compra resultado.",
+    "Pequenas otimizações diárias constroem grandes resultados mensais.",
+    "Quem domina os dados, domina o mercado.",
+    "O medo de errar é mais caro que o erro em si.",
+    "Invista no que traz retorno. Corte o que drena.",
+    "Um bom anúncio não vende — ele conecta pessoas a soluções.",
+    "A diferença entre fracasso e sucesso é uma campanha bem ajustada.",
+    "Quem acorda cedo para olhar os dados, dorme tranquilo à noite.",
+    "Não existe fórmula mágica. Existe teste, análise e escala.",
+    "Seu concorrente também está acordado. A diferença é o que você faz com isso.",
+    "Foco no processo. Os resultados são consequência.",
+    "Tráfego pago é o acelerador. Estratégia é o motor.",
+    "Cada real investido precisa trabalhar por você.",
+    "Não venda produto. Venda transformação.",
+    "O sucesso do cliente é o seu maior ativo.",
+    "Dados não mentem. Ouça o que os números estão dizendo.",
+    "Campanha parada é dinheiro perdido. Analise e ajuste sempre.",
+    "Quem entende o comportamento do consumidor, controla o jogo.",
+    "Escalar um negócio é ciência, não aposta.",
+    "O melhor momento para otimizar foi ontem. O segundo melhor é agora.",
+]
 
+
+def gerar_frase_motivacional() -> str:
+    dia_do_ano = datetime.now().timetuple().tm_yday
+    indice = dia_do_ano % len(FRASES_MOTIVACIONAIS)
+    return FRASES_MOTIVACIONAIS[indice]
+
+
+def enviar_motivacional():
+    cfg = carregar_config()
+    cfg_wpp = cfg["whatsapp"]
+    grupo = cfg_wpp["numeros_destino"][0]
+    frase = gerar_frase_motivacional()
+    agora = datetime.now().strftime("%d/%m/%Y")
+    mensagem = (
+        f"🤖 BOB cita:\n\n"
+        f"🔥 Bora time, vamos fechar o dia com tudo!\n\n"
+        f"{frase}\n\n"
+        f"💪 Que hoje seja um dia de grandes resultados!\n"
+        f"📅 {agora}"
+    )
+    log.info("Enviando mensagem motivacional do dia")
+    ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
+    if ok:
+        log.info("Mensagem motivacional enviada!")
+    else:
+        log.error("Falha ao enviar mensagem motivacional")
 def enviar_whatsapp(cfg_wpp: dict, numero: str, mensagem: str) -> bool:
     url = f"{cfg_wpp['api_url']}/message/sendText/{cfg_wpp['instancia']}"
     headers = {"apikey": cfg_wpp["api_key"], "Content-Type": "application/json"}
