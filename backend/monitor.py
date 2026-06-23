@@ -47,6 +47,16 @@ def carregar_config() -> dict:
                 {"nome": "Brava Pizza", "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Pavao", "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
                 {"nome": "Fornalha", "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
+                {"nome": "CA- Leni ADS 02", "account_id": "act_1569287454130140", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA RJK SHOP", "account_id": "act_297417165372711", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA - Miotto Construtora", "account_id": "act_213109970735074", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA - ICGP", "account_id": "act_360815898753195", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA - Miotto Backup", "account_id": "act_533683308259417", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA - Monaco Agency", "account_id": "act_732966175219099", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "BRUNA MACHADO - DOTCON", "account_id": "act_1102427261426373", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "CA - AMK Estetica", "account_id": "act_590117117342811", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "JS - UNIFORME", "account_id": "act_1452225369942067", "access_token": os.getenv("META_TOKEN", "")},
+{"nome": "SH Tijolos", "account_id": "act_3858259327816511", "access_token": os.getenv("META_TOKEN", "")},
             ]
         },
         "alertas": {
