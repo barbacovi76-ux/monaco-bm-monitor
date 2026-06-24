@@ -168,7 +168,7 @@ def montar_mensagem_saldo(conta: dict, nivel: str, limite: float) -> str:
 
 
 def verificar_e_alertar():
-    cfg = carregar_config()
+    cfg             = carregar_config()
     alertas_enviados = carregar_alertas_enviados()
     hoje            = str(date.today())
     limite_critico  = cfg["alertas"]["limite_critico"]
@@ -265,10 +265,15 @@ def verificar_encerramentos():
 
     for nome_bm, account_id in CONTAS_MONITOR:
         try:
+            campanhas = []
             url = (f"https://graph.facebook.com/{api_version}/{account_id}/campaigns"
                    f"?fields=id,name,status,effective_status,stop_time"
-                   f"&limit=50&access_token={token}")
-            campanhas = requests.get(url, timeout=20).json().get("data", [])
+                   f"&limit=100&access_token={token}")
+            while url:
+                r = requests.get(url, timeout=20).json()
+                campanhas.extend(r.get("data", []))
+                url = r.get("paging", {}).get("next")
+
             for camp in campanhas:
                 stop = camp.get("stop_time")
                 if not stop:
@@ -317,10 +322,27 @@ def verificar_encerramentos():
         log.error("Falha ao enviar alerta de encerramentos")
 
 
-# ── Monitoramento de alteracoes (roda a cada ciclo) ───────────────
+# ── Monitoramento de alteracoes (continuo) ────────────────────────
+
+def buscar_todas_campanhas(api_version: str, account_id: str, token: str) -> list:
+    """Busca todas as campanhas com paginacao para evitar falsos positivos."""
+    campanhas = []
+    url = (f"https://graph.facebook.com/{api_version}/{account_id}/campaigns"
+           f"?fields=id,name,status,effective_status,daily_budget,lifetime_budget"
+           f"&limit=100&access_token={token}")
+    while url:
+        try:
+            r = requests.get(url, timeout=20).json()
+            campanhas.extend(r.get("data", []))
+            url = r.get("paging", {}).get("next")
+        except Exception as e:
+            log.error(f"Erro paginacao [{account_id}]: {e}")
+            break
+    return campanhas
+
 
 def monitorar_alteracoes():
-    """Compara estado atual com snapshot anterior e alerta qualquer mudanca."""
+    """Compara estado atual com snapshot anterior e alerta mudancas reais."""
     cfg         = carregar_config()
     token       = cfg["meta"]["contas"][0]["access_token"]
     api_version = cfg["meta"]["api_version"]
@@ -356,13 +378,11 @@ def monitorar_alteracoes():
     snapshot_anterior = carregar_snapshot()
     snapshot_atual    = {}
     alteracoes        = []
+    primeira_exec     = len(snapshot_anterior) == 0
 
     for nome_bm, account_id in CONTAS_MONITOR:
         try:
-            url = (f"https://graph.facebook.com/{api_version}/{account_id}/campaigns"
-                   f"?fields=id,name,status,effective_status,daily_budget,lifetime_budget,updated_time"
-                   f"&limit=100&access_token={token}")
-            campanhas = requests.get(url, timeout=20).json().get("data", [])
+            campanhas = buscar_todas_campanhas(api_version, account_id, token)
 
             for camp in campanhas:
                 chave = f"{account_id}_{camp['id']}"
@@ -372,9 +392,12 @@ def monitorar_alteracoes():
                     "status":          camp.get("effective_status") or camp.get("status"),
                     "daily_budget":    camp.get("daily_budget",    "0"),
                     "lifetime_budget": camp.get("lifetime_budget", "0"),
-                    "updated_time":    camp.get("updated_time",    ""),
                 }
                 snapshot_atual[chave] = estado_atual
+
+                # Nao alertar na primeira execucao — apenas constroi snapshot
+                if primeira_exec:
+                    continue
 
                 if chave in snapshot_anterior:
                     ant = snapshot_anterior[chave]
@@ -413,19 +436,18 @@ def monitorar_alteracoes():
                                 "de": fmt_brl(de_v), "para": fmt_brl(para_v),
                             })
                 else:
-                    # Snapshot vazio = primeira execucao, nao alertar
-                    if snapshot_anterior:
-                        alteracoes.append({
-                            "bm": nome_bm, "camp": camp["name"],
-                            "tipo": "CAMPANHA_NOVA",
-                            "de": "—", "para": estado_atual["status"],
-                        })
+                    # Campanha nova — so alerta se nao for primeira execucao
+                    alteracoes.append({
+                        "bm": nome_bm, "camp": camp["name"],
+                        "tipo": "CAMPANHA_NOVA",
+                        "de": "—", "para": estado_atual["status"],
+                    })
 
         except Exception as e:
             log.error(f"Erro ao monitorar [{nome_bm}]: {e}")
 
-    # Campanhas removidas
-    if snapshot_anterior:
+    # Campanhas removidas — só detecta se nao for primeira execucao
+    if not primeira_exec:
         for chave, ant in snapshot_anterior.items():
             if chave not in snapshot_atual:
                 alteracoes.append({
@@ -435,6 +457,10 @@ def monitorar_alteracoes():
                 })
 
     salvar_snapshot(snapshot_atual)
+
+    if primeira_exec:
+        log.info(f"Monitoramento: snapshot inicial criado com {len(snapshot_atual)} campanhas.")
+        return
 
     if not alteracoes:
         log.info("Monitoramento: nenhuma alteracao detectada.")
@@ -679,18 +705,18 @@ def rodar_loop():
     # 07:00 BRT = 10:00 UTC — motivacional
     # 08:00 BRT = 11:00 UTC — encerramentos
     # 12:00 BRT = 15:00 UTC — saldo
-    # alteracoes: a cada ciclo de 60s (continuo)
+    # alteracoes — continuo a cada 60s
     horario_motivacional  = "10:00"
     horario_encerramentos = "11:00"
 
     log.info("Monitor de BMs iniciado")
-    log.info(f"  Motivacional:    {horario_motivacional} UTC (07:00 BRT)")
-    log.info(f"  Encerramentos:   {horario_encerramentos} UTC (08:00 BRT)")
-    log.info(f"  Saldo:           {horario_alvo} UTC (12:00 BRT)")
-    log.info(f"  Alteracoes:      continuo — a cada 60s")
-    log.info(f"  Contas:          {len(cfg['meta']['contas'])}")
-    log.info(f"  Limite critico:  {fmt_brl(cfg['alertas']['limite_critico'])}")
-    log.info(f"  Limite baixo:    {fmt_brl(cfg['alertas']['limite_baixo'])}")
+    log.info(f"  Motivacional:   {horario_motivacional} UTC (07:00 BRT)")
+    log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
+    log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
+    log.info(f"  Alteracoes:     continuo a cada 60s")
+    log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
+    log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
+    log.info(f"  Limite baixo:   {fmt_brl(cfg['alertas']['limite_baixo'])}")
     log.info("")
 
     ultimo_dia_motivacional  = None
@@ -702,7 +728,6 @@ def rodar_loop():
         hora_atual = agora.strftime("%H:%M")
         hoje       = agora.date()
 
-        # Motivacional — 07h BRT
         if hora_atual == horario_motivacional and ultimo_dia_motivacional != hoje:
             ultimo_dia_motivacional = hoje
             try:
@@ -710,7 +735,6 @@ def rodar_loop():
             except Exception as e:
                 log.exception(f"Erro motivacional: {e}")
 
-        # Encerramentos — 08h BRT
         if hora_atual == horario_encerramentos and ultimo_dia_encerramentos != hoje:
             ultimo_dia_encerramentos = hoje
             try:
@@ -718,7 +742,6 @@ def rodar_loop():
             except Exception as e:
                 log.exception(f"Erro encerramentos: {e}")
 
-        # Saldo — 12h BRT
         if hora_atual == horario_alvo and ultimo_dia_saldo != hoje:
             ultimo_dia_saldo = hoje
             try:
@@ -726,7 +749,6 @@ def rodar_loop():
             except Exception as e:
                 log.exception(f"Erro saldo: {e}")
 
-        # Alteracoes — continuo a cada ciclo
         try:
             monitorar_alteracoes()
         except Exception as e:
