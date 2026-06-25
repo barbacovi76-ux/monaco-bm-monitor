@@ -21,9 +21,8 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-CONFIG_PATH   = Path(__file__).parent / "config.json"
-ALERTAS_LOG   = Path(__file__).parent / "alertas_enviados.json"
-SNAPSHOT_FILE = Path(__file__).parent / "snapshot_campanhas.json"
+CONFIG_PATH  = Path(__file__).parent / "config.json"
+ALERTAS_LOG  = Path(__file__).parent / "alertas_enviados.json"
 
 
 # ── Config ────────────────────────────────────────────────────────
@@ -88,18 +87,6 @@ def salvar_alertas_enviados(dados: dict):
         json.dump(dados, f, ensure_ascii=False, indent=2)
 
 
-def carregar_snapshot() -> dict:
-    if SNAPSHOT_FILE.exists():
-        with open(SNAPSHOT_FILE, encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-
-def salvar_snapshot(snapshot: dict):
-    with open(SNAPSHOT_FILE, "w", encoding="utf-8") as f:
-        json.dump(snapshot, f, ensure_ascii=False, indent=2)
-
-
 def fmt_brl(valor: float) -> str:
     return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -154,8 +141,7 @@ def consultar_saldo(account_id: str, token: str, api_version: str) -> dict | Non
 def montar_mensagem_saldo(conta: dict, nivel: str, limite: float) -> str:
     label = "CRITICO" if nivel == "critico" else "BAIXO"
     linhas = [
-        f"Alerta de Saldo — {label}",
-        "",
+        f"Alerta de Saldo — {label}", "",
         f"BM: {conta['nome']}",
         f"Saldo atual: {fmt_brl(conta['balance'])}",
         f"Limite de alerta: {fmt_brl(limite)}",
@@ -256,7 +242,7 @@ def verificar_encerramentos():
         ("SH Tijolos",             "act_3858259327816511"),
     ]
 
-    hoje  = datetime.utcnow().date()
+    hoje  = datetime.now(datetime.UTC).date() if hasattr(datetime, 'UTC') else datetime.utcnow().date()
     ontem = hoje - timedelta(days=1)
     encerradas      = []
     encerrando_hoje = []
@@ -320,177 +306,6 @@ def verificar_encerramentos():
         log.info("Alerta de encerramentos enviado!")
     else:
         log.error("Falha ao enviar alerta de encerramentos")
-
-
-# ── Monitoramento de alteracoes (continuo) ────────────────────────
-
-def buscar_todas_campanhas(api_version: str, account_id: str, token: str) -> list:
-    """Busca todas as campanhas com paginacao para evitar falsos positivos."""
-    campanhas = []
-    url = (f"https://graph.facebook.com/{api_version}/{account_id}/campaigns"
-           f"?fields=id,name,status,effective_status,daily_budget,lifetime_budget"
-           f"&limit=100&access_token={token}")
-    while url:
-        try:
-            r = requests.get(url, timeout=20).json()
-            campanhas.extend(r.get("data", []))
-            url = r.get("paging", {}).get("next")
-        except Exception as e:
-            log.error(f"Erro paginacao [{account_id}]: {e}")
-            break
-    return campanhas
-
-
-def monitorar_alteracoes():
-    """Compara estado atual com snapshot anterior e alerta mudancas reais."""
-    cfg         = carregar_config()
-    token       = cfg["meta"]["contas"][0]["access_token"]
-    api_version = cfg["meta"]["api_version"]
-    cfg_wpp     = cfg["whatsapp"]
-    grupo       = cfg_wpp["numeros_destino"][0]
-
-    CONTAS_MONITOR = [
-        ("Rosa Sul Nova",          "act_2523170184768797"),
-        ("Dia de Pizza Dourados",  "act_723575425785405"),
-        ("IH Campo Grande",        "act_1131240581799095"),
-        ("Mollinari Pizzaria",     "act_459274303920372"),
-        ("MrGabs",                 "act_728296823243425"),
-        ("IH Dourados",            "act_831936562721815"),
-        ("Villa Grano Pizzaria",   "act_909424425271250"),
-        ("Brados Pizzaria",        "act_972023765779926"),
-        ("Berlim Pizzaria",        "act_836447545843342"),
-        ("A Favorita",             "act_969681458906352"),
-        ("Brava Pizza",            "act_4279801688941861"),
-        ("Pavao Lanchonete",       "act_1759603645448352"),
-        ("Fornalha Pizzaria",      "act_1618084519451450"),
-        ("CA- Leni ADS 02",        "act_1569287454130140"),
-        ("CA RJK SHOP",            "act_297417165372711"),
-        ("CA - Miotto Construtora","act_213109970735074"),
-        ("CA - ICGP",              "act_360815898753195"),
-        ("CA - Miotto Backup",     "act_533683308259417"),
-        ("CA - Monaco Agency",     "act_732966175219099"),
-        ("BRUNA MACHADO",          "act_1102427261426373"),
-        ("CA - AMK Estetica",      "act_590117117342811"),
-        ("JS - UNIFORME",          "act_1452225369942067"),
-        ("SH Tijolos",             "act_3858259327816511"),
-    ]
-
-    snapshot_anterior = carregar_snapshot()
-    snapshot_atual    = {}
-    alteracoes        = []
-    primeira_exec     = len(snapshot_anterior) == 0
-
-    for nome_bm, account_id in CONTAS_MONITOR:
-        try:
-            campanhas = buscar_todas_campanhas(api_version, account_id, token)
-
-            for camp in campanhas:
-                chave = f"{account_id}_{camp['id']}"
-                estado_atual = {
-                    "nome":            camp["name"],
-                    "bm":              nome_bm,
-                    "status":          camp.get("effective_status") or camp.get("status"),
-                    "daily_budget":    camp.get("daily_budget",    "0"),
-                    "lifetime_budget": camp.get("lifetime_budget", "0"),
-                }
-                snapshot_atual[chave] = estado_atual
-
-                # Nao alertar na primeira execucao — apenas constroi snapshot
-                if primeira_exec:
-                    continue
-
-                if chave in snapshot_anterior:
-                    ant = snapshot_anterior[chave]
-
-                    if ant["nome"] != estado_atual["nome"]:
-                        alteracoes.append({
-                            "bm": nome_bm, "camp": estado_atual["nome"],
-                            "tipo": "NOME_ALTERADO",
-                            "de": ant["nome"], "para": estado_atual["nome"],
-                        })
-
-                    if ant["status"] != estado_atual["status"]:
-                        alteracoes.append({
-                            "bm": nome_bm, "camp": camp["name"],
-                            "tipo": "STATUS_ALTERADO",
-                            "de": ant["status"], "para": estado_atual["status"],
-                        })
-
-                    if ant["daily_budget"] != estado_atual["daily_budget"]:
-                        de_v   = int(ant["daily_budget"]          or 0) / 100
-                        para_v = int(estado_atual["daily_budget"] or 0) / 100
-                        if de_v > 0 or para_v > 0:
-                            alteracoes.append({
-                                "bm": nome_bm, "camp": camp["name"],
-                                "tipo": "ORCAMENTO_DIARIO_ALTERADO",
-                                "de": fmt_brl(de_v), "para": fmt_brl(para_v),
-                            })
-
-                    if ant["lifetime_budget"] != estado_atual["lifetime_budget"]:
-                        de_v   = int(ant["lifetime_budget"]          or 0) / 100
-                        para_v = int(estado_atual["lifetime_budget"] or 0) / 100
-                        if de_v > 0 or para_v > 0:
-                            alteracoes.append({
-                                "bm": nome_bm, "camp": camp["name"],
-                                "tipo": "ORCAMENTO_TOTAL_ALTERADO",
-                                "de": fmt_brl(de_v), "para": fmt_brl(para_v),
-                            })
-                else:
-                    # Campanha nova — so alerta se nao for primeira execucao
-                    alteracoes.append({
-                        "bm": nome_bm, "camp": camp["name"],
-                        "tipo": "CAMPANHA_NOVA",
-                        "de": "—", "para": estado_atual["status"],
-                    })
-
-        except Exception as e:
-            log.error(f"Erro ao monitorar [{nome_bm}]: {e}")
-
-    # Campanhas removidas — só detecta se nao for primeira execucao
-    if not primeira_exec:
-        for chave, ant in snapshot_anterior.items():
-            if chave not in snapshot_atual:
-                alteracoes.append({
-                    "bm": ant["bm"], "camp": ant["nome"],
-                    "tipo": "CAMPANHA_REMOVIDA",
-                    "de": ant["status"], "para": "DELETADA/ARQUIVADA",
-                })
-
-    salvar_snapshot(snapshot_atual)
-
-    if primeira_exec:
-        log.info(f"Monitoramento: snapshot inicial criado com {len(snapshot_atual)} campanhas.")
-        return
-
-    if not alteracoes:
-        log.info("Monitoramento: nenhuma alteracao detectada.")
-        return
-
-    agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
-    linhas = [
-        f"Alerta de Alteracoes — BOB",
-        f"Monaco Agency | {agora_str}",
-        f"",
-        f"{len(alteracoes)} alteracao(oes) detectada(s):",
-        f"",
-    ]
-
-    for a in alteracoes:
-        linhas.append(f"[{a['tipo']}]")
-        linhas.append(f"  BM: {a['bm']}")
-        linhas.append(f"  Campanha: {a['camp']}")
-        linhas.append(f"  De: {a['de']}")
-        linhas.append(f"  Para: {a['para']}")
-        linhas.append("")
-
-    linhas.append("━━━━━━━━━━━━━━━━━━━━")
-    linhas.append("Verifique o painel para mais detalhes.")
-
-    ok = enviar_whatsapp(cfg_wpp, grupo, "\n".join(linhas))
-    if ok:
-        log.info(f"Alerta de {len(alteracoes)} alteracao(oes) enviado!")
-    else:
-        log.error("Falha ao enviar alerta de alteracoes")
 
 
 # ── Motivacional ──────────────────────────────────────────────────
@@ -705,7 +520,6 @@ def rodar_loop():
     # 07:00 BRT = 10:00 UTC — motivacional
     # 08:00 BRT = 11:00 UTC — encerramentos
     # 12:00 BRT = 15:00 UTC — saldo
-    # alteracoes — continuo a cada 60s
     horario_motivacional  = "10:00"
     horario_encerramentos = "11:00"
 
@@ -713,7 +527,6 @@ def rodar_loop():
     log.info(f"  Motivacional:   {horario_motivacional} UTC (07:00 BRT)")
     log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
     log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
-    log.info(f"  Alteracoes:     continuo a cada 60s")
     log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
     log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
     log.info(f"  Limite baixo:   {fmt_brl(cfg['alertas']['limite_baixo'])}")
@@ -724,7 +537,7 @@ def rodar_loop():
     ultimo_dia_saldo         = None
 
     while True:
-        agora      = datetime.utcnow()
+        agora      = datetime.now()
         hora_atual = agora.strftime("%H:%M")
         hoje       = agora.date()
 
@@ -749,10 +562,14 @@ def rodar_loop():
             except Exception as e:
                 log.exception(f"Erro saldo: {e}")
 
-        try:
-            monitorar_alteracoes()
-        except Exception as e:
-            log.exception(f"Erro alteracoes: {e}")
+        h, m = map(int, horario_alvo.split(":"))
+        proximo = agora.replace(hour=h, minute=m, second=0, microsecond=0)
+        if proximo <= agora:
+            proximo += timedelta(days=1)
+        falta   = proximo - agora
+        horas   = int(falta.total_seconds() // 3600)
+        minutos = int((falta.total_seconds() % 3600) // 60)
+        log.info(f"Proxima verificacao de saldo em {horas}h {minutos}min")
 
         time.sleep(60)
 
