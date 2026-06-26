@@ -368,33 +368,34 @@ let _enc = [], _encDias = 7;
 const fmt = v => v.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
 const fmtN = v => Number(v).toLocaleString('pt-BR');
 
-const CONTAS = [
-  {nome:'CA - ROSA SUL NOVA', id:'act_2523170184768797', seg:'food'},
-  {nome:'CA1 - Doces Mania', id:'act_105301940058633', seg:'outros'},
-  {nome:'CA- Leni ADS 02', id:'act_1569287454130140', seg:'food'},
-  {nome:'CA RJK SHOP', id:'act_297417165372711', seg:'outros'},
-  {nome:'CA - Miotto Construtora', id:'act_213109970735074', seg:'outros'},
-  {nome:'CA - ICGP', id:'act_360815898753195', seg:'outros'},
-  {nome:'CA - Miotto Backup', id:'act_533683308259417', seg:'outros'},
-  {nome:'CA - Monaco Agency', id:'act_732966175219099', seg:'outros'},
-  {nome:'Dia de Pizza - Dourados', id:'act_723575425785405', seg:'food'},
-  {nome:'IH CAMPO GRANDE MS', id:'act_1131240581799095', seg:'food'},
-  {nome:'BRUNA MACHADO - DOTCON', id:'act_1102427261426373', seg:'outros'},
-  {nome:'CA - AMK Estetica', id:'act_590117117342811', seg:'outros'},
-  {nome:'Mollinari Pizzaria', id:'act_459274303920372', seg:'food'},
-  {nome:'MrGabs', id:'act_728296823243425', seg:'food'},
-  {nome:'CA - Facilita cell', id:'act_1288527439639093', seg:'outros'},
-  {nome:'IH DOURADOS', id:'act_831936562721815', seg:'food'},
-  {nome:'Villa Grano Pizzaria', id:'act_909424425271250', seg:'food'},
-  {nome:'JS - UNIFORME', id:'act_1452225369942067', seg:'outros'},
-  {nome:'Brados Pizzaria', id:'act_972023765779926', seg:'food'},
-  {nome:'Berlim Pizzaria', id:'act_836447545843342', seg:'food'},
-  {nome:'A FAVORITA', id:'act_969681458906352', seg:'food'},
-  {nome:'CA - BRAVA PIZZA', id:'act_4279801688941861', seg:'food'},
-  {nome:'Pavao Lanchonete', id:'act_1759603645448352', seg:'food'},
-  {nome:'SH Tijolos', id:'act_3858259327816511', seg:'outros'},
-  {nome:'Fornalha Pizzaria', id:'act_1618084519451450', seg:'food'},
-];
+// Contas carregadas dinamicamente da API do Meta
+let CONTAS = JSON.parse(localStorage.getItem('monaco_contas') || '[]');
+
+const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistro',
+  'fornalha','brados','berlim','mrgabs','mollinari','pavao','favorita','brava',
+  'dourados','campo','ih dourados','villa grano','rosa sul'];
+
+function inferirSeg(nome) {
+  const n = nome.toLowerCase();
+  return FOOD_KEYWORDS.some(k => n.includes(k)) ? 'food' : 'outros';
+}
+
+async function buscarContas(tok) {
+  const contas = [];
+  let url = 'https://graph.facebook.com/'+API+'/me/adaccounts?fields=name,account_id,account_status&limit=100&access_token='+tok;
+  while (url) {
+    const r = await fetch(url);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    (d.data || []).forEach(c => {
+      if (c.account_status === 1) {
+        contas.push({ nome: c.name, id: 'act_' + c.account_id, seg: inferirSeg(c.name) });
+      }
+    });
+    url = (d.paging && d.paging.next) ? d.paging.next : null;
+  }
+  return contas;
+}
 
 const CONTAS_ENC = [
   {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
@@ -478,6 +479,21 @@ async function carregarDados() {
   const btn = document.getElementById('btn-load');
   btn.innerHTML = '<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Carregando';
   btn.disabled = true;
+
+  // Buscar contas dinamicamente se ainda nao tiver
+  if (!CONTAS.length) {
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">◌</span> Buscando contas da API do Meta...</td></tr>';
+    try {
+      CONTAS = await buscarContas(tok);
+      localStorage.setItem('monaco_contas', JSON.stringify(CONTAS));
+    } catch(e) {
+      document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading">Erro ao buscar contas: ' + e.message + '</td></tr>';
+      btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Carregar';
+      btn.disabled = false;
+      return;
+    }
+  }
+
   document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">◌</span> Consultando ' + CONTAS.length + ' contas...</td></tr>';
   const res = [];
   for (const c of CONTAS) {
@@ -702,6 +718,8 @@ function salvarToken() {
   const t = document.getElementById('tok-in').value.trim();
   if (!t) { alert('Cole o token primeiro!'); return; }
   localStorage.setItem(TK, t);
+  localStorage.removeItem('monaco_contas'); // limpa cache de contas ao trocar token
+  CONTAS = [];
   document.getElementById('cfg-bar').innerHTML = '<span class="tag-ok">TOKEN_OK — clique em Carregar</span>';
 }
 
