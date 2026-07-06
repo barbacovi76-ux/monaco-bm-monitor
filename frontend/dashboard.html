@@ -464,6 +464,32 @@ function status(gasto, pedidos, cpr) {
   return 'r';
 }
 
+function statusObj(g, p, leads, msgs, cl, obj) {
+  if (g === 0) return 'x';
+  if (obj === 'LEADS') {
+    if (leads === 0) return 'r';
+    const cpl = g / leads;
+    return cpl <= 30 ? 'g' : cpl <= 80 ? 'a' : 'r';
+  }
+  if (obj === 'MESSAGES') {
+    if (msgs === 0) return msgs === 0 && cl > 0 ? 'a' : 'r';
+    const cpmsg = g / msgs;
+    return cpmsg <= 10 ? 'g' : cpmsg <= 30 ? 'a' : 'r';
+  }
+  if (obj === 'TRAFFIC' || obj === 'AWARENESS') {
+    return cl > 0 ? 'g' : g > 0 ? 'a' : 'x';
+  }
+  // SALES default
+  if (p === 0) return 'r';
+  const cpr = g / p;
+  return cpr <= 15 ? 'g' : cpr <= 40 ? 'a' : 'r';
+}
+
+function objLabel(obj) {
+  const m = {SALES:'VENDAS', LEADS:'LEADS', MESSAGES:'MSG', TRAFFIC:'TRAFEGO', AWARENESS:'ALCANCE'};
+  return m[obj] || obj;
+}
+
 function badge(s) {
   const m = {g:['g','OTIMO'], a:['a','ATENCAO'], r:['r','CRITICO'], x:['x','SEM DADOS']};
   return '<span class="badge ' + m[s][0] + '">' + m[s][1] + '</span>';
@@ -501,26 +527,50 @@ async function carregarDados() {
       let url;
       if (periodo === 'custom' && dIni && dFim) {
         const tr = encodeURIComponent(JSON.stringify({since:dIni,until:dFim}));
-        url = 'https://graph.facebook.com/'+API+'/'+c.id+'/insights?fields=spend,impressions,clicks,actions,action_values&time_range='+tr+'&access_token='+tok;
+        url = 'https://graph.facebook.com/'+API+'/'+c.id+'/insights?fields=spend,impressions,clicks,reach,actions,action_values&time_range='+tr+'&access_token='+tok;
       } else {
-        url = 'https://graph.facebook.com/'+API+'/'+c.id+'/insights?fields=spend,impressions,clicks,actions,action_values&date_preset='+periodo+'&access_token='+tok;
+        url = 'https://graph.facebook.com/'+API+'/'+c.id+'/insights?fields=spend,impressions,clicks,reach,actions,action_values&date_preset='+periodo+'&access_token='+tok;
       }
       const r = await fetch(url);
       const d = await r.json();
+      // Buscar objetivo predominante da conta
+      let objetivo = 'SALES';
+      try {
+        const robj = await fetch('https://graph.facebook.com/'+API+'/'+c.id+'/campaigns?fields=objective&limit=5&access_token='+tok);
+        const dobj = await robj.json();
+        const camps = dobj.data || [];
+        const objs = camps.map(x => x.objective || '');
+        if (objs.some(o => o.includes('LEAD'))) objetivo = 'LEADS';
+        else if (objs.some(o => o.includes('MESSAGES') || o.includes('ENGAGEMENT'))) objetivo = 'MESSAGES';
+        else if (objs.some(o => o.includes('TRAFFIC'))) objetivo = 'TRAFFIC';
+        else if (objs.some(o => o.includes('AWARENESS'))) objetivo = 'AWARENESS';
+      } catch(e) {}
+
       if (d.data && d.data[0]) {
         const i = d.data[0];
         const g = parseFloat(i.spend||0);
         const im = parseInt(i.impressions||0);
+        const rc = parseInt(i.reach||0);
         const cl = parseInt(i.clicks||0);
         const ac = i.actions||[];
         const av = i.action_values||[];
+        // Sales
         const p = parseInt(ac.find(a=>a.action_type==='purchase')?.value||0);
         const f = parseFloat(av.find(a=>a.action_type==='purchase')?.value||0);
+        // Leads
+        const leads = parseInt(ac.find(a=>a.action_type==='lead')?.value||0);
+        // Messages/conversations
+        const msgs = parseInt(ac.find(a=>a.action_type==='onsite_conversion.messaging_conversation_started_7d')?.value
+          || ac.find(a=>a.action_type==='onsite_conversion.total_messaging_connection')?.value||0);
         const cpr = p>0&&g>0?g/p:0;
         const roas = g>0&&f>0?f/g:0;
-        res.push({...c, g, im, cl, p, f, cpr, roas, st:status(g,p,cpr)});
+        const cpl = leads>0&&g>0?g/leads:0;
+        const cpm = im>0?g/im*1000:0;
+        const cpc = cl>0?g/cl:0;
+        const cpmsg = msgs>0&&g>0?g/msgs:0;
+        res.push({...c, g, im, rc, cl, p, f, leads, msgs, cpr, roas, cpl, cpm, cpc, cpmsg, objetivo, st:statusObj(g,p,leads,msgs,cl,objetivo)});
       } else {
-        res.push({...c, g:0, im:0, cl:0, p:0, f:0, cpr:0, roas:0, st:'x'});
+        res.push({...c, g:0, im:0, rc:0, cl:0, p:0, f:0, leads:0, msgs:0, cpr:0, roas:0, cpl:0, cpm:0, cpc:0, cpmsg:0, objetivo, st:'x'});
       }
     } catch(e) { res.push({...c, g:0, im:0, cl:0, p:0, f:0, cpr:0, roas:0, st:'x'}); }
   }
@@ -594,15 +644,47 @@ function filtrar() {
 
   tbody.innerHTML = d.map(x => {
     const pct = Math.round((x.g/maxG)*100);
+    const obj = x.objetivo || 'SALES';
+    let col3, col4, col5, col6, col7;
+
+    if (obj === 'LEADS') {
+      col3 = x.g>0?fmt(x.g):'<span style="color:var(--muted)">—</span>';
+      col4 = '<span style="font-size:10px;color:var(--dim)">LEADS</span><br><strong>' + (x.leads>0?fmtN(x.leads):'0') + '</strong>';
+      col5 = '<span style="font-size:10px;color:var(--dim)">ALCANCE</span><br>' + (x.rc>0?fmtN(x.rc):'—');
+      col6 = '<span style="font-size:10px;color:var(--dim)">CPL</span><br>' + (x.cpl>0?fmt(x.cpl):'—');
+      col7 = '<span style="font-size:10px;color:var(--dim)">CLIQUES</span><br>' + (x.cl>0?fmtN(x.cl):'—');
+    } else if (obj === 'MESSAGES') {
+      col3 = x.g>0?fmt(x.g):'<span style="color:var(--muted)">—</span>';
+      col4 = '<span style="font-size:10px;color:var(--dim)">CONVERSAS</span><br><strong>' + (x.msgs>0?fmtN(x.msgs):'0') + '</strong>';
+      col5 = '<span style="font-size:10px;color:var(--dim)">CLIQUES</span><br>' + (x.cl>0?fmtN(x.cl):'—');
+      col6 = '<span style="font-size:10px;color:var(--dim)">CP/MSG</span><br>' + (x.cpmsg>0?fmt(x.cpmsg):'—');
+      col7 = '<span style="font-size:10px;color:var(--dim)">ALCANCE</span><br>' + (x.rc>0?fmtN(x.rc):'—');
+    } else if (obj === 'TRAFFIC' || obj === 'AWARENESS') {
+      col3 = x.g>0?fmt(x.g):'<span style="color:var(--muted)">—</span>';
+      col4 = '<span style="font-size:10px;color:var(--dim)">CLIQUES</span><br><strong>' + (x.cl>0?fmtN(x.cl):'0') + '</strong>';
+      col5 = '<span style="font-size:10px;color:var(--dim)">IMPRESSOES</span><br>' + (x.im>0?fmtN(x.im):'—');
+      col6 = '<span style="font-size:10px;color:var(--dim)">CPC</span><br>' + (x.cpc>0?fmt(x.cpc):'—');
+      col7 = '<span style="font-size:10px;color:var(--dim)">CPM</span><br>' + (x.cpm>0?fmt(x.cpm):'—');
+    } else {
+      // SALES default
+      const roasCor2 = x.roas>=3?'#16c784':x.roas>=1.5?'#f0a500':x.roas>0?'#e84040':'#323752';
+      col3 = x.g>0?fmt(x.g):'<span style="color:var(--muted)">—</span>';
+      col4 = x.p>0?'<strong>'+fmtN(x.p)+'</strong>':'<span style="color:var(--muted)">0</span>';
+      col5 = '<span style="color:var(--green);">'+(x.f>0?fmt(x.f):'<span style="color:var(--muted)">—</span>')+'</span>';
+      col6 = x.cpr>0?fmt(x.cpr):'<span style="color:var(--muted)">—</span>';
+      col7 = '<span style="font-weight:500;color:'+roasCor2+';">'+(x.roas>0?x.roas.toFixed(2)+'x':'—')+'</span>';
+    }
+
     return '<tr>' +
       '<td><span class="bm-name" onclick="abrirDetalhe(\''+x.id+'\',\''+x.nome.replace(/'/g,'')+'\')">' + x.nome + '</span>' +
-      '<div class="bm-id">' + x.id + '<span class="bm-seg">' + x.seg + '</span></div></td>' +
+      '<div class="bm-id">' + x.id + '<span class="bm-seg">' + x.seg + '</span>' +
+      '<span class="bm-seg" style="border-color:rgba(245,197,24,.3);color:var(--gold);">' + objLabel(obj) + '</span></div></td>' +
       '<td>' + badge(x.st) + '</td>' +
-      '<td class="mono" style="font-weight:500;">' + (x.g>0?fmt(x.g):'<span style="color:var(--muted)">—</span>') + '</td>' +
-      '<td class="mono">' + (x.p>0?'<strong>'+fmtN(x.p)+'</strong>':'<span style="color:var(--muted)">0</span>') + '</td>' +
-      '<td class="mono" style="color:var(--green);">' + (x.f>0?fmt(x.f):'<span style="color:var(--muted)">—</span>') + '</td>' +
-      '<td class="mono">' + (x.cpr>0?fmt(x.cpr):'<span style="color:var(--muted)">—</span>') + '</td>' +
-      '<td class="mono" style="font-weight:500;color:'+roasCor(x.roas)+';">' + (x.roas>0?x.roas.toFixed(2)+'x':'—') + '</td>' +
+      '<td class="mono" style="font-weight:500;">' + col3 + '</td>' +
+      '<td class="mono">' + col4 + '</td>' +
+      '<td class="mono">' + col5 + '</td>' +
+      '<td class="mono">' + col6 + '</td>' +
+      '<td class="mono">' + col7 + '</td>' +
       '<td><div class="bar-wrap"><div class="bar-fill" style="width:'+pct+'%;background:'+barCor(x.st)+';"></div></div><div class="bar-pct">'+pct+'%</div></td>' +
       '<td><button class="btn-wpp" onclick="enviar(this,\''+x.id+'\')">SEND</button></td>' +
       '</tr>';
