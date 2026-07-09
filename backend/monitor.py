@@ -566,9 +566,10 @@ def analisar_comparativo():
     def fmt_br(d): return d.strftime("%d/%m")
 
     def buscar_insights(account_id, since, until):
+        time_range = '{' + f'"since":"{since}","until":"{until}"' + '}'
         url = (f"https://graph.facebook.com/{api_version}/{account_id}/insights"
                f"?fields=spend,actions,action_values,impressions,clicks"
-               f"&time_range={{"since":"{since}","until":"{until}"}}"
+               f"&time_range={time_range}"
                f"&access_token={token}")
         try:
             r = requests.get(url, timeout=20)
