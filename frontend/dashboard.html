@@ -551,18 +551,37 @@ async function carregarDados() {
       }
       const r = await fetch(url);
       const d = await r.json();
-      // Buscar objetivo predominante da conta
-      let objetivo = 'SALES';
-      try {
-        const robj = await fetch('https://graph.facebook.com/'+API+'/'+c.id+'/campaigns?fields=objective&limit=5&access_token='+tok);
-        const dobj = await robj.json();
-        const camps = dobj.data || [];
-        const objs = camps.map(x => x.objective || '');
-        if (objs.some(o => o.includes('LEAD'))) objetivo = 'LEADS';
-        else if (objs.some(o => o.includes('MESSAGES') || o.includes('ENGAGEMENT'))) objetivo = 'MESSAGES';
-        else if (objs.some(o => o.includes('TRAFFIC'))) objetivo = 'TRAFFIC';
-        else if (objs.some(o => o.includes('AWARENESS'))) objetivo = 'AWARENESS';
-      } catch(e) {}
+      // Detectar objetivo predominante — food e sempre SALES
+      const FOOD_IDS = [
+        'act_2523170184768797','act_723575425785405','act_1131240581799095',
+        'act_459274303920372','act_728296823243425','act_831936562721815',
+        'act_909424425271250','act_972023765779926','act_836447545843342',
+        'act_969681458906352','act_4279801688941861','act_1759603645448352',
+        'act_1618084519451450','act_1569287454130140','act_3379098802257981',
+        'act_626472496317271','act_218943216626025',
+      ];
+      let objetivo = FOOD_IDS.includes(c.id) ? 'SALES' : 'OUTROS_AUTO';
+
+      if (objetivo === 'OUTROS_AUTO') {
+        objetivo = 'SALES'; // default
+        try {
+          const robj = await fetch('https://graph.facebook.com/'+API+'/'+c.id+'/campaigns?fields=objective&limit=10&access_token='+tok);
+          const dobj = await robj.json();
+          const camps = dobj.data || [];
+          const objs = camps.map(x => x.objective || '');
+          const counts = {};
+          objs.forEach(o => {
+            let tipo = 'SALES';
+            if (o.includes('LEAD')) tipo = 'LEADS';
+            else if (o.includes('MESSAGES') || o.includes('ENGAGEMENT')) tipo = 'MESSAGES';
+            else if (o.includes('TRAFFIC')) tipo = 'TRAFFIC';
+            else if (o.includes('AWARENESS')) tipo = 'AWARENESS';
+            counts[tipo] = (counts[tipo] || 0) + 1;
+          });
+          // Pega o objetivo mais frequente
+          objetivo = Object.entries(counts).sort((a,b) => b[1]-a[1])[0]?.[0] || 'SALES';
+        } catch(e) {}
+      }
 
       if (d.data && d.data[0]) {
         const i = d.data[0];
