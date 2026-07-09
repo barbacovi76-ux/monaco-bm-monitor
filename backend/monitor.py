@@ -510,6 +510,191 @@ def enviar_motivacional():
         log.error("Falha ao enviar mensagem motivacional")
 
 
+
+# ── Comparativo de performance ────────────────────────────────────
+
+def analisar_comparativo():
+    """Compara semana atual vs semana passada e alerta quedas de performance."""
+    from datetime import datetime, timedelta, date
+
+    hoje = date.today()
+    dia_semana = hoje.weekday()  # 0=seg, 2=qua, 4=sex
+
+    # Roda apenas segunda (0), quarta (2) e sexta (4)
+    if dia_semana not in (0, 2, 4):
+        return
+
+    cfg         = carregar_config()
+    token       = cfg["meta"]["contas"][0]["access_token"]
+    api_version = cfg["meta"]["api_version"]
+    cfg_wpp     = cfg["whatsapp"]
+    grupo       = cfg_wpp["numeros_destino"][0]
+
+    CONTAS_FOOD = [
+        ("Rosa Sul Nova",          "act_2523170184768797"),
+        ("Dia de Pizza Dourados",  "act_723575425785405"),
+        ("IH Campo Grande",        "act_1131240581799095"),
+        ("Mollinari Pizzaria",     "act_459274303920372"),
+        ("MrGabs",                 "act_728296823243425"),
+        ("IH Dourados",            "act_831936562721815"),
+        ("Villa Grano Pizzaria",   "act_909424425271250"),
+        ("Brados Pizzaria",        "act_972023765779926"),
+        ("Berlim Pizzaria",        "act_836447545843342"),
+        ("A Favorita",             "act_969681458906352"),
+        ("Brava Pizza",            "act_4279801688941861"),
+        ("Pavao Lanchonete",       "act_1759603645448352"),
+        ("Fornalha Pizzaria",      "act_1618084519451450"),
+        ("CA- Leni ADS 02",        "act_1569287454130140"),
+        ("CA RJK SHOP",            "act_297417165372711"),
+        ("CA - Miotto Construtora","act_213109970735074"),
+        ("CA - ICGP",              "act_360815898753195"),
+        ("CA - Miotto Backup",     "act_533683308259417"),
+        ("CA - Monaco Agency",     "act_732966175219099"),
+        ("BRUNA MACHADO - DOTCON", "act_1102427261426373"),
+        ("CA - AMK Estetica",      "act_590117117342811"),
+        ("JS - UNIFORME",          "act_1452225369942067"),
+        ("SH Tijolos",             "act_3858259327816511"),
+    ]
+
+    # Periodos
+    fim_atual    = hoje - timedelta(days=1)
+    ini_atual    = fim_atual - timedelta(days=6)
+    fim_anterior = ini_atual - timedelta(days=1)
+    ini_anterior = fim_anterior - timedelta(days=6)
+
+    def fmt_date(d): return d.strftime("%Y-%m-%d")
+    def fmt_br(d): return d.strftime("%d/%m")
+
+    def buscar_insights(account_id, since, until):
+        url = (f"https://graph.facebook.com/{api_version}/{account_id}/insights"
+               f"?fields=spend,actions,action_values,impressions,clicks"
+               f"&time_range={{"since":"{since}","until":"{until}"}}"
+               f"&access_token={token}")
+        try:
+            r = requests.get(url, timeout=20)
+            data = r.json()
+            if not data.get("data"):
+                return {"gasto": 0, "pedidos": 0, "fat": 0, "cpr": 0, "leads": 0, "clicks": 0}
+            ins = data["data"][0]
+            gasto   = float(ins.get("spend", 0))
+            actions = ins.get("actions", [])
+            av      = ins.get("action_values", [])
+            pedidos = int(next((a["value"] for a in actions if a["action_type"] == "purchase"), 0))
+            fat     = float(next((a["value"] for a in av if a["action_type"] == "purchase"), 0))
+            leads   = int(next((a["value"] for a in actions if a["action_type"] == "lead"), 0))
+            clicks  = int(ins.get("clicks", 0))
+            cpr     = gasto / pedidos if pedidos > 0 else 0
+            cpl     = gasto / leads if leads > 0 else 0
+            return {"gasto": gasto, "pedidos": pedidos, "fat": fat, "cpr": cpr, "leads": leads, "cpl": cpl, "clicks": clicks}
+        except Exception as e:
+            log.error(f"Erro insights comparativo [{account_id}]: {e}")
+            return {"gasto": 0, "pedidos": 0, "fat": 0, "cpr": 0, "leads": 0, "cpl": 0, "clicks": 0}
+
+    THRESHOLD = 0.10  # 10%
+
+    alertas = []
+    melhorias = []
+
+    log.info("Iniciando analise comparativa de performance...")
+
+    for nome_bm, account_id in CONTAS_FOOD:
+        atual    = buscar_insights(account_id, fmt_date(ini_atual),    fmt_date(fim_atual))
+        anterior = buscar_insights(account_id, fmt_date(ini_anterior), fmt_date(fim_anterior))
+
+        # Pular contas sem dados nos dois periodos
+        if atual["gasto"] == 0 and anterior["gasto"] == 0:
+            continue
+
+        problemas = []
+        melhs = []
+
+        # Comparar pedidos
+        if anterior["pedidos"] > 0 and atual["pedidos"] > 0:
+            var_ped = (atual["pedidos"] - anterior["pedidos"]) / anterior["pedidos"]
+            if var_ped <= -THRESHOLD:
+                problemas.append(f"  Pedidos: {anterior['pedidos']} → {atual['pedidos']} ({var_ped*100:.1f}%)")
+            elif var_ped >= THRESHOLD:
+                melhs.append(f"  Pedidos: {anterior['pedidos']} → {atual['pedidos']} (+{var_ped*100:.1f}%)")
+
+        # Comparar CPR
+        if anterior["cpr"] > 0 and atual["cpr"] > 0:
+            var_cpr = (atual["cpr"] - anterior["cpr"]) / anterior["cpr"]
+            if var_cpr >= THRESHOLD:
+                problemas.append(f"  CPR: {fmt_brl(anterior['cpr'])} → {fmt_brl(atual['cpr'])} (+{var_cpr*100:.1f}%)")
+            elif var_cpr <= -THRESHOLD:
+                melhs.append(f"  CPR: {fmt_brl(anterior['cpr'])} → {fmt_brl(atual['cpr'])} ({var_cpr*100:.1f}%)")
+
+        # Comparar leads
+        if anterior["leads"] > 0 and atual["leads"] > 0:
+            var_leads = (atual["leads"] - anterior["leads"]) / anterior["leads"]
+            if var_leads <= -THRESHOLD:
+                problemas.append(f"  Leads: {anterior['leads']} → {atual['leads']} ({var_leads*100:.1f}%)")
+            elif var_leads >= THRESHOLD:
+                melhs.append(f"  Leads: {anterior['leads']} → {atual['leads']} (+{var_leads*100:.1f}%)")
+
+        # Comparar CPL
+        if anterior["cpl"] > 0 and atual["cpl"] > 0:
+            var_cpl = (atual["cpl"] - anterior["cpl"]) / anterior["cpl"]
+            if var_cpl >= THRESHOLD:
+                problemas.append(f"  CPL: {fmt_brl(anterior['cpl'])} → {fmt_brl(atual['cpl'])} (+{var_cpl*100:.1f}%)")
+            elif var_cpl <= -THRESHOLD:
+                melhs.append(f"  CPL: {fmt_brl(anterior['cpl'])} → {fmt_brl(atual['cpl'])} ({var_cpl*100:.1f}%)")
+
+        # Comparar faturamento
+        if anterior["fat"] > 0 and atual["fat"] > 0:
+            var_fat = (atual["fat"] - anterior["fat"]) / anterior["fat"]
+            if var_fat <= -THRESHOLD:
+                problemas.append(f"  Faturamento: {fmt_brl(anterior['fat'])} → {fmt_brl(atual['fat'])} ({var_fat*100:.1f}%)")
+
+        if problemas:
+            alertas.append({"bm": nome_bm, "problemas": problemas})
+        if melhs:
+            melhorias.append({"bm": nome_bm, "melhs": melhs})
+
+    if not alertas and not melhorias:
+        log.info("Comparativo: nenhuma variacao significativa detectada.")
+        return
+
+    periodo_txt = f"{fmt_br(ini_atual)} - {fmt_br(fim_atual)}"
+    anterior_txt = f"{fmt_br(ini_anterior)} - {fmt_br(fim_anterior)}"
+    agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    linhas = [
+        f"Analise de Performance — BOB",
+        f"Monaco Agency | {agora_str}",
+        f"",
+        f"Periodo atual:   {periodo_txt}",
+        f"Periodo anterior: {anterior_txt}",
+        f"Variacao minima: 10%",
+        f"",
+    ]
+
+    if alertas:
+        linhas.append(f"ATENCAO — Queda de performance ({len(alertas)} conta(s))")
+        linhas.append("")
+        for a in alertas:
+            linhas.append(f"  {a['bm']}")
+            linhas += a["problemas"]
+            linhas.append("")
+
+    if melhorias:
+        linhas.append(f"MELHORIA — Evolucao positiva ({len(melhorias)} conta(s))")
+        linhas.append("")
+        for m in melhorias:
+            linhas.append(f"  {m['bm']}")
+            linhas += m["melhs"]
+            linhas.append("")
+
+    linhas.append("━━━━━━━━━━━━━━━━━━━━")
+    linhas.append(f"Resumo: {len(alertas)} alerta(s) | {len(melhorias)} melhoria(s)")
+
+    mensagem = "\n".join(linhas)
+    ok = enviar_whatsapp(cfg_wpp, grupo, mensagem)
+    if ok:
+        log.info(f"Comparativo enviado: {len(alertas)} alertas, {len(melhorias)} melhorias")
+    else:
+        log.error("Falha ao enviar comparativo")
+
 # ── Loop principal ────────────────────────────────────────────────
 
 def rodar_loop():
@@ -520,12 +705,14 @@ def rodar_loop():
     # 07:00 BRT = 10:00 UTC — motivacional
     # 08:00 BRT = 11:00 UTC — encerramentos
     # 12:00 BRT = 15:00 UTC — saldo
-    horario_motivacional  = "10:00"
-    horario_encerramentos = "11:00"
+    horario_motivacional  = "10:00"  # 07:00 BRT
+    horario_encerramentos = "11:00"  # 08:00 BRT
+    horario_comparativo   = "12:00"  # 09:00 BRT — seg, qua, sex
 
     log.info("Monitor de BMs iniciado")
     log.info(f"  Motivacional:   {horario_motivacional} UTC (07:00 BRT)")
     log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
+    log.info(f"  Comparativo:    {horario_comparativo} UTC (09:00 BRT) — seg/qua/sex")
     log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
     log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
     log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
@@ -534,6 +721,7 @@ def rodar_loop():
 
     ultimo_dia_motivacional  = None
     ultimo_dia_encerramentos = None
+    ultimo_dia_comparativo   = None
     ultimo_dia_saldo         = None
 
     while True:
@@ -554,6 +742,13 @@ def rodar_loop():
                 verificar_encerramentos()
             except Exception as e:
                 log.exception(f"Erro encerramentos: {e}")
+
+        if hora_atual == horario_comparativo and ultimo_dia_comparativo != hoje:
+            ultimo_dia_comparativo = hoje
+            try:
+                analisar_comparativo()
+            except Exception as e:
+                log.exception(f"Erro comparativo: {e}")
 
         if hora_atual == horario_alvo and ultimo_dia_saldo != hoje:
             ultimo_dia_saldo = hoje
