@@ -75,21 +75,27 @@ tr:hover td { background: #1a1e2a; }
   .modal-criativo-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 12px; }
   .modal-criativo-body { font-size: 12px; color: #9ca3af; margin-top: 8px; line-height: 1.5; }
   .modal-close-btn { float: right; background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
-  .bob-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 400px; background: #111318; border-left: 1px solid #2a2d3a; z-index: 50; transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column; }
+  .bob-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 420px; background: #111318; border-left: 1px solid #2a2d3a; z-index: 50; transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column; }
   .bob-panel.open { transform: translateX(0); }
   .bob-header { padding: 16px 18px; border-bottom: 1px solid #2a2d3a; display: flex; align-items: center; justify-content: space-between; background: #161a24; flex-shrink: 0; }
   .bob-title { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
   .bob-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
   .bob-close:hover { color: #fff; }
+  .bob-config { padding: 10px 14px; border-bottom: 1px solid #2a2d3a; background: #161a24; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
+  .bob-config label { font-size: 10px; color: #6b7280; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .bob-config input { width: 54px; background: #0f1117; border: 1px solid #2a2d3a; border-radius: 4px; padding: 3px 6px; font-size: 11px; color: #e8e8e8; outline: none; }
+  .bob-config input:focus { border-color: #7c3aed; }
+  .bob-config button { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid #7c3aed; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 500; }
+  .bob-config button:hover { background: rgba(124,58,237,.25); }
   .bob-body { flex: 1; overflow-y: auto; padding: 14px; }
   .bob-loading { text-align: center; padding: 40px; color: #4b5563; font-size: 13px; }
-  .bob-alert { border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border-left: 3px solid; }
+  .bob-alert { border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; border-left: 3px solid; }
   .bob-alert.critico { background: rgba(248,113,113,.08); border-color: #f87171; }
   .bob-alert.atencao { background: rgba(251,191,36,.08); border-color: #fbbf24; }
   .bob-alert.info { background: rgba(96,165,250,.08); border-color: #60a5fa; }
   .bob-alert.ok { background: rgba(52,211,153,.08); border-color: #34d399; }
-  .bob-alert-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-  .bob-alert-desc { font-size: 12px; color: #9ca3af; line-height: 1.5; }
+  .bob-alert-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+  .bob-alert-desc { font-size: 11px; color: #9ca3af; line-height: 1.5; }
   .bob-alert-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; }
   .bob-tag.red { background: rgba(248,113,113,.15); color: #f87171; }
@@ -98,6 +104,7 @@ tr:hover td { background: #1a1e2a; }
   .bob-tag.blue { background: rgba(96,165,250,.15); color: #60a5fa; }
   .bob-empty { text-align: center; padding: 40px 20px; color: #34d399; font-size: 13px; }
   .bob-section { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; margin: 14px 0 8px; }
+  .bob-camp-card { border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: #161a24; }
   .overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); z-index: 49; }
   .overlay-bg.open { display: block; }
 </style>
@@ -197,7 +204,7 @@ if (periodoAtual === 'custom' && dataInicio && dataFim) {
 
 const token = localStorage.getItem(TOKEN_KEY);
 const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const fmtN = v => v.toLocaleString('pt-BR');
+const fmtN = v => Number(v).toLocaleString('pt-BR');
 
 function buildTimeParam() {
   if (dataInicio && dataFim) {
@@ -291,7 +298,7 @@ function buildRow(item, level, indent, maxGasto) {
     <td class="${indentClass}">
       <div class="${level === 'anuncios' ? 'nome-ad-cell' : ''}">
         ${level === 'anuncios' ? `
-          <div class="thumb-wrap" 
+          <div class="thumb-wrap"
                data-nome="${item.name.replace(/"/g,'&quot;')}"
                data-thumb="${thumbUrl}"
                data-video="${videoUrl}"
@@ -451,102 +458,280 @@ async function carregarTab() {
   }
 }
 
+// ── BOB — Gestor de Tráfego Sênior ──────────────────────────────
+// Diagnostico completo: gargalo de funil, CTR x CPA x ROAS, regras de
+// corte automaticas, hipotese de proximo teste e plano de acao priorizado.
+
+function getBobConfig() {
+  const saved = JSON.parse(localStorage.getItem('monaco_bob_cfg_' + accountId) || '{}');
+  return {
+    cpaAlvo: saved.cpaAlvo || 25,
+    roasMin: saved.roasMin || 2,
+  };
+}
+
+function salvarBobConfig() {
+  const cfg = {
+    cpaAlvo: parseFloat(document.getElementById('bob-cpa-alvo').value) || 25,
+    roasMin: parseFloat(document.getElementById('bob-roas-min').value) || 2,
+  };
+  localStorage.setItem('monaco_bob_cfg_' + accountId, JSON.stringify(cfg));
+  return cfg;
+}
+
+function initBobConfig() {
+  const cfg = getBobConfig();
+  const elCpa = document.getElementById('bob-cpa-alvo');
+  const elRoas = document.getElementById('bob-roas-min');
+  if (elCpa) elCpa.value = cfg.cpaAlvo;
+  if (elRoas) elRoas.value = cfg.roasMin;
+}
+
+function classificarObjetivo(obj) {
+  const o = (obj || '').toUpperCase();
+  if (o.includes('LEAD')) return 'LEADS';
+  if (o.includes('MESSAGE') || o.includes('ENGAGEMENT')) return 'MESSAGES';
+  if (o.includes('TRAFFIC') || o.includes('LINK_CLICKS')) return 'TRAFFIC';
+  if (o.includes('AWARENESS') || o.includes('REACH') || o.includes('BRAND')) return 'AWARENESS';
+  return 'SALES';
+}
+
+function objLabelBob(o) {
+  return { SALES: 'Vendas', LEADS: 'Leads', MESSAGES: 'Mensagens', TRAFFIC: 'Tráfego', AWARENESS: 'Alcance' }[o] || o;
+}
+
+function diagnosticarCampanha(camp, cfg, hoje) {
+  const ins = camp.insights?.data?.[0] || {};
+  const gasto = parseFloat(ins.spend || 0);
+  const impr = parseInt(ins.impressions || 0);
+  const clicks = parseInt(ins.clicks || 0);
+  const reach = parseInt(ins.reach || 0);
+  const freq = parseFloat(ins.frequency || 0);
+  const actions = ins.actions || [];
+  const avs = ins.action_values || [];
+  const obj = classificarObjetivo(camp.objective);
+
+  const ctr = impr > 0 ? (clicks / impr * 100) : 0;
+  const cpc = clicks > 0 ? gasto / clicks : 0;
+
+  let convQtd = 0, convLabel = 'resultados', cpa = 0, roas = 0, fat = 0;
+  if (obj === 'SALES') {
+    convQtd = parseInt(actions.find(a => a.action_type === 'purchase')?.value || 0);
+    fat = parseFloat(avs.find(a => a.action_type === 'purchase')?.value || 0);
+    cpa = convQtd > 0 ? gasto / convQtd : 0;
+    roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+    convLabel = 'pedidos';
+  } else if (obj === 'LEADS') {
+    convQtd = parseInt(actions.find(a => a.action_type === 'lead')?.value || 0);
+    cpa = convQtd > 0 ? gasto / convQtd : 0;
+    convLabel = 'leads';
+  } else if (obj === 'MESSAGES') {
+    convQtd = parseInt(actions.find(a => a.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value
+      || actions.find(a => a.action_type === 'onsite_conversion.total_messaging_connection')?.value || 0);
+    cpa = convQtd > 0 ? gasto / convQtd : 0;
+    convLabel = 'conversas';
+  } else {
+    convQtd = clicks;
+    cpa = cpc;
+    convLabel = 'cliques';
+  }
+
+  const ads = camp.ads?.data || [];
+  const adsAtivos = ads.filter(a => a.effective_status === 'ACTIVE').length;
+
+  let diasRestantes = null;
+  if (camp.stop_time) {
+    diasRestantes = Math.ceil((new Date(camp.stop_time) - hoje) / 86400000);
+  }
+
+  const problemas = [];
+  const acoes = [];
+  let prioridade = 9;
+  let statusGeral = 'ok';
+  const marcarPrioridade = (p, novoStatus) => {
+    prioridade = Math.min(prioridade, p);
+    const ordem = { critico: 0, atencao: 1, ok: 2 };
+    if (ordem[novoStatus] < ordem[statusGeral]) statusGeral = novoStatus;
+  };
+
+  const cpaAlvo = cfg.cpaAlvo;
+  const cpaTeto = cpaAlvo * 1.5;
+  const roasMin = cfg.roasMin;
+
+  // 1) Gargalo de alcance/entrega
+  if (gasto > 0 && impr < 500) {
+    problemas.push({ tipo: 'atencao', titulo: 'Baixa entrega/alcance', desc: `Apenas ${fmtN(impr)} impressões no período. Possível limitação de orçamento, lance ou público muito restrito.` });
+    acoes.push('Revisar orçamento diário e amplitude do público — considerar Advantage+ ou ampliar interesses.');
+    marcarPrioridade(3, 'atencao');
+  }
+
+  // 2) Gargalo de criativo — CTR baixo (regra de corte: CTR < 0,8%)
+  if (impr >= 1000 && ctr > 0 && ctr < 0.8) {
+    problemas.push({ tipo: 'critico', titulo: 'CTR abaixo do mínimo — gargalo no CRIATIVO', desc: `CTR de ${ctr.toFixed(2)}%, abaixo do piso de 0,8%. O hook não está parando o scroll do público.` });
+    acoes.push('Pausar o criativo atual e testar 3-4 novos hooks (estrutura 1x4x1) nos primeiros 3 segundos.');
+    marcarPrioridade(1, 'critico');
+  }
+
+  // 3) Fadiga de criativo — frequência > 3,5
+  if (freq > 3.5) {
+    problemas.push({ tipo: 'atencao', titulo: 'Frequência alta — fadiga de criativo', desc: `Frequência de ${freq.toFixed(2)}x. O público já viu o anúncio muitas vezes; tende a cansar e o custo por resultado sobe.` });
+    acoes.push('Renovar criativos ou ampliar/atualizar o público para reduzir a frequência.');
+    marcarPrioridade(2, 'atencao');
+  }
+
+  // 4) Gargalo pós-clique — cliques sem nenhuma conversão
+  if (gasto > 0 && clicks >= 50 && convQtd === 0) {
+    problemas.push({ tipo: 'critico', titulo: 'Cliques sem conversão — gargalo pós-clique', desc: `${fmtN(clicks)} cliques e nenhum(a) ${convLabel}. O problema está na PÁGINA DE DESTINO, no PIXEL/rastreamento ou na OFERTA — não no criativo.` });
+    acoes.push('Checar pixel/CAPI (deduplicação), velocidade da página (LCP < 2,5s) e clareza da oferta/CTA na landing page.');
+    marcarPrioridade(0, 'critico');
+  } else if (gasto > 0 && convQtd === 0 && clicks < 50 && impr >= 500) {
+    problemas.push({ tipo: 'atencao', titulo: 'Volume insuficiente para diagnóstico', desc: `Investiu ${fmt(gasto)} mas ainda com poucos cliques (${fmtN(clicks)}) para uma leitura confiável.` });
+    acoes.push('Aguardar mais volume ou revisar segmentação/lance antes de tirar conclusões definitivas.');
+    marcarPrioridade(4, 'atencao');
+  }
+
+  // 5) Custo por resultado acima da meta/teto (regra de corte: CPA > 1,5x meta)
+  const rotuloCpa = convLabel === 'pedidos' ? 'CPR' : 'Custo por ' + convLabel.replace(/s$/, '');
+  if (convQtd > 0 && cpa > cpaTeto) {
+    problemas.push({ tipo: 'critico', titulo: `${rotuloCpa} acima do teto (1,5x a meta)`, desc: `${fmt(cpa)} por ${convLabel.replace(/s$/, '')}, ${(cpa / cpaAlvo).toFixed(1)}x acima da meta de ${fmt(cpaAlvo)}.` });
+    acoes.push('Pausar o conjunto de anúncios com pior custo ou reduzir orçamento até otimizar oferta/público.');
+    marcarPrioridade(1, 'critico');
+  } else if (convQtd > 0 && cpa > cpaAlvo) {
+    problemas.push({ tipo: 'atencao', titulo: `${rotuloCpa} acima da meta`, desc: `${fmt(cpa)} por ${convLabel.replace(/s$/, '')}, acima da meta de ${fmt(cpaAlvo)}.` });
+    acoes.push('Testar novos públicos e criativos para reduzir o custo por resultado.');
+    marcarPrioridade(3, 'atencao');
+  }
+
+  // 6) ROAS (apenas vendas) — regra de corte: ROAS < mínimo viável
+  if (obj === 'SALES' && gasto > 0 && fat > 0) {
+    if (roas < roasMin) {
+      problemas.push({ tipo: 'critico', titulo: 'ROAS abaixo do mínimo viável', desc: `ROAS ${roas.toFixed(2)}x, abaixo do mínimo de ${roasMin}x definido. Campanha operando no prejuízo ou com margem insuficiente.` });
+      acoes.push('Reestruturar: revisar oferta/ticket médio, testar novo público lookalike e cortar segmentos frios de baixa conversão.');
+      marcarPrioridade(0, 'critico');
+    } else if (roas < roasMin * 1.5) {
+      problemas.push({ tipo: 'atencao', titulo: 'ROAS na média — espaço para otimizar', desc: `ROAS ${roas.toFixed(2)}x, dentro do viável, mas abaixo do ideal.` });
+      acoes.push('Otimizar públicos e criativos para elevar o ROAS antes de aumentar orçamento.');
+      marcarPrioridade(4, 'atencao');
+    } else {
+      problemas.push({ tipo: 'ok', titulo: 'ROAS saudável — oportunidade de escala', desc: `ROAS ${roas.toFixed(2)}x com ${fmtN(convQtd)} pedidos e ${fmt(fat)} em faturamento.` });
+      acoes.push('Escalar verba em +20% e reavaliar em 48-72h (escala vertical). Considerar duplicar a campanha para escala horizontal.');
+      marcarPrioridade(6, 'ok');
+    }
+  }
+
+  // 7) Orçamento quase esgotado
+  const lifetimeBudget = parseFloat(camp.lifetime_budget || 0) / 100;
+  const budgetRemaining = parseFloat(camp.budget_remaining || 0) / 100;
+  const pctGasto = lifetimeBudget > 0 ? ((lifetimeBudget - budgetRemaining) / lifetimeBudget * 100) : 0;
+  if (pctGasto > 90) {
+    problemas.push({ tipo: 'critico', titulo: 'Orçamento quase esgotado', desc: `${pctGasto.toFixed(0)}% do orçamento vitalício já foi usado. Restam ${fmt(budgetRemaining)}.` });
+    acoes.push('Aumentar o orçamento vitalício ou preparar campanha de continuidade.');
+    marcarPrioridade(1, 'critico');
+  }
+
+  // 8) Encerramento próximo
+  if (diasRestantes !== null && diasRestantes >= 0 && diasRestantes <= 2) {
+    problemas.push({ tipo: 'critico', titulo: `Encerra em ${diasRestantes} dia(s)`, desc: 'Data de término se aproximando.' });
+    acoes.push('Duplicar ou criar nova campanha para não perder continuidade de veiculação.');
+    marcarPrioridade(1, 'critico');
+  } else if (diasRestantes !== null && diasRestantes > 2 && diasRestantes <= 7) {
+    problemas.push({ tipo: 'atencao', titulo: `Encerra em ${diasRestantes} dias`, desc: 'Planejar renovação com antecedência.' });
+    marcarPrioridade(4, 'atencao');
+  }
+
+  // 9) Estrutura de teste — 1x4x1
+  if (adsAtivos === 0 && gasto > 0) {
+    problemas.push({ tipo: 'critico', titulo: 'Nenhum anúncio ativo', desc: 'Campanha ativa sem anúncios rodando.' });
+    acoes.push('Verificar conjuntos/anúncios pausados por erro, reprovação ou saldo.');
+    marcarPrioridade(1, 'critico');
+  } else if (adsAtivos === 1 && gasto > 0) {
+    problemas.push({ tipo: 'atencao', titulo: 'Apenas 1 criativo ativo — sem teste', desc: 'A estrutura 1x4x1 recomenda testar ao menos 3-4 variações de criativo por público.' });
+    acoes.push('Subir mais 2-3 variações de criativo (hook, formato, copy) para o mesmo público.');
+    marcarPrioridade(5, 'atencao');
+  }
+
+  if (!problemas.length) {
+    problemas.push({ tipo: 'ok', titulo: 'Sem alertas — campanha estável', desc: 'Métricas dentro do esperado para o período selecionado.' });
+    prioridade = 8;
+  }
+
+  return { camp, obj, gasto, impr, clicks, reach, freq, ctr, cpc, convQtd, convLabel, cpa, roas, fat, adsAtivos, diasRestantes, problemas, acoes, prioridade, statusGeral };
+}
+
+function renderDiagnosticos(diags, cfg) {
+  const nCritico = diags.filter(d => d.statusGeral === 'critico').length;
+  const nAtencao = diags.filter(d => d.statusGeral === 'atencao').length;
+  const nOk = diags.filter(d => d.statusGeral === 'ok').length;
+
+  let html = `<div style="font-size:11px;color:#6b7280;margin-bottom:14px;line-height:1.7;">
+    ${diags.length} campanha(s) ativa(s) analisada(s) — Meta CPA ${fmt(cfg.cpaAlvo)} · ROAS mín ${cfg.roasMin}x<br>
+    <span style="color:#f87171;">🔴 ${nCritico} crítico(s)</span> · <span style="color:#fbbf24;">⚠️ ${nAtencao} atenção</span> · <span style="color:#34d399;">✅ ${nOk} saudável(is)</span>
+  </div>`;
+
+  diags.forEach((d, idx) => {
+    const corBorda = { critico: '#f87171', atencao: '#fbbf24', ok: '#34d399' }[d.statusGeral];
+    const iconStatus = { critico: '🔴', atencao: '⚠️', ok: '✅' }[d.statusGeral];
+    const roasTxt = d.obj === 'SALES' ? ` · ROAS ${d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—'}` : '';
+
+    html += `<div class="bob-camp-card" style="border-left:3px solid ${corBorda};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div style="font-size:13px;font-weight:600;color:#fff;">${iconStatus} ${d.camp.name}</div>
+        <span style="font-size:10px;color:#6b7280;white-space:nowrap;">prioridade #${idx + 1}</span>
+      </div>
+      <div style="font-size:10px;color:#6b7280;margin:4px 0 10px;line-height:1.6;">
+        ${objLabelBob(d.obj)} · Gasto ${fmt(d.gasto)} · CTR ${d.ctr.toFixed(2)}% · Freq ${d.freq.toFixed(2)}x${roasTxt} · ${d.convLabel} ${fmtN(d.convQtd)} (${d.cpa > 0 ? fmt(d.cpa) : '—'}/un)
+      </div>`;
+
+    d.problemas.forEach(p => {
+      html += `<div class="bob-alert ${p.tipo}">
+        <div class="bob-alert-title">${p.titulo}</div>
+        <div class="bob-alert-desc">${p.desc}</div>
+      </div>`;
+    });
+
+    if (d.acoes.length) {
+      html += `<div style="margin-top:8px;font-size:11px;color:#a78bfa;font-weight:600;">💡 Próximo teste / plano de ação:</div>
+      <ol style="margin:4px 0 0 16px;padding:0;font-size:11px;color:#c8c8c8;line-height:1.7;">`;
+      d.acoes.forEach(a => { html += `<li>${a}</li>`; });
+      html += `</ol>`;
+    }
+
+    html += `</div>`;
+  });
+
+  return html;
+}
+
 async function abrirBOB() {
   document.getElementById('bob-panel').classList.add('open');
   document.getElementById('overlay-bg').classList.add('open');
-  document.getElementById('bob-body').innerHTML = '<div class="bob-loading"><span class="spin">⟳</span> BOB analisando campanhas...</div>';
+  document.getElementById('bob-body').innerHTML = '<div class="bob-loading"><span class="spin">⟳</span> BOB (Gestor de Tráfego) analisando campanhas...</div>';
 
-  const alertas = [];
+  const cfg = salvarBobConfig();
   const hoje = new Date();
   const insightsField = dataInicio && dataFim
-    ? `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`
-    : `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,actions,action_values,cost_per_action_type}`;
+    ? `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,reach,frequency,actions,action_values}`
+    : `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,reach,frequency,actions,action_values}`;
 
   try {
-    const fields = `id,name,status,effective_status,lifetime_budget,daily_budget,budget_remaining,start_time,stop_time,${insightsField},ads.limit(50){id,status,effective_status}`;
+    const fields = `id,name,objective,status,effective_status,lifetime_budget,daily_budget,budget_remaining,start_time,stop_time,${insightsField},ads.limit(50){id,status,effective_status}`;
     const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
     const r = await fetch(url);
     const d = await r.json();
-    const campanhas = d.data || [];
+    const campanhas = (d.data || []).filter(c => (c.effective_status || c.status) === 'ACTIVE');
 
-    for (const camp of campanhas) {
-      const status = camp.effective_status || camp.status;
-      const ins = camp.insights?.data?.[0] || {};
-      const gasto = parseFloat(ins.spend || 0);
-      const actions = ins.actions || [];
-      const avs = ins.action_values || [];
-      const pedidos = parseInt(actions.find(a => a.action_type === 'purchase')?.value || 0);
-      const fat = parseFloat(avs.find(a => a.action_type === 'purchase')?.value || 0);
-      const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
-      const cpr = pedidos > 0 ? gasto / pedidos : 0;
-      const ads = camp.ads?.data || [];
-      const adsAtivos = ads.filter(a => a.effective_status === 'ACTIVE').length;
-      const lifetimeBudget = parseFloat(camp.lifetime_budget || 0) / 100;
-      const budgetRemaining = parseFloat(camp.budget_remaining || 0) / 100;
-      const pctGasto = lifetimeBudget > 0 ? ((lifetimeBudget - budgetRemaining) / lifetimeBudget * 100) : 0;
-
-      let diasRestantes = null;
-      if (camp.stop_time) {
-        const stop = new Date(camp.stop_time);
-        diasRestantes = Math.ceil((stop - hoje) / 86400000);
-      }
-
-      if (status === 'ACTIVE') {
-        if (gasto > 0 && pedidos === 0) {
-          alertas.push({ tipo: 'critico', icon: '🚨', camp: camp.name, titulo: 'Gasto sem resultado', desc: `Investiu ${fmt(gasto)} sem nenhuma compra. Revisar pixel e criativos.`, tags: [{txt: fmt(gasto)+' gasto', cor: 'red'}, {txt: '0 pedidos', cor: 'red'}], diasRestantes });
-        } else if (gasto > 0 && roas > 0 && roas < 1.5) {
-          alertas.push({ tipo: 'critico', icon: '📉', camp: camp.name, titulo: 'ROAS crítico — prejuízo', desc: `ROAS ${roas.toFixed(2)}x. Cada R$ 1 investido retorna R$ ${roas.toFixed(2)}. Campanha no prejuízo.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'red'}, {txt: fmt(cpr)+' CPR', cor: 'red'}], diasRestantes });
-        } else if (gasto > 0 && roas >= 1.5 && roas < 3) {
-          alertas.push({ tipo: 'atencao', icon: '⚠️', camp: camp.name, titulo: 'ROAS abaixo do ideal', desc: `ROAS ${roas.toFixed(2)}x está abaixo da meta de 3x. Otimizar público e criativos.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'amber'}, {txt: fmt(cpr)+' CPR', cor: 'amber'}], diasRestantes });
-        } else if (gasto > 0 && roas >= 3) {
-          alertas.push({ tipo: 'ok', icon: '✅', camp: camp.name, titulo: 'Performance excelente', desc: `ROAS ${roas.toFixed(2)}x com ${pedidos} pedidos. ${fmt(fat)} em faturamento.`, tags: [{txt: 'ROAS '+roas.toFixed(2)+'x', cor: 'green'}, {txt: pedidos+' pedidos', cor: 'green'}], diasRestantes });
-        }
-        if (pctGasto > 90) {
-          alertas.push({ tipo: 'critico', icon: '💸', camp: camp.name, titulo: 'Orçamento quase esgotado', desc: `${pctGasto.toFixed(0)}% do orçamento usado. Restam apenas ${fmt(budgetRemaining)}.`, tags: [{txt: fmt(budgetRemaining)+' restante', cor: 'red'}], diasRestantes });
-        }
-        if (diasRestantes !== null && diasRestantes <= 2 && diasRestantes >= 0) {
-          alertas.push({ tipo: 'critico', icon: '⏰', camp: camp.name, titulo: `Encerra em ${diasRestantes} dia(s)!`, desc: `Campanha com data de término se aproximando. Verificar renovação.`, tags: [{txt: diasRestantes+' dia(s)', cor: 'red'}], diasRestantes });
-        } else if (diasRestantes !== null && diasRestantes <= 7 && diasRestantes > 2) {
-          alertas.push({ tipo: 'atencao', icon: '📅', camp: camp.name, titulo: `Encerra em ${diasRestantes} dias`, desc: `Planejar renovação ou nova campanha.`, tags: [{txt: diasRestantes+' dias', cor: 'amber'}], diasRestantes });
-        }
-        if (adsAtivos === 0) {
-          alertas.push({ tipo: 'atencao', icon: '🎭', camp: camp.name, titulo: 'Nenhum anúncio ativo', desc: `Campanha ativa sem anúncios rodando. Verificar conjuntos e criativos.`, tags: [{txt: '0 anúncios ativos', cor: 'amber'}], diasRestantes });
-        }
-      } else if (status === 'PAUSED' && gasto > 0) {
-        alertas.push({ tipo: 'info', icon: '⏸️', camp: camp.name, titulo: 'Campanha pausada com histórico', desc: `Estava gastando ${fmt(gasto)} no período. Verificar se pausa foi intencional.`, tags: [{txt: 'Pausada', cor: 'blue'}, {txt: fmt(gasto)+' gasto', cor: 'blue'}], diasRestantes });
-      }
-    }
-
-    // Renderizar
-    if (!alertas.length) {
-      document.getElementById('bob-body').innerHTML = '<div class="bob-empty">✅ Nenhum alerta encontrado!<br><span style="font-size:11px;color:#6b7280;margin-top:6px;display:block;">Todas as campanhas estão saudáveis.</span></div>';
+    if (!campanhas.length) {
+      document.getElementById('bob-body').innerHTML = '<div class="bob-empty">Nenhuma campanha ativa no período para analisar.</div>';
       return;
     }
 
-    const ordem = { critico: 0, atencao: 1, info: 2, ok: 3 };
-    alertas.sort((a, b) => (ordem[a.tipo] || 0) - (ordem[b.tipo] || 0));
+    const diagnosticos = campanhas.map(camp => diagnosticarCampanha(camp, cfg, hoje));
+    const ordem = { critico: 0, atencao: 1, ok: 2 };
+    diagnosticos.sort((a, b) => (ordem[a.statusGeral] - ordem[b.statusGeral]) || (a.prioridade - b.prioridade));
 
-    const labels = { critico: '🔴 Crítico', atencao: '⚠️ Atenção', info: 'ℹ️ Info', ok: '✅ Saudável' };
-    const grupos = {};
-    alertas.forEach(a => { if (!grupos[a.tipo]) grupos[a.tipo] = []; grupos[a.tipo].push(a); });
+    document.getElementById('bob-body').innerHTML = renderDiagnosticos(diagnosticos, cfg);
 
-    let html = `<div style="font-size:12px;color:#6b7280;margin-bottom:12px;">${campanhas.length} campanhas analisadas — ${alertas.length} alerta(s)</div>`;
-
-    for (const [tipo, lista] of Object.entries(grupos)) {
-      html += `<div class="bob-section">${labels[tipo]} (${lista.length})</div>`;
-      html += lista.map(a => `
-        <div class="bob-alert ${a.tipo}">
-          <div class="bob-alert-title">${a.icon} ${a.camp}</div>
-          <div style="font-size:11px;font-weight:600;color:#e8e8e8;margin-bottom:3px;">${a.titulo}</div>
-          <div class="bob-alert-desc">${a.desc}</div>
-          ${a.diasRestantes !== null && a.diasRestantes >= 0 ? `<div style="font-size:11px;color:${a.diasRestantes <= 2 ? '#f87171' : '#fbbf24'};margin-top:4px;">⏰ Encerra em ${a.diasRestantes} dia(s)</div>` : ''}
-          <div class="bob-alert-tags">${(a.tags||[]).map(t => `<span class="bob-tag ${t.cor}">${t.txt}</span>`).join('')}</div>
-        </div>`).join('');
-    }
-
-    document.getElementById('bob-body').innerHTML = html;
-
-  } catch(e) {
+  } catch (e) {
     document.getElementById('bob-body').innerHTML = `<div class="bob-loading">Erro: ${e.message}</div>`;
   }
 }
@@ -599,6 +784,7 @@ function fecharCriativo(e) {
 }
 
 // Iniciar
+initBobConfig();
 if (!accountId) {
   document.getElementById('tbody').innerHTML = `<tr><td colspan="9" class="empty-state"><div>ID da conta não informado.</div></td></tr>`;
 } else {
@@ -616,8 +802,13 @@ if (!accountId) {
 <div class="overlay-bg" id="overlay-bg" onclick="fecharBOB()"></div>
 <div class="bob-panel" id="bob-panel">
   <div class="bob-header">
-    <div class="bob-title">🤖 BOB — Análise da BM</div>
+    <div class="bob-title">🤖 BOB — Gestor de Tráfego</div>
     <button class="bob-close" onclick="fecharBOB()">✕</button>
+  </div>
+  <div class="bob-config">
+    <label>CPA alvo R$ <input type="number" id="bob-cpa-alvo" step="1" min="0"></label>
+    <label>ROAS mín <input type="number" id="bob-roas-min" step="0.5" min="0"></label>
+    <button onclick="abrirBOB()">Reanalisar</button>
   </div>
   <div class="bob-body" id="bob-body">
     <div class="bob-loading">Clique em "🤖 BOB" para analisar esta BM</div>
