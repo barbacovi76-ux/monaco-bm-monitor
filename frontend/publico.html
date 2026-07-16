@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise de Público — Monaco Agency</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
+.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+.logo span { background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
+.back-btn:hover { background: #262a3a; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
+.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
+.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
+.section-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.mc { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
+.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
+.mc-val.green { color: #34d399; }
+.mc-val.amber { color: #fbbf24; }
+.mc-val.red { color: #f87171; }
+.mc-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 8px 12px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; background: #111318; border-bottom: 1px solid #2a2d3a; }
+td { padding: 8px 12px; border-bottom: 1px solid #1e2130; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #1a1e2a; }
+.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+.spin { display: inline-block; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.sugestao { border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid; font-size: 12px; line-height: 1.6; }
+.sugestao.critico { background: rgba(248,113,113,.08); border-color: #f87171; color: #fca5a5; }
+.sugestao.atencao { background: rgba(251,191,36,.08); border-color: #fbbf24; color: #fde68a; }
+.sugestao.ok { background: rgba(52,211,153,.08); border-color: #34d399; color: #6ee7b7; }
+.sugestao b { color: #fff; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-item { font-size: 11px; padding: 4px 10px; border-radius: 99px; background: #1e2130; border: 1px solid #2a2d3a; color: #c8c8c8; }
+.plano-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #1e2130; }
+.plano-item:last-child { border-bottom: none; }
+.plano-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: #1e2130; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #9ca3af; }
+.plano-num.critico { background: rgba(248,113,113,.2); color: #f87171; }
+.plano-num.atencao { background: rgba(251,191,36,.2); color: #fbbf24; }
+.plano-num.ok { background: rgba(52,211,153,.2); color: #34d399; }
+.plano-texto { font-size: 12px; color: #d1d5db; line-height: 1.6; }
+.empty-ok { text-align: center; padding: 24px; color: #34d399; font-size: 13px; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🎯 Análise de Público <span>Monaco Agency</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="periodo-badge" id="periodo-label">Carregando...</span>
+    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="bm-header">
+    <div>
+      <div class="bm-title" id="bm-title">Carregando...</div>
+      <div class="bm-id" id="bm-id"></div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="loading"><span class="spin">⟳</span> BOB analisando público, localização e posicionamento...</div>
+  </div>
+</div>
+
+<script>
+const TOKEN_KEY = 'monaco_meta_token';
+const API_VERSION = 'v19.0';
+const params = new URLSearchParams(window.location.search);
+const accountId = params.get('id');
+const bmNome = decodeURIComponent(params.get('nome') || 'BM');
+const periodoAtual = params.get('periodo') || 'last_7d';
+const dataInicio = params.get('since') || '';
+const dataFim = params.get('until') || '';
+const token = localStorage.getItem(TOKEN_KEY);
+
+document.getElementById('bm-title').textContent = bmNome;
+document.getElementById('bm-id').textContent = accountId;
+
+const periodoLabels = { today: 'Hoje', yesterday: 'Ontem', last_7d: 'Últimos 7 dias', last_14d: 'Últimos 14 dias', last_30d: 'Últimos 30 dias' };
+if (periodoAtual === 'custom' && dataInicio && dataFim) {
+  const fmtD = d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR');
+  document.getElementById('periodo-label').textContent = `${fmtD(dataInicio)} até ${fmtD(dataFim)}`;
+} else {
+  document.getElementById('periodo-label').textContent = periodoLabels[periodoAtual] || periodoAtual;
+}
+
+const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtN = v => Number(v).toLocaleString('pt-BR');
+
+function getTimeParam() {
+  if (dataInicio && dataFim) return `time_range=${encodeURIComponent(JSON.stringify({ since: dataInicio, until: dataFim }))}`;
+  return `date_preset=${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}`;
+}
+
+const PLATFORM_LABELS = { facebook: 'Facebook', instagram: 'Instagram', audience_network: 'Audience Network', messenger: 'Messenger' };
+const POSITION_LABELS = {
+  feed: 'Feed', story: 'Stories', reels: 'Reels', video_feeds: 'Feed de vídeos', marketplace: 'Marketplace',
+  instant_article: 'Instant Article', instream_video: 'Vídeo in-stream', search: 'Busca', right_hand_column: 'Coluna lateral',
+  suggested_video: 'Vídeos sugeridos', facebook_reels: 'Facebook Reels', facebook_reels_overlay: 'Facebook Reels (overlay)',
+};
+const DEVICE_LABELS = { mobile: 'Celular', desktop: 'Computador', connected_tv: 'TV conectada' };
+const GENDER_LABELS = { male: 'Masculino', female: 'Feminino', unknown: 'Não informado' };
+
+function parseSeg(d) {
+  const gasto = parseFloat(d.spend || 0);
+  const impr = parseInt(d.impressions || 0);
+  const clicks = parseInt(d.clicks || 0);
+  const actions = d.actions || [];
+  const avs = d.action_values || [];
+  const pedidos = parseInt((actions.find(a => a.action_type === 'purchase') || { value: 0 }).value);
+  const fat = parseFloat((avs.find(a => a.action_type === 'purchase') || { value: 0 }).value);
+  const leads = parseInt((actions.find(a => a.action_type === 'lead') || { value: 0 }).value);
+  const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
+  const ctr = impr > 0 ? (clicks / impr * 100) : 0;
+  return { gasto, impr, clicks, pedidos, fat, leads, roas, ctr };
+}
+
+async function fetchBreakdown(breakdown) {
+  const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${getTimeParam()}&breakdowns=${breakdown}&limit=200&access_token=${token}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.data || [];
+}
+
+function analisarSegmentos(rows, chaveField, labelMap) {
+  const parsed = rows.map(d => {
+    const p = parseSeg(d);
+    const raw = d[chaveField] || '—';
+    const chave = (labelMap && labelMap[raw]) || raw;
+    return { ...p, chave };
+  }).filter(s => s.gasto > 0).sort((a, b) => b.gasto - a.gasto);
+
+  if (!parsed.length) return { parsed: [], sugestoes: [] };
+
+  const gastoTotal = parsed.reduce((s, x) => s + x.gasto, 0);
+  const conv = s => s.pedidos > 0 ? s.pedidos : s.leads;
+  const custoConv = s => { const c = conv(s); return c > 0 ? s.gasto / c : 0; };
+
+  const comVolume = parsed.filter(s => s.gasto >= gastoTotal * 0.05);
+  const custos = comVolume.map(custoConv).filter(c => c > 0);
+  const custoMedio = custos.length ? custos.reduce((a, b) => a + b, 0) / custos.length : 0;
+
+  const sugestoes = [];
+  comVolume.forEach(s => {
+    const c = conv(s);
+    const custo = custoConv(s);
+    if (c === 0 && s.gasto > 0) {
+      sugestoes.push({ tipo: 'critico', texto: `<b>${s.chave}</b>: ${fmt(s.gasto)} investidos sem nenhuma conversão. Considerar excluir ou reduzir orçamento.` });
+    } else if (custoMedio > 0 && custo > custoMedio * 1.5) {
+      sugestoes.push({ tipo: 'atencao', texto: `<b>${s.chave}</b>: custo por resultado ${fmt(custo)}, ${(custo / custoMedio).toFixed(1)}x acima da média do período. Avaliar reduzir verba ou excluir.` });
+    } else if (custoMedio > 0 && custo > 0 && custo < custoMedio * 0.6) {
+      sugestoes.push({ tipo: 'ok', texto: `<b>${s.chave}</b>: custo por resultado ${fmt(custo)}, bem abaixo da média. Bom candidato para aumentar orçamento ou criar público semelhante (lookalike).` });
+    }
+  });
+
+  return { parsed, sugestoes, custoMedio };
+}
+
+function renderSecaoSeg(titulo, icone, resultado, colResultLabel) {
+  if (!resultado.parsed.length) return '';
+  const conv = s => s.pedidos > 0 ? s.pedidos : s.leads;
+  const custoConv = s => { const c = conv(s); return c > 0 ? s.gasto / c : 0; };
+
+  const rows = resultado.parsed.slice(0, 12).map(s => {
+    const c = conv(s);
+    const custo = custoConv(s);
+    const roasColor = s.roas >= 3 ? '#34d399' : s.roas >= 1.5 ? '#fbbf24' : s.roas > 0 ? '#f87171' : '#6b7280';
+    return `<tr>
+      <td style="color:#e8e8e8;font-weight:500;">${s.chave}</td>
+      <td>${fmt(s.gasto)}</td>
+      <td>${fmtN(c)}</td>
+      <td>${custo > 0 ? fmt(custo) : '—'}</td>
+      <td style="color:${roasColor};font-weight:600;">${s.roas > 0 ? s.roas.toFixed(2) + 'x' : '—'}</td>
+      <td>${s.ctr > 0 ? s.ctr.toFixed(2) + '%' : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  const sugestoesHtml = resultado.sugestoes.length
+    ? resultado.sugestoes.map(s => `<div class="sugestao ${s.tipo}">${s.texto}</div>`).join('')
+    : '';
+
+  return `
+  <div class="section">
+    <div class="section-title">${icone} ${titulo}</div>
+    <table><thead><tr><th>${titulo}</th><th>Gasto</th><th>${colResultLabel}</th><th>Custo/res.</th><th>ROAS</th><th>CTR</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    ${sugestoesHtml ? `<div style="margin-top:12px;">${sugestoesHtml}</div>` : ''}
+  </div>`;
+}
+
+async function carregarPublicosAtuais() {
+  const fields = 'id,name,status,effective_status,targeting{age_min,age_max,genders,geo_locations,interests,flexible_spec,custom_audiences,lookalike_audiences}';
+  const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/adsets?fields=${fields}&limit=100&access_token=${token}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  const ativos = (d.data || []).filter(a => (a.effective_status || a.status) === 'ACTIVE');
+
+  const interesses = new Set();
+  let temLookalike = false, temCustomAudience = false, qtdAdsetsComInteresse = 0;
+  const paises = new Set(), regioes = new Set();
+
+  ativos.forEach(a => {
+    const t = a.targeting || {};
+    let achouInteresse = false;
+    (t.interests || []).forEach(i => { interesses.add(i.name); achouInteresse = true; });
+    (t.flexible_spec || []).forEach(spec => {
+      (spec.interests || []).forEach(i => { interesses.add(i.name); achouInteresse = true; });
+    });
+    if (achouInteresse) qtdAdsetsComInteresse++;
+    if ((t.lookalike_audiences || []).length) temLookalike = true;
+    if ((t.custom_audiences || []).length) temCustomAudience = true;
+    const geo = t.geo_locations || {};
+    (geo.countries || []).forEach(c => paises.add(c));
+    (geo.regions || []).forEach(reg => regioes.add(reg.name || reg.key));
+    (geo.cities || []).forEach(c => regioes.add(c.name));
+  });
+
+  return {
+    totalAtivos: ativos.length,
+    interesses: Array.from(interesses),
+    temLookalike, temCustomAudience, qtdAdsetsComInteresse,
+    paises: Array.from(paises), regioes: Array.from(regioes),
+  };
+}
+
+function renderPublicosAtuais(info) {
+  const sugestoes = [];
+  if (!info.totalAtivos) {
+    sugestoes.push({ tipo: 'atencao', texto: 'Nenhum conjunto de anúncios ativo encontrado para ler a segmentação atual.' });
+  } else {
+    if (!info.temLookalike) {
+      sugestoes.push({ tipo: 'atencao', texto: 'Nenhum público <b>lookalike</b> ativo. Criar um LAL de 1-3% a partir de compradores/pixel costuma reduzir o CPA em contas com histórico de conversão.' });
+    }
+    if (!info.temCustomAudience) {
+      sugestoes.push({ tipo: 'atencao', texto: 'Nenhum público personalizado (custom audience) ativo. Considerar remarketing de visitantes do site/engajamento como camada adicional de funil.' });
+    }
+    if (info.interesses.length > 0 && info.interesses.length <= 3 && info.qtdAdsetsComInteresse > 0) {
+      sugestoes.push({ tipo: 'atencao', texto: `Apenas ${info.interesses.length} interesse(s) distinto(s) em uso. Testar 2-3 novos interesses correlatos ou público amplo (Advantage+ Audience) para ampliar o teto de escala.` });
+    }
+    if (info.regioes.length === 0 && info.paises.length > 0) {
+      sugestoes.push({ tipo: 'ok', texto: `Segmentação geográfica abrangendo o(s) país(es) inteiro(s) (${info.paises.join(', ')}), sem recorte por região. Ver a tabela de Localização abaixo para decidir se vale restringir aos estados com melhor retorno.` });
+    }
+  }
+
+  const tagsInteresses = info.interesses.length
+    ? `<div class="tag-list">${info.interesses.map(i => `<span class="tag-item">${i}</span>`).join('')}</div>`
+    : '<div style="font-size:12px;color:#6b7280;">Nenhum interesse específico configurado (públicos amplos ou só lookalike/remarketing).</div>';
+
+  return `
+  <div class="section">
+    <div class="section-title">🧩 Públicos e Interesses em Uso Hoje</div>
+    <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">${info.totalAtivos} conjunto(s) de anúncios ativo(s) · Lookalike: ${info.temLookalike ? 'sim' : 'não'} · Público personalizado: ${info.temCustomAudience ? 'sim' : 'não'}</div>
+    ${tagsInteresses}
+    ${sugestoes.length ? `<div style="margin-top:12px;">${sugestoes.map(s => `<div class="sugestao ${s.tipo}">${s.texto}</div>`).join('')}</div>` : ''}
+  </div>`;
+}
+
+function renderPlanoDeAcao(todasSugestoes) {
+  if (!todasSugestoes.length) {
+    return `<div class="section"><div class="section-title">✅ Plano de Ação do Gestor</div><div class="empty-ok">Nenhum ponto crítico de público, localização ou posicionamento identificado neste período.</div></div>`;
+  }
+  const ordem = { critico: 0, atencao: 1, ok: 2 };
+  const ordenadas = [...todasSugestoes].sort((a, b) => ordem[a.tipo] - ordem[b.tipo]);
+  const itens = ordenadas.map((s, i) => `
+    <div class="plano-item">
+      <div class="plano-num ${s.tipo}">${i + 1}</div>
+      <div class="plano-texto">${s.texto}</div>
+    </div>`).join('');
+  return `
+  <div class="section">
+    <div class="section-title">✅ Plano de Ação do Gestor — Público e Localização</div>
+    ${itens}
+  </div>`;
+}
+
+async function carregar() {
+  if (!token) {
+    document.getElementById('main-content').innerHTML = '<div class="loading">Token não encontrado. Volte ao dashboard e salve o token.</div>';
+    return;
+  }
+
+  try {
+    const [ageRows, genderRows, regionRows, platRows, posRows, devRows, publicosInfo] = await Promise.all([
+      fetchBreakdown('age'),
+      fetchBreakdown('gender'),
+      fetchBreakdown('region'),
+      fetchBreakdown('publisher_platform'),
+      fetchBreakdown('platform_position'),
+      fetchBreakdown('device_platform'),
+      carregarPublicosAtuais(),
+    ]);
+
+    const totalGasto = ageRows.reduce((s, d) => s + parseFloat(d.spend || 0), 0);
+    const totalConv = ageRows.reduce((s, d) => {
+      const p = parseSeg(d);
+      return s + (p.pedidos > 0 ? p.pedidos : p.leads);
+    }, 0);
+
+    const resAge = analisarSegmentos(ageRows, 'age');
+    const resGender = analisarSegmentos(genderRows, 'gender', GENDER_LABELS);
+    const resRegion = analisarSegmentos(regionRows, 'region');
+    const resPlat = analisarSegmentos(platRows, 'publisher_platform', PLATFORM_LABELS);
+    const resPos = analisarSegmentos(posRows, 'platform_position', POSITION_LABELS);
+    const resDev = analisarSegmentos(devRows, 'device_platform', DEVICE_LABELS);
+
+    const resumoHtml = `
+    <div class="metrics-row">
+      <div class="mc"><div class="mc-label">💰 Investido no período</div><div class="mc-val">${fmt(totalGasto)}</div></div>
+      <div class="mc"><div class="mc-label">📦 Resultados totais</div><div class="mc-val">${fmtN(totalConv)}</div></div>
+      <div class="mc"><div class="mc-label">📍 Estados/regiões ativas</div><div class="mc-val">${resRegion.parsed.length}</div></div>
+      <div class="mc"><div class="mc-label">🧩 Interesses em uso</div><div class="mc-val">${publicosInfo.interesses.length}</div></div>
+    </div>`;
+
+    const todasSugestoes = [
+      ...resRegion.sugestoes,
+      ...resAge.sugestoes,
+      ...resGender.sugestoes,
+      ...resPlat.sugestoes,
+      ...resPos.sugestoes,
+      ...resDev.sugestoes,
+    ];
+    // extrair sugestões textuais também da seção de públicos atuais para o plano consolidado
+    const infoParaPlano = (() => {
+      const extra = [];
+      if (publicosInfo.totalAtivos) {
+        if (!publicosInfo.temLookalike) extra.push({ tipo: 'atencao', texto: 'Criar público <b>lookalike</b> (1-3%) a partir de compradores/pixel — nenhum ativo hoje.' });
+        if (!publicosInfo.temCustomAudience) extra.push({ tipo: 'atencao', texto: 'Ativar <b>remarketing</b> (custom audience) de visitantes/engajamento — nenhum ativo hoje.' });
+        if (publicosInfo.interesses.length > 0 && publicosInfo.interesses.length <= 3) extra.push({ tipo: 'atencao', texto: 'Testar novos interesses ou público amplo (Advantage+) — apenas ' + publicosInfo.interesses.length + ' interesse(s) em uso.' });
+      }
+      return extra;
+    })();
+    todasSugestoes.push(...infoParaPlano);
+
+    let html = resumoHtml;
+    html += renderSecaoSeg('Localização (Estado/Região)', '📍', resRegion, 'Resultados');
+    html += `<div class="grid-2">`;
+    html += renderSecaoSeg('Idade', '🎂', resAge, 'Resultados');
+    html += renderSecaoSeg('Gênero', '⚧', resGender, 'Resultados');
+    html += `</div>`;
+    html += `<div class="grid-2">`;
+    html += renderSecaoSeg('Posicionamento', '📱', resPos, 'Resultados');
+    html += renderSecaoSeg('Plataforma', '🌐', resPlat, 'Resultados');
+    html += `</div>`;
+    html += renderSecaoSeg('Dispositivo', '💻', resDev, 'Resultados');
+    html += renderPublicosAtuais(publicosInfo);
+    html += renderPlanoDeAcao(todasSugestoes);
+
+    document.getElementById('main-content').innerHTML = html;
+
+  } catch (e) {
+    document.getElementById('main-content').innerHTML = `<div class="loading">Erro: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+carregar();
+</script>
+</body>
+</html>

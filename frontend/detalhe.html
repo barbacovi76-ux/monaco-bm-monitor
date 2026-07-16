@@ -129,6 +129,9 @@ tr:hover td { background: #1a1e2a; }
       <button onclick="abrirAnalise()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #7c3aed;background:rgba(124,58,237,.15);color:#a78bfa;font-weight:500;">
         🔍 Análise Gestor
       </button>
+      <button onclick="abrirPublico()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #2563eb;background:rgba(37,99,235,.15);color:#60a5fa;font-weight:500;">
+        🎯 Público
+      </button>
       <button onclick="abrirBOB()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;font-weight:500;">
         🤖 BOB
       </button>
@@ -500,7 +503,26 @@ function objLabelBob(o) {
   return { SALES: 'Vendas', LEADS: 'Leads', MESSAGES: 'Mensagens', TRAFFIC: 'Tráfego', AWARENESS: 'Alcance' }[o] || o;
 }
 
-function diagnosticarCampanha(camp, cfg, hoje) {
+function getPrevPeriodRange() {
+  if (dataInicio && dataFim) {
+    const d1 = new Date(dataInicio), d2 = new Date(dataFim);
+    const diff = Math.round((d2 - d1) / 86400000) + 1;
+    const ps = new Date(d1); ps.setDate(ps.getDate() - diff);
+    const pe = new Date(d1); pe.setDate(pe.getDate() - 1);
+    return { since: ps.toISOString().split('T')[0], until: pe.toISOString().split('T')[0] };
+  }
+  const hoje2 = new Date();
+  const dias = { last_7d: 7, last_14d: 14, last_30d: 30, today: 1, yesterday: 1 }[periodoAtual] || 7;
+  const pe = new Date(hoje2); pe.setDate(pe.getDate() - dias);
+  const ps = new Date(pe); ps.setDate(ps.getDate() - dias);
+  return { since: ps.toISOString().split('T')[0], until: pe.toISOString().split('T')[0] };
+}
+
+function actVal(actions, tipo) {
+  return parseInt(actions.find(a => a.action_type === tipo)?.value || 0);
+}
+
+function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
   const ins = camp.insights?.data?.[0] || {};
   const gasto = parseFloat(ins.spend || 0);
   const impr = parseInt(ins.impressions || 0);
@@ -513,6 +535,12 @@ function diagnosticarCampanha(camp, cfg, hoje) {
 
   const ctr = impr > 0 ? (clicks / impr * 100) : 0;
   const cpc = clicks > 0 ? gasto / clicks : 0;
+
+  // Funil completo (relevante sobretudo para SALES)
+  const lpView = actVal(actions, 'landing_page_view') || actVal(actions, 'omni_landing_page_view');
+  const viewContent = actVal(actions, 'view_content') || actVal(actions, 'omni_view_content');
+  const addCart = actVal(actions, 'add_to_cart') || actVal(actions, 'omni_add_to_cart');
+  const checkout = actVal(actions, 'initiate_checkout') || actVal(actions, 'omni_initiated_checkout');
 
   let convQtd = 0, convLabel = 'resultados', cpa = 0, roas = 0, fat = 0;
   if (obj === 'SALES') {
@@ -590,6 +618,27 @@ function diagnosticarCampanha(camp, cfg, hoje) {
     marcarPrioridade(4, 'atencao');
   }
 
+  // 4b) Funil detalhado (SALES) — aponta exatamente onde está vazando
+  if (obj === 'SALES' && clicks >= 30) {
+    if (lpView > 0 && lpView < clicks * 0.5) {
+      problemas.push({ tipo: 'critico', titulo: 'Perda entre clique e página de destino', desc: `${fmtN(clicks)} cliques mas só ${fmtN(lpView)} visualizações de página (${(lpView / clicks * 100).toFixed(0)}%). Indica página lenta, redirecionamento com erro ou pixel mal instalado.` });
+      acoes.push('Testar velocidade da LP (LCP < 2,5s), checar redirecionamentos e instalação do pixel/CAPI.');
+      marcarPrioridade(0, 'critico');
+    } else if (lpView >= 20 && addCart === 0 && checkout === 0 && convQtd === 0) {
+      problemas.push({ tipo: 'critico', titulo: 'Visita à página sem intenção de compra', desc: `${fmtN(lpView)} visualizações de página e nenhum add ao carrinho. O gargalo está na OFERTA, preço ou clareza da página — não no criativo nem no tráfego.` });
+      acoes.push('Revisar copy/preço da LP, prova social e clareza do CTA. Testar página alternativa.');
+      marcarPrioridade(0, 'critico');
+    } else if (addCart >= 10 && checkout > 0 && checkout < addCart * 0.4) {
+      problemas.push({ tipo: 'atencao', titulo: 'Abandono entre carrinho e checkout', desc: `${fmtN(addCart)} adições ao carrinho, só ${fmtN(checkout)} iniciaram checkout (${(checkout / addCart * 100).toFixed(0)}%).` });
+      acoes.push('Simplificar o checkout, revisar custo de frete exibido e opções de pagamento.');
+      marcarPrioridade(3, 'atencao');
+    } else if (checkout >= 5 && convQtd === 0) {
+      problemas.push({ tipo: 'critico', titulo: 'Checkout iniciado sem finalizar compra', desc: `${fmtN(checkout)} checkouts iniciados e nenhuma compra concluída. Provável fricção de pagamento ou erro no fluxo de finalização.` });
+      acoes.push('Testar o fluxo de pagamento ponta a ponta e revisar meios de pagamento disponíveis.');
+      marcarPrioridade(0, 'critico');
+    }
+  }
+
   // 5) Custo por resultado acima da meta/teto (regra de corte: CPA > 1,5x meta)
   const rotuloCpa = convLabel === 'pedidos' ? 'CPR' : 'Custo por ' + convLabel.replace(/s$/, '');
   if (convQtd > 0 && cpa > cpaTeto) {
@@ -616,6 +665,40 @@ function diagnosticarCampanha(camp, cfg, hoje) {
       problemas.push({ tipo: 'ok', titulo: 'ROAS saudável — oportunidade de escala', desc: `ROAS ${roas.toFixed(2)}x com ${fmtN(convQtd)} pedidos e ${fmt(fat)} em faturamento.` });
       acoes.push('Escalar verba em +20% e reavaliar em 48-72h (escala vertical). Considerar duplicar a campanha para escala horizontal.');
       marcarPrioridade(6, 'ok');
+    }
+  }
+
+  // 6b) Tendência vs período anterior comparável (evita corte por ruído de 1 dia)
+  const prev = prevMap && prevMap[camp.id];
+  if (prev && prev.gasto > 0) {
+    const prevActions = prev.actions || [];
+    const prevAvs = prev.avs || [];
+    let prevConv = 0, prevCpa = 0, prevRoas = 0, prevFat = 0;
+    if (obj === 'SALES') {
+      prevConv = actVal(prevActions, 'purchase');
+      prevFat = parseFloat(prevAvs.find(a => a.action_type === 'purchase')?.value || 0);
+      prevCpa = prevConv > 0 ? prev.gasto / prevConv : 0;
+      prevRoas = prev.gasto > 0 && prevFat > 0 ? prevFat / prev.gasto : 0;
+    } else if (obj === 'LEADS') {
+      prevConv = actVal(prevActions, 'lead');
+      prevCpa = prevConv > 0 ? prev.gasto / prevConv : 0;
+    }
+    if (prevConv > 0 && convQtd > 0 && cpa > 0 && prevCpa > 0) {
+      const deltaCpa = (cpa - prevCpa) / prevCpa;
+      if (deltaCpa >= 0.3) {
+        problemas.push({ tipo: 'atencao', titulo: `${rotuloCpa} em piora (tendência)`, desc: `Subiu ${(deltaCpa * 100).toFixed(0)}% vs período anterior comparável (${fmt(prevCpa)} → ${fmt(cpa)}). Confirma que não é ruído de um único dia.` });
+        acoes.push('Priorizar esta campanha na fila de otimização — a piora já é uma tendência, não um pico isolado.');
+        marcarPrioridade(2, 'atencao');
+      } else if (deltaCpa <= -0.3) {
+        problemas.push({ tipo: 'ok', titulo: `${rotuloCpa} em melhora (tendência)`, desc: `Caiu ${Math.abs(deltaCpa * 100).toFixed(0)}% vs período anterior (${fmt(prevCpa)} → ${fmt(cpa)}).` });
+      }
+    }
+    if (obj === 'SALES' && prevRoas > 0 && roas > 0) {
+      const deltaRoas = (roas - prevRoas) / prevRoas;
+      if (deltaRoas <= -0.25) {
+        problemas.push({ tipo: 'atencao', titulo: 'ROAS em queda (tendência)', desc: `Caiu ${Math.abs(deltaRoas * 100).toFixed(0)}% vs período anterior (${prevRoas.toFixed(2)}x → ${roas.toFixed(2)}x).` });
+        marcarPrioridade(2, 'atencao');
+      }
     }
   }
 
@@ -655,7 +738,7 @@ function diagnosticarCampanha(camp, cfg, hoje) {
     prioridade = 8;
   }
 
-  return { camp, obj, gasto, impr, clicks, reach, freq, ctr, cpc, convQtd, convLabel, cpa, roas, fat, adsAtivos, diasRestantes, problemas, acoes, prioridade, statusGeral };
+  return { camp, obj, gasto, impr, clicks, reach, freq, ctr, cpc, convQtd, convLabel, cpa, roas, fat, adsAtivos, diasRestantes, lpView, addCart, checkout, problemas, acoes, prioridade, statusGeral };
 }
 
 function renderDiagnosticos(diags, cfg) {
@@ -672,15 +755,19 @@ function renderDiagnosticos(diags, cfg) {
     const corBorda = { critico: '#f87171', atencao: '#fbbf24', ok: '#34d399' }[d.statusGeral];
     const iconStatus = { critico: '🔴', atencao: '⚠️', ok: '✅' }[d.statusGeral];
     const roasTxt = d.obj === 'SALES' ? ` · ROAS ${d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—'}` : '';
+    const funilTxt = d.obj === 'SALES' && (d.lpView || d.addCart || d.checkout)
+      ? `<div style="font-size:10px;color:#4b5563;margin:-4px 0 10px;">Funil: ${fmtN(d.clicks)} cliques → ${fmtN(d.lpView)} página → ${fmtN(d.addCart)} carrinho → ${fmtN(d.checkout)} checkout → ${fmtN(d.convQtd)} compra</div>`
+      : '';
 
     html += `<div class="bob-camp-card" style="border-left:3px solid ${corBorda};">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
         <div style="font-size:13px;font-weight:600;color:#fff;">${iconStatus} ${d.camp.name}</div>
         <span style="font-size:10px;color:#6b7280;white-space:nowrap;">prioridade #${idx + 1}</span>
       </div>
-      <div style="font-size:10px;color:#6b7280;margin:4px 0 10px;line-height:1.6;">
+      <div style="font-size:10px;color:#6b7280;margin:4px 0 6px;line-height:1.6;">
         ${objLabelBob(d.obj)} · Gasto ${fmt(d.gasto)} · CTR ${d.ctr.toFixed(2)}% · Freq ${d.freq.toFixed(2)}x${roasTxt} · ${d.convLabel} ${fmtN(d.convQtd)} (${d.cpa > 0 ? fmt(d.cpa) : '—'}/un)
-      </div>`;
+      </div>
+      ${funilTxt}`;
 
     d.problemas.forEach(p => {
       html += `<div class="bob-alert ${p.tipo}">
@@ -716,8 +803,21 @@ async function abrirBOB() {
   try {
     const fields = `id,name,objective,status,effective_status,lifetime_budget,daily_budget,budget_remaining,start_time,stop_time,${insightsField},ads.limit(50){id,status,effective_status}`;
     const url = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=${fields}&limit=50&access_token=${token}`;
-    const r = await fetch(url);
+
+    const prevRange = getPrevPeriodRange();
+    const prevInsightsField = `insights.time_range({"since":"${prevRange.since}","until":"${prevRange.until}"}){spend,actions,action_values}`;
+    const prevUrl = `https://graph.facebook.com/${API_VERSION}/${accountId}/campaigns?fields=id,${prevInsightsField}&limit=50&access_token=${token}`;
+
+    const [r, rPrev] = await Promise.all([fetch(url), fetch(prevUrl)]);
     const d = await r.json();
+    const dPrev = await rPrev.json();
+
+    const prevMap = {};
+    (dPrev.data || []).forEach(c => {
+      const pins = c.insights?.data?.[0];
+      if (pins) prevMap[c.id] = { gasto: parseFloat(pins.spend || 0), actions: pins.actions || [], avs: pins.action_values || [] };
+    });
+
     const campanhas = (d.data || []).filter(c => (c.effective_status || c.status) === 'ACTIVE');
 
     if (!campanhas.length) {
@@ -725,7 +825,7 @@ async function abrirBOB() {
       return;
     }
 
-    const diagnosticos = campanhas.map(camp => diagnosticarCampanha(camp, cfg, hoje));
+    const diagnosticos = campanhas.map(camp => diagnosticarCampanha(camp, cfg, hoje, prevMap));
     const ordem = { critico: 0, atencao: 1, ok: 2 };
     diagnosticos.sort((a, b) => (ordem[a.statusGeral] - ordem[b.statusGeral]) || (a.prioridade - b.prioridade));
 
@@ -743,6 +843,14 @@ function fecharBOB() {
 
 function abrirAnalise() {
   let url = `analise.html?id=${accountId}&nome=${encodeURIComponent(bmNome)}&periodo=${periodoAtual}`;
+  if (periodoAtual === 'custom' && dataInicio && dataFim) {
+    url += `&since=${dataInicio}&until=${dataFim}`;
+  }
+  window.open(url, '_blank');
+}
+
+function abrirPublico() {
+  let url = `publico.html?id=${accountId}&nome=${encodeURIComponent(bmNome)}&periodo=${periodoAtual}`;
   if (periodoAtual === 'custom' && dataInicio && dataFim) {
     url += `&since=${dataInicio}&until=${dataFim}`;
   }
