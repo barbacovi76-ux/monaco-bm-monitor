@@ -139,10 +139,20 @@ async function fetchBreakdown(breakdown) {
 }
 
 function analisarSegmentos(rows, chaveField, labelMap) {
+  const isMulti = Array.isArray(chaveField);
   const parsed = rows.map(d => {
     const p = parseSeg(d);
-    const raw = d[chaveField] || '—';
-    const chave = (labelMap && labelMap[raw]) || raw;
+    let chave;
+    if (isMulti) {
+      chave = chaveField.map((f, i) => {
+        const raw = d[f] || '—';
+        const map = Array.isArray(labelMap) ? labelMap[i] : null;
+        return (map && map[raw]) || raw;
+      }).join(' · ');
+    } else {
+      const raw = d[chaveField] || '—';
+      chave = (labelMap && labelMap[raw]) || raw;
+    }
     return { ...p, chave };
   }).filter(s => s.gasto > 0).sort((a, b) => b.gasto - a.gasto);
 
@@ -301,7 +311,7 @@ async function carregar() {
       fetchBreakdown('gender'),
       fetchBreakdown('region'),
       fetchBreakdown('publisher_platform'),
-      fetchBreakdown('platform_position'),
+      fetchBreakdown('publisher_platform,platform_position'),
       fetchBreakdown('device_platform'),
       carregarPublicosAtuais(),
     ]);
@@ -316,7 +326,7 @@ async function carregar() {
     const resGender = analisarSegmentos(genderRows, 'gender', GENDER_LABELS);
     const resRegion = analisarSegmentos(regionRows, 'region');
     const resPlat = analisarSegmentos(platRows, 'publisher_platform', PLATFORM_LABELS);
-    const resPos = analisarSegmentos(posRows, 'platform_position', POSITION_LABELS);
+    const resPos = analisarSegmentos(posRows, ['publisher_platform', 'platform_position'], [PLATFORM_LABELS, POSITION_LABELS]);
     const resDev = analisarSegmentos(devRows, 'device_platform', DEVICE_LABELS);
 
     const resumoHtml = `
