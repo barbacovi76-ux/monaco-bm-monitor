@@ -24,47 +24,74 @@ log = logging.getLogger(__name__)
 CONFIG_PATH  = Path(__file__).parent / "config.json"
 ALERTAS_LOG  = Path(__file__).parent / "alertas_enviados.json"
 
+# Lista padrao de contas (nome + account_id apenas — sem segredos).
+# Pode ser sobrescrita/expandida pelo cadastro de clientes (config.json),
+# que so guarda dados nao sensiveis: o token do Meta sempre vem do
+# ambiente (META_TOKEN), nunca de arquivo versionado no repositorio publico.
+DEFAULT_CONTAS = [
+    {"nome": "Rosa Sul Nova",           "account_id": "act_2523170184768797"},
+    {"nome": "Dia de Pizza Dourados",   "account_id": "act_723575425785405"},
+    {"nome": "IH Campo Grande",         "account_id": "act_1131240581799095"},
+    {"nome": "Mollinari",               "account_id": "act_459274303920372"},
+    {"nome": "MrGabs",                  "account_id": "act_728296823243425"},
+    {"nome": "IH Dourados",             "account_id": "act_831936562721815"},
+    {"nome": "Villa Grano",             "account_id": "act_909424425271250"},
+    {"nome": "Brados",                  "account_id": "act_972023765779926"},
+    {"nome": "Berlim",                  "account_id": "act_836447545843342"},
+    {"nome": "A Favorita",              "account_id": "act_969681458906352"},
+    {"nome": "Brava Pizza",             "account_id": "act_4279801688941861"},
+    {"nome": "Pavao",                   "account_id": "act_1759603645448352"},
+    {"nome": "Fornalha",                "account_id": "act_1618084519451450"},
+    {"nome": "CA- Leni ADS 02",         "account_id": "act_1569287454130140"},
+    {"nome": "CA RJK SHOP",             "account_id": "act_297417165372711"},
+    {"nome": "CA - Miotto Construtora", "account_id": "act_213109970735074"},
+    {"nome": "CA - ICGP",               "account_id": "act_360815898753195"},
+    {"nome": "CA - Miotto Backup",      "account_id": "act_533683308259417"},
+    {"nome": "CA - Monaco Agency",      "account_id": "act_732966175219099"},
+    {"nome": "BRUNA MACHADO - DOTCON",  "account_id": "act_1102427261426373"},
+    {"nome": "CA - AMK Estetica",       "account_id": "act_590117117342811"},
+    {"nome": "JS - UNIFORME",           "account_id": "act_1452225369942067"},
+    {"nome": "SH Tijolos",              "account_id": "act_3858259327816511"},
+]
+
 
 # ── Config ────────────────────────────────────────────────────────
 
 def carregar_config() -> dict:
+    """Monta a configuracao em runtime. A lista de clientes (contas) pode vir
+    do config.json versionado (cadastrado via clientes.html), mas token do
+    Meta e credenciais do WhatsApp SEMPRE vem de variavel de ambiente —
+    nunca de arquivo, porque o repositorio e publico."""
+    contas = [dict(c) for c in DEFAULT_CONTAS]
+
     if CONFIG_PATH.exists():
-        with open(CONFIG_PATH, encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(CONFIG_PATH, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict) and data.get("contas"):
+                contas = data["contas"]
+        except Exception as e:
+            log.error(f"Erro ao ler config.json, usando contas padrao: {e}")
+
+    token = os.getenv("META_TOKEN", "")
+    for c in contas:
+        c.setdefault("ativo", True)
+        c.setdefault("metricas", ["saldo"])
+        c.setdefault("whatsapp_numero", "")
+        c.setdefault("limite_critico", None)
+        c.setdefault("limite_baixo", None)
+        c["access_token"] = token  # sempre via env var
+
     return {
         "meta": {
             "api_version": "v19.0",
-            "contas": [
-                {"nome": "Rosa Sul Nova",           "account_id": "act_2523170184768797", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Dia de Pizza Dourados",   "account_id": "act_723575425785405",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "IH Campo Grande",         "account_id": "act_1131240581799095", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Mollinari",               "account_id": "act_459274303920372",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "MrGabs",                  "account_id": "act_728296823243425",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "IH Dourados",             "account_id": "act_831936562721815",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Villa Grano",             "account_id": "act_909424425271250",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Brados",                  "account_id": "act_972023765779926",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Berlim",                  "account_id": "act_836447545843342",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "A Favorita",              "account_id": "act_969681458906352",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Brava Pizza",             "account_id": "act_4279801688941861", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Pavao",                   "account_id": "act_1759603645448352", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "Fornalha",                "account_id": "act_1618084519451450", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA- Leni ADS 02",         "account_id": "act_1569287454130140", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA RJK SHOP",             "account_id": "act_297417165372711",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA - Miotto Construtora", "account_id": "act_213109970735074",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA - ICGP",               "account_id": "act_360815898753195",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA - Miotto Backup",      "account_id": "act_533683308259417",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA - Monaco Agency",      "account_id": "act_732966175219099",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "BRUNA MACHADO - DOTCON",  "account_id": "act_1102427261426373", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "CA - AMK Estetica",       "account_id": "act_590117117342811",  "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "JS - UNIFORME",           "account_id": "act_1452225369942067", "access_token": os.getenv("META_TOKEN", "")},
-                {"nome": "SH Tijolos",              "account_id": "act_3858259327816511", "access_token": os.getenv("META_TOKEN", "")},
-            ]
+            "contas": contas,
         },
         "alertas": {
             "limite_critico": 50,
             "limite_baixo": 100,
             "horario_verificacao": "15:00",
-            "alertar_uma_vez_por_dia": True
+            "alertar_uma_vez_por_dia": True,
         },
         "whatsapp": {
             "api_url":          os.getenv("WPP_API_URL",     "http://localhost:8080"),
@@ -105,6 +132,16 @@ def enviar_whatsapp(cfg_wpp: dict, numero: str, mensagem: str) -> bool:
     except requests.exceptions.RequestException as e:
         log.error(f"Falha ao enviar WhatsApp para {numero}: {e}")
         return False
+
+
+def destino_cliente(conta_cfg: dict, cfg_wpp: dict) -> list:
+    """Retorna o(s) numero(s)/grupo de WhatsApp de destino para um cliente.
+    Se o cliente tiver um WhatsApp proprio cadastrado, envia so pra ele.
+    Caso contrario, cai no grupo interno de operacoes (comportamento antigo)."""
+    numero = (conta_cfg.get("whatsapp_numero") or "").strip()
+    if numero:
+        return [numero]
+    return cfg_wpp["numeros_destino"]
 
 
 # ── Saldo ─────────────────────────────────────────────────────────
@@ -157,19 +194,26 @@ def verificar_e_alertar():
     cfg             = carregar_config()
     alertas_enviados = carregar_alertas_enviados()
     hoje            = str(date.today())
-    limite_critico  = cfg["alertas"]["limite_critico"]
-    limite_baixo    = cfg["alertas"]["limite_baixo"]
+    limite_critico_padrao = cfg["alertas"]["limite_critico"]
+    limite_baixo_padrao   = cfg["alertas"]["limite_baixo"]
     uma_vez_por_dia = cfg["alertas"]["alertar_uma_vez_por_dia"]
     api_version     = cfg["meta"]["api_version"]
     cfg_wpp         = cfg["whatsapp"]
-    numeros         = cfg_wpp["numeros_destino"]
 
     log.info(f"=== Verificacao de saldo — {datetime.now().strftime('%d/%m/%Y %H:%M')} ===")
 
     for conta_cfg in cfg["meta"]["contas"]:
+        if not conta_cfg.get("ativo", True):
+            continue
+        if "saldo" not in conta_cfg.get("metricas", ["saldo"]):
+            continue
+
         account_id = conta_cfg["account_id"]
         token      = conta_cfg["access_token"]
         nome       = conta_cfg["nome"]
+        limite_critico = conta_cfg.get("limite_critico") or limite_critico_padrao
+        limite_baixo   = conta_cfg.get("limite_baixo") or limite_baixo_padrao
+
         log.info(f"Consultando: {nome} ({account_id})")
         conta = consultar_saldo(account_id, token, api_version)
         if conta is None:
@@ -194,7 +238,7 @@ def verificar_e_alertar():
                 continue
         mensagem = montar_mensagem_saldo(conta, nivel, limite_ref)
         enviou = False
-        for numero in numeros:
+        for numero in destino_cliente(conta_cfg, cfg_wpp):
             if enviar_whatsapp(cfg_wpp, numero, mensagem):
                 enviou = True
         if enviou:
@@ -205,6 +249,169 @@ def verificar_e_alertar():
             salvar_alertas_enviados(alertas_enviados)
 
     log.info("=== Verificacao de saldo concluida ===\n")
+
+
+# ── Relatorio de performance por cliente ─────────────────────────
+# Equivalente ao relatorio automatico da Metrifiquei: cada cliente recebe,
+# no proprio WhatsApp, so as metricas que ele escolheu no cadastro.
+
+def buscar_insights_periodo(account_id: str, token: str, api_version: str, date_preset: str = "last_7d") -> dict:
+    url = (f"https://graph.facebook.com/{api_version}/{account_id}/insights"
+           f"?fields=spend,actions,action_values,impressions,clicks"
+           f"&date_preset={date_preset}&access_token={token}")
+    try:
+        r = requests.get(url, timeout=20)
+        data = r.json()
+        if not data.get("data"):
+            return {"gasto": 0, "pedidos": 0, "fat": 0, "leads": 0, "clicks": 0, "impr": 0}
+        ins     = data["data"][0]
+        gasto   = float(ins.get("spend", 0))
+        actions = ins.get("actions", [])
+        av      = ins.get("action_values", [])
+        pedidos = int(next((a["value"] for a in actions if a["action_type"] == "purchase"), 0))
+        fat     = float(next((a["value"] for a in av if a["action_type"] == "purchase"), 0))
+        leads   = int(next((a["value"] for a in actions if a["action_type"] == "lead"), 0))
+        clicks  = int(ins.get("clicks", 0))
+        impr    = int(ins.get("impressions", 0))
+        return {"gasto": gasto, "pedidos": pedidos, "fat": fat, "leads": leads, "clicks": clicks, "impr": impr}
+    except Exception as e:
+        log.error(f"Erro insights performance [{account_id}]: {e}")
+        return {"gasto": 0, "pedidos": 0, "fat": 0, "leads": 0, "clicks": 0, "impr": 0}
+
+
+def montar_mensagem_performance(nome: str, ins: dict) -> str:
+    gasto, pedidos, fat, leads, clicks = ins["gasto"], ins["pedidos"], ins["fat"], ins["leads"], ins["clicks"]
+    linhas = ["Relatorio de Performance — BOB", nome, "Periodo: ultimos 7 dias", ""]
+    if pedidos > 0 or fat > 0:
+        cpr  = gasto / pedidos if pedidos > 0 else 0
+        roas = fat / gasto if gasto > 0 and fat > 0 else 0
+        linhas += [
+            f"Investido: {fmt_brl(gasto)}",
+            f"Pedidos: {pedidos}",
+            f"Faturamento: {fmt_brl(fat)}",
+            f"CPR: {fmt_brl(cpr) if cpr else '-'}",
+            f"ROAS: {roas:.2f}x" if roas else "ROAS: -",
+        ]
+    elif leads > 0:
+        cpl = gasto / leads if leads > 0 else 0
+        linhas += [
+            f"Investido: {fmt_brl(gasto)}",
+            f"Leads: {leads}",
+            f"Custo por lead: {fmt_brl(cpl) if cpl else '-'}",
+        ]
+    else:
+        linhas += [
+            f"Investido: {fmt_brl(gasto)}",
+            f"Cliques: {clicks}",
+            f"Impressoes: {ins['impr']}",
+        ]
+    linhas += ["", f"Horario: {datetime.now().strftime('%d/%m/%Y %H:%M')}"]
+    return "\n".join(linhas)
+
+
+def enviar_relatorios_performance():
+    cfg         = carregar_config()
+    api_version = cfg["meta"]["api_version"]
+    cfg_wpp     = cfg["whatsapp"]
+
+    log.info("Enviando relatorios de performance por cliente...")
+    for conta_cfg in cfg["meta"]["contas"]:
+        if not conta_cfg.get("ativo", True):
+            continue
+        if "performance" not in conta_cfg.get("metricas", []):
+            continue
+        account_id = conta_cfg["account_id"]
+        token      = conta_cfg["access_token"]
+        nome       = conta_cfg["nome"]
+        ins = buscar_insights_periodo(account_id, token, api_version)
+        if ins["gasto"] == 0:
+            log.info(f"  {nome}: sem gasto no periodo, pulando relatorio")
+            continue
+        mensagem = montar_mensagem_performance(nome, ins)
+        for numero in destino_cliente(conta_cfg, cfg_wpp):
+            enviar_whatsapp(cfg_wpp, numero, mensagem)
+    log.info("Relatorios de performance concluidos.")
+
+
+# ── Comparativo semanal individual por cliente ───────────────────
+
+def buscar_insights_range(account_id: str, token: str, api_version: str, since: str, until: str) -> dict:
+    time_range = '{' + f'"since":"{since}","until":"{until}"' + '}'
+    url = (f"https://graph.facebook.com/{api_version}/{account_id}/insights"
+           f"?fields=spend,actions,action_values,impressions,clicks"
+           f"&time_range={time_range}&access_token={token}")
+    try:
+        r = requests.get(url, timeout=20)
+        data = r.json()
+        if not data.get("data"):
+            return {"gasto": 0, "pedidos": 0, "fat": 0, "leads": 0, "clicks": 0}
+        ins     = data["data"][0]
+        gasto   = float(ins.get("spend", 0))
+        actions = ins.get("actions", [])
+        av      = ins.get("action_values", [])
+        pedidos = int(next((a["value"] for a in actions if a["action_type"] == "purchase"), 0))
+        fat     = float(next((a["value"] for a in av if a["action_type"] == "purchase"), 0))
+        leads   = int(next((a["value"] for a in actions if a["action_type"] == "lead"), 0))
+        clicks  = int(ins.get("clicks", 0))
+        return {"gasto": gasto, "pedidos": pedidos, "fat": fat, "leads": leads, "clicks": clicks}
+    except Exception as e:
+        log.error(f"Erro insights range [{account_id}]: {e}")
+        return {"gasto": 0, "pedidos": 0, "fat": 0, "leads": 0, "clicks": 0}
+
+
+def enviar_comparativo_individual():
+    """Comparativo semanal individual (seg/qua/sex) so para clientes que
+    marcaram 'comparativo' no cadastro. Independente do relatorio interno
+    da equipe (analisar_comparativo), que continua igual."""
+    hoje = date.today()
+    if hoje.weekday() not in (0, 2, 4):
+        return
+
+    cfg         = carregar_config()
+    api_version = cfg["meta"]["api_version"]
+    cfg_wpp     = cfg["whatsapp"]
+
+    fim_atual    = hoje - timedelta(days=1)
+    ini_atual    = fim_atual - timedelta(days=6)
+    fim_anterior = ini_atual - timedelta(days=1)
+    ini_anterior = fim_anterior - timedelta(days=6)
+    fmt_date = lambda d: d.strftime("%Y-%m-%d")
+    fmt_br   = lambda d: d.strftime("%d/%m")
+
+    log.info("Enviando comparativos individuais por cliente...")
+    for conta_cfg in cfg["meta"]["contas"]:
+        if not conta_cfg.get("ativo", True):
+            continue
+        if "comparativo" not in conta_cfg.get("metricas", []):
+            continue
+        account_id = conta_cfg["account_id"]
+        token      = conta_cfg["access_token"]
+        nome       = conta_cfg["nome"]
+
+        atual    = buscar_insights_range(account_id, token, api_version, fmt_date(ini_atual), fmt_date(fim_atual))
+        anterior = buscar_insights_range(account_id, token, api_version, fmt_date(ini_anterior), fmt_date(fim_anterior))
+        if atual["gasto"] == 0 and anterior["gasto"] == 0:
+            continue
+
+        linhas = [
+            "Comparativo Semanal — BOB", nome, "",
+            f"Periodo atual: {fmt_br(ini_atual)} - {fmt_br(fim_atual)}",
+            f"Periodo anterior: {fmt_br(ini_anterior)} - {fmt_br(fim_anterior)}", "",
+        ]
+        if anterior["pedidos"] > 0 or atual["pedidos"] > 0:
+            var_ped = ((atual["pedidos"] - anterior["pedidos"]) / anterior["pedidos"] * 100) if anterior["pedidos"] > 0 else 0
+            linhas.append(f"Pedidos: {anterior['pedidos']} -> {atual['pedidos']} ({var_ped:+.1f}%)")
+            linhas.append(f"Faturamento: {fmt_brl(anterior['fat'])} -> {fmt_brl(atual['fat'])}")
+        elif anterior["leads"] > 0 or atual["leads"] > 0:
+            var_leads = ((atual["leads"] - anterior["leads"]) / anterior["leads"] * 100) if anterior["leads"] > 0 else 0
+            linhas.append(f"Leads: {anterior['leads']} -> {atual['leads']} ({var_leads:+.1f}%)")
+        linhas.append(f"Investido: {fmt_brl(anterior['gasto'])} -> {fmt_brl(atual['gasto'])}")
+        linhas += ["", f"Horario: {datetime.now().strftime('%d/%m/%Y %H:%M')}"]
+
+        mensagem = "\n".join(linhas)
+        for numero in destino_cliente(conta_cfg, cfg_wpp):
+            enviar_whatsapp(cfg_wpp, numero, mensagem)
+    log.info("Comparativos individuais concluidos.")
 
 
 # ── Encerramentos ─────────────────────────────────────────────────
@@ -511,10 +718,12 @@ def enviar_motivacional():
 
 
 
-# ── Comparativo de performance ────────────────────────────────────
+# ── Comparativo de performance (relatorio interno da equipe) ─────
 
 def analisar_comparativo():
-    """Compara semana atual vs semana passada e alerta quedas de performance."""
+    """Compara semana atual vs semana passada e alerta quedas de performance.
+    Relatorio combinado enviado para o grupo interno da equipe — nao mexe
+    no cadastro de clientes (veja enviar_comparativo_individual para isso)."""
     from datetime import datetime, timedelta, date
 
     hoje = date.today()
@@ -705,25 +914,34 @@ def rodar_loop():
     # Horarios em UTC (Railway usa UTC — BRT = UTC-3)
     # 07:00 BRT = 10:00 UTC — motivacional
     # 08:00 BRT = 11:00 UTC — encerramentos
+    # 09:00 BRT = 12:00 UTC — comparativo interno (seg/qua/sex)
+    # 10:00 BRT = 13:00 UTC — comparativo individual por cliente (seg/qua/sex)
     # 12:00 BRT = 15:00 UTC — saldo
+    # 15:00 BRT = 18:00 UTC — relatorio de performance por cliente
     horario_motivacional  = "10:00"  # 07:00 BRT
     horario_encerramentos = "11:00"  # 08:00 BRT
     horario_comparativo   = "12:00"  # 09:00 BRT — seg, qua, sex
+    horario_comp_indiv    = "13:00"  # 10:00 BRT — seg, qua, sex
+    horario_performance   = "18:00"  # 15:00 BRT — diario
 
     log.info("Monitor de BMs iniciado")
-    log.info(f"  Motivacional:   {horario_motivacional} UTC (07:00 BRT)")
-    log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
-    log.info(f"  Comparativo:    {horario_comparativo} UTC (09:00 BRT) — seg/qua/sex")
-    log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
-    log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
-    log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
-    log.info(f"  Limite baixo:   {fmt_brl(cfg['alertas']['limite_baixo'])}")
+    log.info(f"  Motivacional:        {horario_motivacional} UTC (07:00 BRT)")
+    log.info(f"  Encerramentos:       {horario_encerramentos} UTC (08:00 BRT)")
+    log.info(f"  Comparativo interno: {horario_comparativo} UTC (09:00 BRT) — seg/qua/sex")
+    log.info(f"  Comparativo cliente: {horario_comp_indiv} UTC (10:00 BRT) — seg/qua/sex")
+    log.info(f"  Saldo:               {horario_alvo} UTC (12:00 BRT)")
+    log.info(f"  Performance cliente: {horario_performance} UTC (15:00 BRT)")
+    log.info(f"  Contas:              {len(cfg['meta']['contas'])}")
+    log.info(f"  Limite critico:      {fmt_brl(cfg['alertas']['limite_critico'])}")
+    log.info(f"  Limite baixo:        {fmt_brl(cfg['alertas']['limite_baixo'])}")
     log.info("")
 
     ultimo_dia_motivacional  = None
     ultimo_dia_encerramentos = None
     ultimo_dia_comparativo   = None
+    ultimo_dia_comp_indiv    = None
     ultimo_dia_saldo         = None
+    ultimo_dia_performance   = None
 
     while True:
         agora      = datetime.now()
@@ -751,12 +969,26 @@ def rodar_loop():
             except Exception as e:
                 log.exception(f"Erro comparativo: {e}")
 
+        if hora_atual == horario_comp_indiv and ultimo_dia_comp_indiv != hoje:
+            ultimo_dia_comp_indiv = hoje
+            try:
+                enviar_comparativo_individual()
+            except Exception as e:
+                log.exception(f"Erro comparativo individual: {e}")
+
         if hora_atual == horario_alvo and ultimo_dia_saldo != hoje:
             ultimo_dia_saldo = hoje
             try:
                 verificar_e_alertar()
             except Exception as e:
                 log.exception(f"Erro saldo: {e}")
+
+        if hora_atual == horario_performance and ultimo_dia_performance != hoje:
+            ultimo_dia_performance = hoje
+            try:
+                enviar_relatorios_performance()
+            except Exception as e:
+                log.exception(f"Erro performance: {e}")
 
         h, m = map(int, horario_alvo.split(":"))
         proximo = agora.replace(hour=h, minute=m, second=0, microsecond=0)
