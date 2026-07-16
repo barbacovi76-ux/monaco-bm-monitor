@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes — Monaco Agency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --gold: #f5c518; --gold-dim: #b8930e; --gold-bg: rgba(245,197,24,.1); --gold-bg2: rgba(245,197,24,.05);
+    --black: #060709; --s1: #0a0c10; --s2: #0e1116; --s3: #13161e; --s4: #181c26;
+    --b1: #1a1e2a; --b2: #222840; --text: #e2e6f0; --dim: #5a6080; --muted: #2a2e40;
+    --green: #00e676; --green2: rgba(0,230,118,.12);
+    --amber: #ffab00; --amber2: rgba(255,171,0,.12);
+    --red: #ff3d57; --red2: rgba(255,61,87,.12);
+    --mono: 'JetBrains Mono', monospace; --sans: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--black); color: var(--text); min-height: 100vh;
+    background-image: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(245,197,24,.04) 0%, transparent 70%); }
+
+  .hdr { background: rgba(10,12,16,.95); border-bottom: 1px solid var(--b1); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: sticky; top: 0; z-index: 100; height: 56px; backdrop-filter: blur(12px); }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-box { width: 32px; height: 32px; background: var(--gold); display: flex; align-items: center;
+    justify-content: center; font-family: var(--mono); font-size: 14px; font-weight: 600; color: #000;
+    flex-shrink: 0; letter-spacing: -1px; box-shadow: 0 0 16px rgba(245,197,24,.3); }
+  .logo-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: .5px; }
+  .logo-sep { color: var(--muted); margin: 0 4px; }
+  .logo-sub { font-size: 11px; color: var(--dim); font-family: var(--mono); letter-spacing: 1px; }
+  .hdr-r { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px solid var(--b1);
+    background: var(--s2); color: var(--dim); font-size: 12px; cursor: pointer; border-radius: 6px;
+    text-decoration: none; transition: all .15s; font-family: var(--sans); white-space: nowrap; font-weight: 500; }
+  .btn:hover { border-color: var(--b2); color: var(--text); background: var(--s3); }
+  .btn.primary { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 600; box-shadow: 0 0 12px rgba(245,197,24,.2); }
+  .btn.primary:hover { background: var(--gold-dim); }
+  .btn.danger { border-color: rgba(255,61,87,.3); color: var(--red); background: var(--red2); }
+  .btn.danger:hover { background: rgba(255,61,87,.2); }
+  .btn i { font-size: 14px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 20px 24px 60px; }
+
+  .cfg { background: var(--s2); border: 1px solid var(--b1); border-left: 2px solid var(--gold); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .cfg label { font-size: 11px; color: var(--dim); font-family: var(--mono); letter-spacing: .8px; white-space: nowrap; text-transform: uppercase; }
+  .cfg input { background: var(--s1); border: 1px solid var(--b1); border-radius: 6px; padding: 8px 12px;
+    font-size: 12px; color: var(--text); outline: none; flex: 1; min-width: 260px; font-family: var(--mono); }
+  .cfg input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,197,24,.08); }
+  .tag-ok { background: var(--green2); color: var(--green); font-size: 11px; padding: 5px 12px; border-radius: 5px;
+    border: 1px solid rgba(0,230,118,.2); font-family: var(--mono); font-weight: 500; }
+  .cfg-note { font-size: 11px; color: var(--dim); line-height: 1.6; width: 100%; }
+  .cfg-note a { color: var(--gold); }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  .toolbar h2 { font-size: 15px; font-weight: 600; color: #fff; }
+  .toolbar .sub { font-size: 11px; color: var(--dim); font-family: var(--mono); margin-top: 2px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .card { background: var(--s2); border: 1px solid var(--b1); border-radius: 10px; padding: 16px 18px; transition: all .15s; }
+  .card:hover { border-color: var(--b2); }
+  .card.inativo { opacity: .5; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .card-nome { font-size: 14px; font-weight: 600; color: #fff; }
+  .card-id { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 3px; }
+  .card-wpp { font-size: 11px; color: var(--dim); font-family: var(--mono); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+  .card-wpp.set { color: var(--green); }
+  .card-tags { display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+  .tag { font-size: 9px; font-family: var(--mono); border-radius: 3px; padding: 3px 7px; font-weight: 600;
+    letter-spacing: .3px; border: 1px solid rgba(245,197,24,.25); color: var(--gold); background: rgba(245,197,24,.05); }
+  .tag.off { border-color: var(--b2); color: var(--dim); background: var(--s1); }
+  .card-actions { display: flex; gap: 6px; margin-top: 12px; }
+  .card-actions .btn { flex: 1; justify-content: center; padding: 6px 8px; font-size: 11px; }
+  .badge-status { font-size: 9px; font-family: var(--mono); padding: 3px 8px; border-radius: 4px; font-weight: 600; letter-spacing: .5px; }
+  .badge-status.on { background: var(--green2); color: var(--green); border: 1px solid rgba(0,230,118,.2); }
+  .badge-status.off { background: rgba(42,46,64,.5); color: var(--dim); border: 1px solid var(--b1); }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--dim); font-size: 13px; font-family: var(--mono); }
+
+  .m-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px; }
+  .m-ov.open { display: flex; }
+  .m-box { background: var(--s2); border: 1px solid var(--b2); border-radius: 12px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .m-ttl { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); letter-spacing: .5px; }
+  .m-cls { background: none; border: none; color: var(--dim); font-size: 18px; cursor: pointer; }
+  .m-cls:hover { color: #fff; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--s1); border: 1px solid var(--b1); border-radius: 6px; padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; font-family: var(--mono); }
+  .field input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,197,24,.08); }
+  .field .hint { font-size: 10px; color: var(--muted); margin-top: 5px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chks { display: flex; flex-direction: column; gap: 8px; }
+  .chk-item { display: flex; align-items: center; gap: 8px; background: var(--s1); border: 1px solid var(--b1); border-radius: 6px; padding: 9px 12px; cursor: pointer; }
+  .chk-item:hover { border-color: var(--b2); }
+  .chk-item input { width: auto; margin: 0; }
+  .chk-item .lbl { font-size: 12px; color: var(--text); }
+  .chk-item .desc { font-size: 10px; color: var(--dim); margin-left: auto; font-family: var(--mono); }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; background: var(--s1); border: 1px solid var(--b1); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; }
+  .toggle-row label { font-size: 12px; color: var(--text); }
+  .m-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .m-actions .btn { flex: 1; justify-content: center; }
+
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 6px;
+    font-size: 12px; font-family: var(--mono); z-index: 500; display: none; border: 1px solid; font-weight: 500; backdrop-filter: blur(8px); }
+  .toast.ok { background: rgba(0,230,118,.12); color: var(--green); border-color: rgba(0,230,118,.25); }
+  .toast.err { background: rgba(255,61,87,.12); color: var(--red); border-color: rgba(255,61,87,.25); }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--s1); }
+  ::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-box">M</div>
+    <span class="logo-name">Monaco Agency</span>
+    <span class="logo-sep">/</span>
+    <span class="logo-sub">Clientes</span>
+  </div>
+  <div class="hdr-r">
+    <a href="dashboard.html" class="btn"><i class="ti ti-arrow-left" aria-hidden="true"></i> Dashboard</a>
+    <button onclick="carregarClientes()" class="btn"><i class="ti ti-refresh" aria-hidden="true"></i> Recarregar</button>
+    <button onclick="abrirModal()" class="btn primary"><i class="ti ti-plus" aria-hidden="true"></i> Adicionar Cliente</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="cfg" id="cfg-bar">
+    <label>GITHUB_TOKEN</label>
+    <input type="password" id="pat-in" placeholder="ghp_xxxxxxxxxxxx (Personal Access Token com permissao 'contents')">
+    <button onclick="salvarPat()" class="btn primary">Salvar</button>
+    <div class="cfg-note">
+      Necessario um <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">Personal Access Token</a> do GitHub com permissao de escrita em conteudo (repo <strong>barbacovi76-ux/monaco-bm-monitor</strong>) para salvar clientes. O token fica salvo apenas no seu navegador (localStorage), nunca e enviado a terceiros — so para a API do GitHub.
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div>
+      <h2>Clientes cadastrados</h2>
+      <div class="sub" id="contador">carregando...</div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="empty">Carregando clientes...</div>
+  </div>
+
+</div>
+
+<div class="m-ov" id="modal">
+  <div class="m-box">
+    <div class="m-ttl"><span id="m-title">Adicionar Cliente</span><button class="m-cls" onclick="fecharModal()">✕</button></div>
+
+    <div class="field">
+      <label>Nome do cliente</label>
+      <input type="text" id="f-nome" placeholder="Ex: Pizzaria do Joao">
+    </div>
+
+    <div class="field">
+      <label>Account ID (Meta Ads)</label>
+      <input type="text" id="f-account" placeholder="act_1234567890">
+      <div class="hint">Encontrado no Gerenciador de Anuncios do cliente, formato act_xxxxxxxxxx</div>
+    </div>
+
+    <div class="field">
+      <label>WhatsApp do cliente</label>
+      <input type="text" id="f-whatsapp" placeholder="5567999999999 (com DDI+DDD, sem espacos)">
+      <div class="hint">Se vazio, os alertas de saldo vao para o grupo interno de operacoes. Relatorios de performance e comparativo so sao enviados se este campo for preenchido.</div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Limite critico (R$)</label>
+        <input type="number" id="f-limite-critico" placeholder="padrao: 50">
+      </div>
+      <div class="field">
+        <label>Limite baixo (R$)</label>
+        <input type="number" id="f-limite-baixo" placeholder="padrao: 100">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Relatorios automaticos</label>
+      <div class="chks">
+        <label class="chk-item"><input type="checkbox" id="m-saldo" checked><span class="lbl">Alerta de saldo</span><span class="desc">diario, so critico/baixo</span></label>
+        <label class="chk-item"><input type="checkbox" id="m-performance"><span class="lbl">Relatorio de performance</span><span class="desc">diario, envia p/ WhatsApp do cliente</span></label>
+        <label class="chk-item"><input type="checkbox" id="m-comparativo"><span class="lbl">Comparativo semanal</span><span class="desc">seg/qua/sex, envia p/ WhatsApp do cliente</span></label>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <label>Cliente ativo</label>
+      <input type="checkbox" id="f-ativo" checked style="width:auto;">
+    </div>
+
+    <div class="m-actions">
+      <button class="btn" onclick="fecharModal()">Cancelar</button>
+      <button class="btn primary" onclick="salvarCliente()" id="btn-salvar-cliente"><i class="ti ti-device-floppy" aria-hidden="true"></i> Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const OWNER = 'barbacovi76-ux';
+const REPO  = 'monaco-bm-monitor';
+const PATH  = 'backend/config.json';
+const BRANCH = 'main';
+const PAT_KEY = 'monaco_gh_pat';
+
+// Fallback: mesma lista padrao existente hoje em monitor.py, usada apenas
+// se ainda nao existir config.json no repositorio (primeira vez).
+const DEFAULT_CONTAS = [
+  {nome:"Rosa Sul Nova",account_id:"act_2523170184768797"},
+  {nome:"Dia de Pizza Dourados",account_id:"act_723575425785405"},
+  {nome:"IH Campo Grande",account_id:"act_1131240581799095"},
+  {nome:"Mollinari",account_id:"act_459274303920372"},
+  {nome:"MrGabs",account_id:"act_728296823243425"},
+  {nome:"IH Dourados",account_id:"act_831936562721815"},
+  {nome:"Villa Grano",account_id:"act_909424425271250"},
+  {nome:"Brados",account_id:"act_972023765779926"},
+  {nome:"Berlim",account_id:"act_836447545843342"},
+  {nome:"A Favorita",account_id:"act_969681458906352"},
+  {nome:"Brava Pizza",account_id:"act_4279801688941861"},
+  {nome:"Pavao",account_id:"act_1759603645448352"},
+  {nome:"Fornalha",account_id:"act_1618084519451450"},
+  {nome:"CA- Leni ADS 02",account_id:"act_1569287454130140"},
+  {nome:"CA RJK SHOP",account_id:"act_297417165372711"},
+  {nome:"CA - Miotto Construtora",account_id:"act_213109970735074"},
+  {nome:"CA - ICGP",account_id:"act_360815898753195"},
+  {nome:"CA - Miotto Backup",account_id:"act_533683308259417"},
+  {nome:"CA - Monaco Agency",account_id:"act_732966175219099"},
+  {nome:"BRUNA MACHADO - DOTCON",account_id:"act_1102427261426373"},
+  {nome:"CA - AMK Estetica",account_id:"act_590117117342811"},
+  {nome:"JS - UNIFORME",account_id:"act_1452225369942067"},
+  {nome:"SH Tijolos",account_id:"act_3858259327816511"},
+];
+
+let clientes = [];
+let fileSha = null;
+let editIndex = -1;
+
+function getPat() { return localStorage.getItem(PAT_KEY) || ''; }
+
+function salvarPat() {
+  const t = document.getElementById('pat-in').value.trim();
+  if (!t) { alert('Cole o token primeiro!'); return; }
+  localStorage.setItem(PAT_KEY, t);
+  document.getElementById('cfg-bar').querySelector('.tag-ok, .cfg-note')?.remove;
+  marcarPatOk();
+  carregarClientes();
+}
+
+function marcarPatOk() {
+  const bar = document.getElementById('cfg-bar');
+  if (!document.getElementById('pat-ok')) {
+    const span = document.createElement('span');
+    span.id = 'pat-ok';
+    span.className = 'tag-ok';
+    span.textContent = 'TOKEN_OK';
+    bar.insertBefore(span, bar.querySelector('.cfg-note'));
+  }
+}
+
+async function ghGet() {
+  const pat = getPat();
+  const headers = pat ? {'Authorization': 'token ' + pat} : {};
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}?ref=${BRANCH}`, {headers});
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('Erro ao ler config.json: ' + r.status);
+  const d = await r.json();
+  fileSha = d.sha;
+  const decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+  return JSON.parse(decoded);
+}
+
+async function ghPut(dataObj, mensagem) {
+  const pat = getPat();
+  if (!pat) throw new Error('Cole o GitHub Token primeiro.');
+  const body = {
+    message: mensagem,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(dataObj, null, 2)))),
+    branch: BRANCH,
+  };
+  if (fileSha) body.sha = fileSha;
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+    method: 'PUT',
+    headers: {'Authorization': 'token ' + pat, 'Content-Type': 'application/json'},
+    body: JSON.stringify(body),
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.message || 'Erro ao salvar no GitHub');
+  fileSha = d.content.sha;
+  return d;
+}
+
+async function carregarClientes() {
+  document.getElementById('grid').innerHTML = '<div class="empty"><span class="ti ti-loader-2" aria-hidden="true"></span> Carregando clientes...</div>';
+  try {
+    const data = await ghGet();
+    if (data && Array.isArray(data.contas)) {
+      clientes = data.contas;
+    } else {
+      clientes = DEFAULT_CONTAS.map(c => ({...c, ativo: true, metricas: ['saldo'], whatsapp_numero: '', limite_critico: null, limite_baixo: null}));
+    }
+  } catch (e) {
+    document.getElementById('grid').innerHTML = '<div class="empty">Erro ao carregar: ' + e.message + '<br><br>Cole o GitHub Token acima e clique em Recarregar.</div>';
+    document.getElementById('contador').textContent = 'erro ao carregar';
+    return;
+  }
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  document.getElementById('contador').textContent = clientes.length + ' cliente(s) cadastrado(s)';
+  if (!clientes.length) {
+    grid.innerHTML = '<div class="empty">Nenhum cliente cadastrado ainda. Clique em "Adicionar Cliente".</div>';
+    return;
+  }
+  grid.innerHTML = clientes.map((c, i) => {
+    const metricas = c.metricas || ['saldo'];
+    const wppOn = !!(c.whatsapp_numero && c.whatsapp_numero.trim());
+    const ativo = c.ativo !== false;
+    return `<div class="card ${ativo ? '' : 'inativo'}">
+      <div class="card-top">
+        <div>
+          <div class="card-nome">${escapeHtml(c.nome)}</div>
+          <div class="card-id">${escapeHtml(c.account_id)}</div>
+        </div>
+        <span class="badge-status ${ativo ? 'on' : 'off'}">${ativo ? 'ATIVO' : 'INATIVO'}</span>
+      </div>
+      <div class="card-wpp ${wppOn ? 'set' : ''}"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> ${wppOn ? escapeHtml(c.whatsapp_numero) : 'sem WhatsApp proprio (usa grupo interno)'}</div>
+      <div class="card-tags">
+        <span class="tag ${metricas.includes('saldo') ? '' : 'off'}">SALDO</span>
+        <span class="tag ${metricas.includes('performance') ? '' : 'off'}">PERFORMANCE</span>
+        <span class="tag ${metricas.includes('comparativo') ? '' : 'off'}">COMPARATIVO</span>
+      </div>
+      <div class="card-actions">
+        <button class="btn" onclick="editarCliente(${i})"><i class="ti ti-edit" aria-hidden="true"></i> Editar</button>
+        <button class="btn danger" onclick="removerCliente(${i})"><i class="ti ti-trash" aria-hidden="true"></i> Remover</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function abrirModal() {
+  editIndex = -1;
+  document.getElementById('m-title').textContent = 'Adicionar Cliente';
+  document.getElementById('f-nome').value = '';
+  document.getElementById('f-account').value = '';
+  document.getElementById('f-whatsapp').value = '';
+  document.getElementById('f-limite-critico').value = '';
+  document.getElementById('f-limite-baixo').value = '';
+  document.getElementById('m-saldo').checked = true;
+  document.getElementById('m-performance').checked = false;
+  document.getElementById('m-comparativo').checked = false;
+  document.getElementById('f-ativo').checked = true;
+  document.getElementById('modal').classList.add('open');
+}
+
+function editarCliente(i) {
+  editIndex = i;
+  const c = clientes[i];
+  document.getElementById('m-title').textContent = 'Editar Cliente';
+  document.getElementById('f-nome').value = c.nome || '';
+  document.getElementById('f-account').value = c.account_id || '';
+  document.getElementById('f-whatsapp').value = c.whatsapp_numero || '';
+  document.getElementById('f-limite-critico').value = c.limite_critico ?? '';
+  document.getElementById('f-limite-baixo').value = c.limite_baixo ?? '';
+  const metricas = c.metricas || ['saldo'];
+  document.getElementById('m-saldo').checked = metricas.includes('saldo');
+  document.getElementById('m-performance').checked = metricas.includes('performance');
+  document.getElementById('m-comparativo').checked = metricas.includes('comparativo');
+  document.getElementById('f-ativo').checked = c.ativo !== false;
+  document.getElementById('modal').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+async function salvarCliente() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const accountId = document.getElementById('f-account').value.trim();
+  if (!nome || !accountId) { alert('Preencha nome e Account ID.'); return; }
+  if (!accountId.startsWith('act_')) { alert('Account ID deve comecar com "act_"'); return; }
+
+  const metricas = [];
+  if (document.getElementById('m-saldo').checked) metricas.push('saldo');
+  if (document.getElementById('m-performance').checked) metricas.push('performance');
+  if (document.getElementById('m-comparativo').checked) metricas.push('comparativo');
+
+  const novo = {
+    nome,
+    account_id: accountId,
+    ativo: document.getElementById('f-ativo').checked,
+    metricas: metricas.length ? metricas : ['saldo'],
+    whatsapp_numero: document.getElementById('f-whatsapp').value.trim(),
+    limite_critico: document.getElementById('f-limite-critico').value ? Number(document.getElementById('f-limite-critico').value) : null,
+    limite_baixo: document.getElementById('f-limite-baixo').value ? Number(document.getElementById('f-limite-baixo').value) : null,
+  };
+
+  if (editIndex >= 0) clientes[editIndex] = novo;
+  else clientes.push(novo);
+
+  await persistir('Cadastro: ' + (editIndex >= 0 ? 'atualiza' : 'adiciona') + ' cliente ' + nome);
+  fecharModal();
+}
+
+async function removerCliente(i) {
+  const c = clientes[i];
+  if (!confirm('Remover "' + c.nome + '" do monitoramento automatico?')) return;
+  clientes.splice(i, 1);
+  await persistir('Cadastro: remove cliente ' + c.nome);
+}
+
+async function persistir(mensagem) {
+  const btn = document.getElementById('btn-salvar-cliente');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Salvando...'; }
+  try {
+    await ghPut({contas: clientes}, mensagem);
+    renderGrid();
+    toast('Salvo! O monitor sera atualizado no proximo deploy automatico.', 'ok');
+  } catch (e) {
+    toast('Erro ao salvar: ' + e.message, 'err');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy" aria-hidden="true"></i> Salvar'; }
+  }
+}
+
+function toast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + tipo; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+}
+
+if (getPat()) marcarPatOk();
+carregarClientes();
+</script>
+
+</body>
+</html>
