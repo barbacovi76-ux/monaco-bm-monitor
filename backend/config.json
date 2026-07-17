@@ -111,17 +111,6 @@
       "limite_baixo": null
     },
     {
-      "nome": "Fornalha",
-      "account_id": "act_1618084519451450",
-      "ativo": true,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null
-    },
-    {
       "nome": "CA- Leni ADS 02",
       "account_id": "act_1569287454130140",
       "ativo": true,
