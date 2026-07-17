@@ -1,0 +1,246 @@
+{
+  "contas": [
+    {
+      "nome": "Rosa Sul Nova",
+      "account_id": "act_2523170184768797",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Dia de Pizza Dourados",
+      "account_id": "act_723575425785405",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "IH Campo Grande",
+      "account_id": "act_1131240581799095",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Mollinari",
+      "account_id": "act_459274303920372",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "MrGabs",
+      "account_id": "act_728296823243425",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "IH Dourados",
+      "account_id": "act_831936562721815",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Brados",
+      "account_id": "act_972023765779926",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Berlim",
+      "account_id": "act_836447545843342",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "A Favorita",
+      "account_id": "act_969681458906352",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Brava Pizza",
+      "account_id": "act_4279801688941861",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Pavao",
+      "account_id": "act_1759603645448352",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Fornalha",
+      "account_id": "act_1618084519451450",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA- Leni ADS 02",
+      "account_id": "act_1569287454130140",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA RJK SHOP",
+      "account_id": "act_297417165372711",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - Miotto Construtora",
+      "account_id": "act_213109970735074",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - ICGP",
+      "account_id": "act_360815898753195",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - Miotto Backup",
+      "account_id": "act_533683308259417",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - Monaco Agency",
+      "account_id": "act_732966175219099",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "BRUNA MACHADO - DOTCON",
+      "account_id": "act_1102427261426373",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - AMK Estetica",
+      "account_id": "act_590117117342811",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "JS - UNIFORME",
+      "account_id": "act_1452225369942067",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "SH Tijolos",
+      "account_id": "act_3858259327816511",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    }
+  ]
+}
