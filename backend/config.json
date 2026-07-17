@@ -67,17 +67,6 @@
       "limite_baixo": null
     },
     {
-      "nome": "Brados",
-      "account_id": "act_972023765779926",
-      "ativo": true,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null
-    },
-    {
       "nome": "Berlim",
       "account_id": "act_836447545843342",
       "ativo": true,
