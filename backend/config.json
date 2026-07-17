@@ -111,17 +111,6 @@
       "limite_baixo": null
     },
     {
-      "nome": "CA- Leni ADS 02",
-      "account_id": "act_1569287454130140",
-      "ativo": true,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null
-    },
-    {
       "nome": "CA RJK SHOP",
       "account_id": "act_297417165372711",
       "ativo": true,
