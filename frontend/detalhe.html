@@ -522,6 +522,41 @@ function actVal(actions, tipo) {
   return parseInt(actions.find(a => a.action_type === tipo)?.value || 0);
 }
 
+// ── GastroHub — Playbook de Food Delivery ───────────────────────
+// Benchmarks e checklist absorvidos do Checklist de Auditoria de
+// Cardapio e do Playbook Operacional de Trafego da GastroHub, aplicados
+// automaticamente quando a conta e identificada como cliente de food.
+
+const FOOD_IDS = [
+  'act_2523170184768797','act_723575425785405','act_1131240581799095',
+  'act_459274303920372','act_728296823243425','act_831936562721815',
+  'act_909424425271250','act_972023765779926','act_836447545843342',
+  'act_969681458906352','act_4279801688941861','act_1759603645448352',
+  'act_1618084519451450','act_1569287454130140','act_3379098802257981',
+  'act_626472496317271','act_218943216626025',
+];
+const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistro',
+  'fornalha','brados','berlim','mrgabs','mollinari','pavao','favorita','brava',
+  'dourados','campo','ih dourados','villa grano','rosa sul','hamburgueria',
+  'acai','sushi','japones','executivo'];
+
+function isFoodAccount() {
+  if (FOOD_IDS.includes(accountId)) return true;
+  const n = (bmNome || '').toLowerCase();
+  return FOOD_KEYWORDS.some(k => n.includes(k));
+}
+
+function renderChecklistGastroHub() {
+  return `<div style="background:#161a24;border:1px solid #2a2d3a;border-left:3px solid #f59e0b;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+    <div style="font-size:12px;font-weight:600;color:#fbbf24;margin-bottom:6px;">🍔 Cliente Food — Checklist GastroHub</div>
+    <div style="font-size:11px;color:#9ca3af;line-height:1.7;">
+      Antes de escalar tráfego, validar manualmente: <strong>fotos</strong> reais e de alta qualidade, <strong>nomes</strong> claros e apetitosos, <strong>descrições</strong> com ingredientes/gramagem, <strong>preços</strong> coerentes com o mercado local, <strong>produtos campeões</strong> em destaque na entrada do cardápio, <strong>combos</strong> visíveis, <strong>jornada de compra</strong> sem fricção (carrinho e checkout testados), <strong>mobile</strong> carregando rápido (&lt;3s) e <strong>rastreamento de eventos</strong> (LP view, add to cart, checkout, purchase) configurado.<br><br>
+      <strong>Horário de veiculação:</strong> campanhas devem rodar 30 min antes da abertura até o fechamento do restaurante — fora do horário, cliques não convertem e o CPA sobe sem resultado.<br><br>
+      <strong>Estética de criativo:</strong> foodporn — close no produto, queijo puxando/molho escorrendo, corte revelando o interior, fumaça/calor visível, preparo do prato.
+    </div>
+  </div>`;
+}
+
 function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
   const ins = camp.insights?.data?.[0] || {};
   const gasto = parseFloat(ins.spend || 0);
@@ -636,6 +671,63 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
       problemas.push({ tipo: 'critico', titulo: 'Checkout iniciado sem finalizar compra', desc: `${fmtN(checkout)} checkouts iniciados e nenhuma compra concluída. Provável fricção de pagamento ou erro no fluxo de finalização.` });
       acoes.push('Testar o fluxo de pagamento ponta a ponta e revisar meios de pagamento disponíveis.');
       marcarPrioridade(0, 'critico');
+    }
+  }
+
+  // 4c) Benchmarks GastroHub — Food Delivery (funil completo do cardápio)
+  if (isFoodAccount() && obj === 'SALES' && lpView >= 20) {
+    const taxaCarrinho = lpView > 0 ? (addCart / lpView * 100) : 0;
+    const taxaCheckoutPct = addCart > 0 ? (checkout / addCart * 100) : 0;
+    const taxaFinaliza = checkout > 0 ? (convQtd / checkout * 100) : 0;
+    const convTotalCardapio = lpView > 0 ? (convQtd / lpView * 100) : 0;
+    const custoPorLpView = lpView > 0 ? (gasto / lpView) : 0;
+
+    if (ctr > 0 && ctr < 2) {
+      problemas.push({ tipo: 'atencao', titulo: 'CTR abaixo do benchmark GastroHub (2% a 5%)', desc: `CTR de ${ctr.toFixed(2)}%. Criativo fraco, copy ruim ou produto pouco atrativo.` });
+      acoes.push('Produzir novo criativo com estética foodporn: close no produto, textura visível, fumaça/calor evidente, corte revelando o interior.');
+      marcarPrioridade(3, 'atencao');
+    }
+    if (custoPorLpView > 1) {
+      problemas.push({ tipo: 'atencao', titulo: 'Custo por visualização de página acima de R$ 1,00', desc: `${fmt(custoPorLpView)} por visualização do cardápio (benchmark GastroHub: até R$ 1,00). Indica criativo fraco ou segmentação de público inadequada.` });
+      acoes.push('Revisar criativo e público-alvo para reduzir o custo por visita ao cardápio.');
+      marcarPrioridade(3, 'atencao');
+    }
+    if (taxaCarrinho > 0 && taxaCarrinho < 15) {
+      problemas.push({ tipo: 'critico', titulo: 'Adição ao carrinho abaixo do benchmark GastroHub (15% a 25%)', desc: `${taxaCarrinho.toFixed(1)}% dos visitantes adicionaram item ao carrinho. Indica cardápio mal estruturado, produto sem apelo ou preço alto.` });
+      acoes.push('Rodar o checklist de auditoria de cardápio GastroHub: fotos, nomes, descrições, preços e produtos campeões.');
+      marcarPrioridade(1, 'critico');
+    }
+    if (taxaCheckoutPct > 0 && taxaCheckoutPct < 60) {
+      problemas.push({ tipo: 'atencao', titulo: 'Início de checkout abaixo do benchmark GastroHub (60% a 80%)', desc: `${taxaCheckoutPct.toFixed(1)}% de quem adicionou ao carrinho iniciou o checkout. Indica atrito na jornada de compra ou falta de opção de pagamento.` });
+      acoes.push('Simplificar a jornada de compra e revisar as opções de pagamento disponíveis no checkout.');
+      marcarPrioridade(2, 'atencao');
+    }
+    if (taxaFinaliza > 0 && taxaFinaliza < 40) {
+      problemas.push({ tipo: 'critico', titulo: 'Compra finalizada abaixo do benchmark GastroHub (40% a 60%)', desc: `${taxaFinaliza.toFixed(1)}% de quem iniciou checkout finalizou a compra. Indica problema no checkout, frete alto ou tempo de entrega longo.` });
+      acoes.push('Revisar taxa de entrega, tempo estimado e opções de pagamento no fechamento do pedido.');
+      marcarPrioridade(1, 'critico');
+    }
+    if (convTotalCardapio > 0 && convTotalCardapio < 8) {
+      problemas.push({ tipo: 'atencao', titulo: 'Conversão total do cardápio abaixo do benchmark GastroHub (8% a 15%)', desc: `${convTotalCardapio.toFixed(1)}% dos visitantes do cardápio finalizaram compra. Gargalo em alguma etapa do funil — investigar ponto a ponto.` });
+      marcarPrioridade(3, 'atencao');
+    } else if (convTotalCardapio >= 8) {
+      problemas.push({ tipo: 'ok', titulo: 'Conversão do cardápio dentro do benchmark GastroHub', desc: `${convTotalCardapio.toFixed(1)}% de conversão total, dentro ou acima da faixa saudável (8% a 15%).` });
+    }
+
+    // CPA dinâmico como % do ticket médio (regra GastroHub: CPA ideal = 10% do ticket médio)
+    if (convQtd > 0 && fat > 0) {
+      const ticketMedio = fat / convQtd;
+      const cpaIdealGastroHub = ticketMedio * 0.10;
+      if (cpaIdealGastroHub > 0 && cpa > cpaIdealGastroHub * 1.5) {
+        problemas.push({ tipo: 'critico', titulo: 'CPA muito acima da regra GastroHub (10% do ticket médio)', desc: `CPA ${fmt(cpa)} vs ideal de ${fmt(cpaIdealGastroHub)} (10% do ticket médio de ${fmt(ticketMedio)}) — ${(cpa / cpaIdealGastroHub).toFixed(1)}x acima do ideal.` });
+        acoes.push('Investigar criativo, segmentação, horário de veiculação e oferta — meta GastroHub é CPA de até 10% do ticket médio.');
+        marcarPrioridade(1, 'critico');
+      } else if (cpaIdealGastroHub > 0 && cpa > cpaIdealGastroHub) {
+        problemas.push({ tipo: 'atencao', titulo: 'CPA acima da regra GastroHub (10% do ticket médio)', desc: `CPA ${fmt(cpa)} vs ideal de ${fmt(cpaIdealGastroHub)} (10% do ticket médio de ${fmt(ticketMedio)}).` });
+        marcarPrioridade(3, 'atencao');
+      } else if (cpaIdealGastroHub > 0) {
+        problemas.push({ tipo: 'ok', titulo: 'CPA dentro da regra GastroHub (10% do ticket médio)', desc: `CPA ${fmt(cpa)}, dentro da meta de ${fmt(cpaIdealGastroHub)} (10% do ticket médio de ${fmt(ticketMedio)}).` });
+      }
     }
   }
 
@@ -821,7 +913,9 @@ async function abrirBOB() {
     const campanhas = (d.data || []).filter(c => (c.effective_status || c.status) === 'ACTIVE');
 
     if (!campanhas.length) {
-      document.getElementById('bob-body').innerHTML = '<div class="bob-empty">Nenhuma campanha ativa no período para analisar.</div>';
+      let vazioHtml = isFoodAccount() ? renderChecklistGastroHub() : '';
+      vazioHtml += '<div class="bob-empty">Nenhuma campanha ativa no período para analisar.</div>';
+      document.getElementById('bob-body').innerHTML = vazioHtml;
       return;
     }
 
@@ -829,7 +923,10 @@ async function abrirBOB() {
     const ordem = { critico: 0, atencao: 1, ok: 2 };
     diagnosticos.sort((a, b) => (ordem[a.statusGeral] - ordem[b.statusGeral]) || (a.prioridade - b.prioridade));
 
-    document.getElementById('bob-body').innerHTML = renderDiagnosticos(diagnosticos, cfg);
+    let bodyHtml = '';
+    if (isFoodAccount()) bodyHtml += renderChecklistGastroHub();
+    bodyHtml += renderDiagnosticos(diagnosticos, cfg);
+    document.getElementById('bob-body').innerHTML = bodyHtml;
 
   } catch (e) {
     document.getElementById('bob-body').innerHTML = `<div class="bob-loading">Erro: ${e.message}</div>`;
