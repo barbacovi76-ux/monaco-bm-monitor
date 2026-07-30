@@ -251,6 +251,7 @@ const DEFAULT_CONTAS = [
 let clientes = [];
 let fileSha = null;
 let editIndex = -1;
+let clientesCarregados = false;
 
 function getPat() { return localStorage.getItem(PAT_KEY) || ''; }
 
@@ -319,6 +320,10 @@ async function importarDoGerenciador() {
     toast('Cole o GitHub Token acima antes de importar (necessario para salvar).', 'err');
     return;
   }
+  if (!clientesCarregados) {
+    toast('A lista atual de clientes nao foi carregada com sucesso (verifique o GitHub Token). Corrija e clique em Recarregar antes de importar, para nao sobrescrever cadastros existentes.', 'err');
+    return;
+  }
   const btn = document.getElementById('btn-importar');
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Importando...'; }
   try {
@@ -354,8 +359,14 @@ async function importarDoGerenciador() {
     });
 
     if (novos > 0) {
-      await persistir('Cadastro: importa ' + novos + ' conta(s) do Gerenciador de Negocios');
-      toast(novos + ' cliente(s) novo(s) importado(s) e salvos (de ' + contasApi.length + ' contas ativas no Gerenciador).', 'ok');
+      const ok = await persistir('Cadastro: importa ' + novos + ' conta(s) do Gerenciador de Negocios');
+      if (ok) {
+        toast(novos + ' cliente(s) novo(s) importado(s) e salvos (de ' + contasApi.length + ' contas ativas no Gerenciador).', 'ok');
+      } else {
+        // reverte em memoria: o save falhou, entao nao ficamos com estado divergente do que esta no GitHub
+        clientes.splice(clientes.length - novos, novos);
+        renderGrid();
+      }
     } else {
       renderGrid();
       toast('Nenhum cliente novo — as ' + contasApi.length + ' contas ativas ja estavam cadastradas.', 'ok');
@@ -369,6 +380,7 @@ async function importarDoGerenciador() {
 
 async function carregarClientes() {
   document.getElementById('grid').innerHTML = '<div class="empty"><span class="ti ti-loader-2" aria-hidden="true"></span> Carregando clientes...</div>';
+  clientesCarregados = false;
   try {
     const data = await ghGet();
     if (data && Array.isArray(data.contas)) {
@@ -381,6 +393,7 @@ async function carregarClientes() {
     document.getElementById('contador').textContent = 'erro ao carregar';
     return;
   }
+  clientesCarregados = true;
   renderGrid();
 }
 
@@ -499,8 +512,10 @@ async function persistir(mensagem) {
     await ghPut({contas: clientes}, mensagem);
     renderGrid();
     toast('Salvo! O monitor sera atualizado no proximo deploy automatico.', 'ok');
+    return true;
   } catch (e) {
     toast('Erro ao salvar: ' + e.message, 'err');
+    return false;
   } finally {
     if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy" aria-hidden="true"></i> Salvar'; }
   }
