@@ -90,7 +90,7 @@ def carregar_config() -> dict:
         "alertas": {
             "limite_critico": 50,
             "limite_baixo": 100,
-            "horario_verificacao": "15:00",
+            "horario_verificacao": "19:30",
             "alertar_uma_vez_por_dia": True,
         },
         "whatsapp": {
@@ -909,15 +909,15 @@ def analisar_comparativo():
 
 def rodar_loop():
     cfg          = carregar_config()
-    horario_alvo = cfg["alertas"].get("horario_verificacao", "15:00")
+    horario_alvo = cfg["alertas"].get("horario_verificacao", "19:30")
 
     # Horarios em UTC (Railway usa UTC — BRT = UTC-3)
     # 07:00 BRT = 10:00 UTC — motivacional
     # 08:00 BRT = 11:00 UTC — encerramentos
     # 09:00 BRT = 12:00 UTC — comparativo interno (seg/qua/sex)
     # 10:00 BRT = 13:00 UTC — comparativo individual por cliente (seg/qua/sex)
-    # 12:00 BRT = 15:00 UTC — saldo
     # 15:00 BRT = 18:00 UTC — relatorio de performance por cliente
+    # 16:30 BRT = 19:30 UTC — saldo
     horario_motivacional  = "10:00"  # 07:00 BRT
     horario_encerramentos = "11:00"  # 08:00 BRT
     horario_comparativo   = "12:00"  # 09:00 BRT — seg, qua, sex
@@ -929,8 +929,8 @@ def rodar_loop():
     log.info(f"  Encerramentos:       {horario_encerramentos} UTC (08:00 BRT)")
     log.info(f"  Comparativo interno: {horario_comparativo} UTC (09:00 BRT) — seg/qua/sex")
     log.info(f"  Comparativo cliente: {horario_comp_indiv} UTC (10:00 BRT) — seg/qua/sex")
-    log.info(f"  Saldo:               {horario_alvo} UTC (12:00 BRT)")
     log.info(f"  Performance cliente: {horario_performance} UTC (15:00 BRT)")
+    log.info(f"  Saldo:               {horario_alvo} UTC (16:30 BRT)")
     log.info(f"  Contas:              {len(cfg['meta']['contas'])}")
     log.info(f"  Limite critico:      {fmt_brl(cfg['alertas']['limite_critico'])}")
     log.info(f"  Limite baixo:        {fmt_brl(cfg['alertas']['limite_baixo'])}")
