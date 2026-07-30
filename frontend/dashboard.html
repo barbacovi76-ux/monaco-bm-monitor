@@ -392,11 +392,28 @@ let CONTAS = JSON.parse(localStorage.getItem('monaco_contas') || '[]');
 
 const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistro',
   'fornalha','brados','berlim','mrgabs','mollinari','pavao','favorita','brava',
-  'dourados','campo','ih dourados','villa grano','rosa sul'];
+  'dourados','campo','ih dourados','villa grano','rosa sul','hamburgueria',
+  'acai','sushi','japones','executivo'];
+
+function normalizarTexto(s) {
+  return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
 
 function inferirSeg(nome) {
-  const n = nome.toLowerCase();
+  const n = normalizarTexto(nome).toLowerCase();
   return FOOD_KEYWORDS.some(k => n.includes(k)) ? 'food' : 'outros';
+}
+
+// Reclassifica contas ja em cache (corrige nomes acentuados classificados
+// errado antes da normalizacao acima existir) sem precisar recarregar da API.
+if (CONTAS.length) {
+  let mudou = false;
+  CONTAS = CONTAS.map(c => {
+    const novoSeg = inferirSeg(c.nome);
+    if (novoSeg !== c.seg) mudou = true;
+    return { ...c, seg: novoSeg };
+  });
+  if (mudou) localStorage.setItem('monaco_contas', JSON.stringify(CONTAS));
 }
 
 async function buscarContas(tok) {

@@ -540,9 +540,13 @@ const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistr
   'dourados','campo','ih dourados','villa grano','rosa sul','hamburgueria',
   'acai','sushi','japones','executivo'];
 
+function normalizarTexto(s) {
+  return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
 function isFoodAccount() {
   if (FOOD_IDS.includes(accountId)) return true;
-  const n = (bmNome || '').toLowerCase();
+  const n = normalizarTexto(bmNome).toLowerCase();
   return FOOD_KEYWORDS.some(k => n.includes(k));
 }
 
