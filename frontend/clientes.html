@@ -112,6 +112,9 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: var(--s1); }
   ::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 2px; }
+
+  .spin { display: inline-block; animation: spin .8s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -126,6 +129,7 @@
   <div class="hdr-r">
     <a href="dashboard.html" class="btn"><i class="ti ti-arrow-left" aria-hidden="true"></i> Dashboard</a>
     <button onclick="carregarClientes()" class="btn"><i class="ti ti-refresh" aria-hidden="true"></i> Recarregar</button>
+    <button onclick="importarDoGerenciador()" class="btn" id="btn-importar"><i class="ti ti-cloud-download" aria-hidden="true"></i> Importar do Gerenciador</button>
     <button onclick="abrirModal()" class="btn primary"><i class="ti ti-plus" aria-hidden="true"></i> Adicionar Cliente</button>
   </div>
 </div>
@@ -300,6 +304,67 @@ async function ghPut(dataObj, mensagem) {
   if (!r.ok) throw new Error(d.message || 'Erro ao salvar no GitHub');
   fileSha = d.content.sha;
   return d;
+}
+
+const META_TOKEN_KEY = 'monaco_meta_token';
+const META_API = 'v19.0';
+
+async function importarDoGerenciador() {
+  const tok = localStorage.getItem(META_TOKEN_KEY);
+  if (!tok) {
+    toast('Token do Gerenciador nao encontrado. Abra o Dashboard, cole/conecte o token do Meta la primeiro (fica salvo no navegador) e volte aqui.', 'err');
+    return;
+  }
+  if (!getPat()) {
+    toast('Cole o GitHub Token acima antes de importar (necessario para salvar).', 'err');
+    return;
+  }
+  const btn = document.getElementById('btn-importar');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Importando...'; }
+  try {
+    const contasApi = [];
+    let url = 'https://graph.facebook.com/' + META_API + '/me/adaccounts?fields=name,account_id,account_status&limit=100&access_token=' + tok;
+    while (url) {
+      const r = await fetch(url);
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+      (d.data || []).forEach(c => {
+        if (c.account_status === 1) contasApi.push({ nome: c.name, account_id: 'act_' + c.account_id });
+      });
+      url = (d.paging && d.paging.next) ? d.paging.next : null;
+    }
+    if (!contasApi.length) { toast('Nenhuma conta ativa encontrada no Gerenciador conectado.', 'err'); return; }
+
+    const existentes = new Set(clientes.map(c => c.account_id));
+    let novos = 0;
+    contasApi.forEach(c => {
+      if (!existentes.has(c.account_id)) {
+        clientes.push({
+          nome: c.nome,
+          account_id: c.account_id,
+          ativo: true,
+          metricas: ['saldo'],
+          whatsapp_numero: '',
+          limite_critico: null,
+          limite_baixo: null,
+        });
+        existentes.add(c.account_id);
+        novos++;
+      }
+    });
+
+    if (novos > 0) {
+      await persistir('Cadastro: importa ' + novos + ' conta(s) do Gerenciador de Negocios');
+      toast(novos + ' cliente(s) novo(s) importado(s) e salvos (de ' + contasApi.length + ' contas ativas no Gerenciador).', 'ok');
+    } else {
+      renderGrid();
+      toast('Nenhum cliente novo — as ' + contasApi.length + ' contas ativas ja estavam cadastradas.', 'ok');
+    }
+  } catch (e) {
+    toast('Erro ao importar: ' + e.message, 'err');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-cloud-download" aria-hidden="true"></i> Importar do Gerenciador'; }
+  }
 }
 
 async function carregarClientes() {
