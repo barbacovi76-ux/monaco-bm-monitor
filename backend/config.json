@@ -208,6 +208,17 @@
       "whatsapp_numero": "",
       "limite_critico": null,
       "limite_baixo": null
+    },
+    {
+      "nome": "Rose moda intima",
+      "account_id": "act_1033202122629700",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "45 920033459",
+      "limite_critico": null,
+      "limite_baixo": null
     }
   ]
 }
