@@ -291,7 +291,6 @@
     </div>
     <span id="periodo"></span>
     <button onclick="abrirEnc()" class="btn"><i class="ti ti-clock-exclamation" aria-hidden="true"></i> Encerramentos</button>
-    <a href="clientes.html" class="btn"><i class="ti ti-users" aria-hidden="true"></i> Clientes</a>
     <a href="relatorio_semanal.html" class="btn"><i class="ti ti-file-text" aria-hidden="true"></i> Relatório</a>
     <a href="saldos_dash.html" class="btn"><i class="ti ti-wallet" aria-hidden="true"></i> Saldos</a>
     <a href="agente.html" class="btn gold"><i class="ti ti-robot" aria-hidden="true"></i> BOB</a>
@@ -392,28 +391,11 @@ let CONTAS = JSON.parse(localStorage.getItem('monaco_contas') || '[]');
 
 const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistro',
   'fornalha','brados','berlim','mrgabs','mollinari','pavao','favorita','brava',
-  'dourados','campo','ih dourados','villa grano','rosa sul','hamburgueria',
-  'acai','sushi','japones','executivo'];
-
-function normalizarTexto(s) {
-  return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
-}
+  'dourados','campo','ih dourados','villa grano','rosa sul'];
 
 function inferirSeg(nome) {
-  const n = normalizarTexto(nome).toLowerCase();
+  const n = nome.toLowerCase();
   return FOOD_KEYWORDS.some(k => n.includes(k)) ? 'food' : 'outros';
-}
-
-// Reclassifica contas ja em cache (corrige nomes acentuados classificados
-// errado antes da normalizacao acima existir) sem precisar recarregar da API.
-if (CONTAS.length) {
-  let mudou = false;
-  CONTAS = CONTAS.map(c => {
-    const novoSeg = inferirSeg(c.nome);
-    if (novoSeg !== c.seg) mudou = true;
-    return { ...c, seg: novoSeg };
-  });
-  if (mudou) localStorage.setItem('monaco_contas', JSON.stringify(CONTAS));
 }
 
 async function buscarContas(tok) {
@@ -435,28 +417,16 @@ async function buscarContas(tok) {
 
 const CONTAS_ENC = [
   {nome:'Rosa Sul Nova', id:'act_2523170184768797'},
-  {nome:'Dia de Pizza Dourados', id:'act_723575425785405'},
-  {nome:'IH Campo Grande', id:'act_1131240581799095'},
   {nome:'Mollinari', id:'act_459274303920372'},
-  {nome:'MrGabs', id:'act_728296823243425'},
-  {nome:'IH Dourados', id:'act_831936562721815'},
   {nome:'Villa Grano', id:'act_909424425271250'},
   {nome:'Brados', id:'act_972023765779926'},
   {nome:'Berlim', id:'act_836447545843342'},
-  {nome:'A Favorita', id:'act_969681458906352'},
-  {nome:'Brava Pizza', id:'act_4279801688941861'},
-  {nome:'Pavao', id:'act_1759603645448352'},
-  {nome:'Fornalha', id:'act_1618084519451450'},
 ];
 
 const GRUPOS_WPP = {
-  'act_2523170184768797': GRUPO, 'act_723575425785405': GRUPO,
-  'act_1131240581799095': GRUPO, 'act_459274303920372': GRUPO,
-  'act_728296823243425': GRUPO, 'act_831936562721815': GRUPO,
-  'act_909424425271250': GRUPO, 'act_972023765779926': GRUPO,
-  'act_836447545843342': GRUPO, 'act_969681458906352': GRUPO,
-  'act_4279801688941861': GRUPO,'act_1759603645448352': GRUPO,
-  'act_1618084519451450': GRUPO,
+  'act_2523170184768797': GRUPO, 'act_459274303920372': GRUPO,
+  'act_909424425271250': GRUPO,  'act_972023765779926': GRUPO,
+  'act_836447545843342': GRUPO,
 };
 
 function toggleDP() {
@@ -675,9 +645,13 @@ function filtrar() {
   const ft = document.getElementById('f-tipo').value;
   sCol = document.getElementById('ordenar').value;
 
+  // Mapear valores do select para os valores internos de st
+  const stMap = {'green':'g','amber':'a','red':'r','gray':'x'};
+  const stFiltro = stMap[fs] || fs;
+
   let d = dados.filter(x =>
     x.nome.toLowerCase().includes(b) &&
-    (!fs || x.st===fs) &&
+    (!fs || x.st === stFiltro) &&
     (!ft || x.seg===ft)
   );
 
