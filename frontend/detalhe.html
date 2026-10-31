@@ -4,120 +4,286 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Detalhe BM — Monaco Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="monaco.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
-.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
-.logo span { background: #3b82f6; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
-.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
-.back-btn:hover { background: #262a3a; }
-.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
-.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
-.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
-.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
-.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.mc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
-.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
-.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
-.mc-val.green { color: #34d399; }
-.mc-val.amber { color: #fbbf24; }
-.mc-val.red { color: #f87171; }
-.tabs { display: flex; gap: 4px; background: #111318; border: 1px solid #2a2d3a; border-radius: 8px; padding: 3px; margin-bottom: 16px; width: fit-content; }
-.tab-btn { padding: 6px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; background: transparent; color: #6b7280; transition: all .15s; }
-.tab-btn:hover { color: #c8c8c8; }
-.tab-btn.ativo { background: #3b82f6; color: #fff; }
-.table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th { text-align: left; padding: 10px 14px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; background: #111318; border-bottom: 1px solid #2a2d3a; white-space: nowrap; cursor: pointer; }
-th:hover { color: #9ca3af; }
-td { padding: 10px 14px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #1a1e2a; }
-.nome-cell { font-weight: 500; color: #fff; font-size: 13px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
-.nome-cell:hover { color: #3b82f6; text-decoration: underline; }
-.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; white-space: nowrap; }
-.badge-green { background: rgba(52,211,153,.15); color: #34d399; }
-.badge-amber { background: rgba(251,191,36,.15); color: #fbbf24; }
-.badge-red { background: rgba(248,113,113,.15); color: #f87171; }
-.badge-gray { background: rgba(107,114,128,.15); color: #6b7280; }
-.badge-blue { background: rgba(59,130,246,.15); color: #60a5fa; }
-.veiculacao { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; }
-.dot-ativo { width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block; }
-.dot-pausado { width: 6px; height: 6px; border-radius: 50%; background: #6b7280; display: inline-block; }
-.expand-btn { background: none; border: 1px solid #2a2d3a; border-radius: 4px; color: #6b7280; cursor: pointer; padding: 2px 6px; font-size: 11px; }
-.expand-btn:hover { background: #1e2130; color: #fff; }
-.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
+/* ── Page-specific overrides ── */
+.bm-header {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.bm-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.bm-id { font-size: 11px; color: var(--dim); margin-top: 3px; font-family: var(--mono); }
+
+.bm-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--s0);
+  border: 1px solid var(--b1);
+  border-radius: 8px;
+  padding: 3px;
+  width: fit-content;
+}
+.tab-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  transition: all var(--t-fast);
+  font-family: var(--sans);
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.ativo { background: var(--gold); color: #000; font-weight: 600; }
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.mc {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.mc-label {
+  font-size: 11px;
+  color: var(--dim);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 500;
+}
+.mc-val { font-size: 20px; font-weight: 700; color: var(--text); font-feature-settings: 'tnum'; }
+.mc-val.green { color: var(--green); }
+.mc-val.amber { color: var(--amber); }
+.mc-val.red   { color: var(--red);   }
+
+/* Table */
+.nome-cell {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 13px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.nome-cell:hover { color: var(--gold); }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-green { background: rgba(52,211,153,.12); color: var(--green); }
+.badge-amber { background: rgba(245,197,24,.12);  color: var(--amber); }
+.badge-red   { background: rgba(248,113,113,.12); color: var(--red);   }
+.badge-gray  { background: rgba(107,114,128,.12); color: var(--dim);   }
+.badge-blue  { background: rgba(96,165,250,.12);  color: var(--blue);  }
+
+.dot-ativo   { width: 6px; height: 6px; border-radius: 50%; background: var(--green);  display: inline-block; }
+.dot-pausado { width: 6px; height: 6px; border-radius: 50%; background: var(--dim);    display: inline-block; }
+
+.expand-btn {
+  background: none;
+  border: 1px solid var(--b2);
+  border-radius: 4px;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: var(--mono);
+  transition: all var(--t-fast);
+}
+.expand-btn:hover { background: var(--s3); color: var(--text); }
+
 .spin { display: inline-block; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
 .indent-1 { padding-left: 28px !important; }
 .indent-2 { padding-left: 48px !important; }
-.level-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 6px; font-weight: 500; }
-.level-camp { background: rgba(139,92,246,.2); color: #a78bfa; }
-.level-conj { background: rgba(59,130,246,.2); color: #60a5fa; }
-.level-ad { background: rgba(16,185,129,.2); color: #34d399; }
-.roas-val { font-weight: 600; }
-.bar-wrap { width: 80px; height: 3px; background: #2a2d3a; border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
-.bar-fill { height: 100%; border-radius: 2px; }
-.empty-state { text-align: center; padding: 60px 20px; color: #4b5563; }
-.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-  .thumb-wrap { width: 48px; height: 48px; border-radius: 6px; overflow: hidden; background: #1e2130; border: 1px solid #2a2d3a; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
-  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
-  .thumb-wrap .play-icon { font-size: 18px; color: #6b7280; }
-  .thumb-wrap:hover { border-color: #3b82f6; }
-  .nome-ad-cell { display: flex; align-items: center; gap: 10px; }
-  .modal-criativo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; }
-  .modal-criativo.open { display: flex; }
-  .modal-criativo-inner { background: #161a24; border: 1px solid #2a2d3a; border-radius: 14px; padding: 20px; max-width: 540px; width: 90%; }
-  .modal-criativo-inner img { width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain; }
-  .modal-criativo-inner video { width: 100%; border-radius: 8px; max-height: 400px; }
-  .modal-criativo-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 12px; }
-  .modal-criativo-body { font-size: 12px; color: #9ca3af; margin-top: 8px; line-height: 1.5; }
-  .modal-close-btn { float: right; background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
-  .bob-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 420px; background: #111318; border-left: 1px solid #2a2d3a; z-index: 50; transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column; }
-  .bob-panel.open { transform: translateX(0); }
-  .bob-header { padding: 16px 18px; border-bottom: 1px solid #2a2d3a; display: flex; align-items: center; justify-content: space-between; background: #161a24; flex-shrink: 0; }
-  .bob-title { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
-  .bob-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
-  .bob-close:hover { color: #fff; }
-  .bob-config { padding: 10px 14px; border-bottom: 1px solid #2a2d3a; background: #161a24; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0; }
-  .bob-config label { font-size: 10px; color: #6b7280; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-  .bob-config input { width: 54px; background: #0f1117; border: 1px solid #2a2d3a; border-radius: 4px; padding: 3px 6px; font-size: 11px; color: #e8e8e8; outline: none; }
-  .bob-config input:focus { border-color: #7c3aed; }
-  .bob-config button { padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; border: 1px solid #7c3aed; background: rgba(124,58,237,.15); color: #a78bfa; font-weight: 500; }
-  .bob-config button:hover { background: rgba(124,58,237,.25); }
-  .bob-body { flex: 1; overflow-y: auto; padding: 14px; }
-  .bob-loading { text-align: center; padding: 40px; color: #4b5563; font-size: 13px; }
-  .bob-alert { border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; border-left: 3px solid; }
-  .bob-alert.critico { background: rgba(248,113,113,.08); border-color: #f87171; }
-  .bob-alert.atencao { background: rgba(251,191,36,.08); border-color: #fbbf24; }
-  .bob-alert.info { background: rgba(96,165,250,.08); border-color: #60a5fa; }
-  .bob-alert.ok { background: rgba(52,211,153,.08); border-color: #34d399; }
-  .bob-alert-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 3px; }
-  .bob-alert-desc { font-size: 11px; color: #9ca3af; line-height: 1.5; }
-  .bob-alert-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; }
-  .bob-tag.red { background: rgba(248,113,113,.15); color: #f87171; }
-  .bob-tag.amber { background: rgba(251,191,36,.15); color: #fbbf24; }
-  .bob-tag.green { background: rgba(52,211,153,.15); color: #34d399; }
-  .bob-tag.blue { background: rgba(96,165,250,.15); color: #60a5fa; }
-  .bob-empty { text-align: center; padding: 40px 20px; color: #34d399; font-size: 13px; }
-  .bob-section { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .8px; margin: 14px 0 8px; }
-  .bob-camp-card { border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: #161a24; }
-  .overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); z-index: 49; }
-  .overlay-bg.open { display: block; }
+
+.level-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  font-weight: 600;
+  font-family: var(--mono);
+  letter-spacing: .4px;
+}
+.level-camp { background: rgba(139,92,246,.18); color: #a78bfa; }
+.level-conj { background: rgba(96,165,250,.18);  color: var(--blue); }
+.level-ad   { background: rgba(52,211,153,.18);  color: var(--green); }
+
+.roas-val { font-weight: 700; }
+.bar-wrap  { width: 80px; height: 3px; background: var(--b2); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+.bar-fill  { height: 100%; border-radius: 2px; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(--dim); }
+.empty-state .icon { font-size: 36px; margin-bottom: 12px; color: var(--b3); }
+
+/* Creative modal */
+.thumb-wrap {
+  width: 48px; height: 48px;
+  border-radius: 6px; overflow: hidden;
+  background: var(--s3); border: 1px solid var(--b2);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer;
+  transition: border-color var(--t-fast);
+}
+.thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-wrap .play-icon { font-size: 18px; color: var(--dim); }
+.thumb-wrap:hover { border-color: var(--gold-dim); }
+.nome-ad-cell { display: flex; align-items: center; gap: 10px; }
+
+.modal-criativo {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,.85); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-criativo.open { display: flex; }
+.modal-criativo-inner {
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: 14px; padding: 20px;
+  max-width: 540px; width: 90%;
+}
+.modal-criativo-inner img   { width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain; }
+.modal-criativo-inner video { width: 100%; border-radius: 8px; max-height: 400px; }
+.modal-criativo-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+.modal-criativo-body  { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
+.modal-close-btn { float: right; background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; }
+.modal-close-btn:hover { color: var(--text); }
+
+/* BOB side panel */
+.bob-panel {
+  position: fixed; right: 0; top: 0; height: 100vh; width: 420px;
+  background: var(--s1); border-left: 1px solid var(--b1);
+  z-index: 50; transform: translateX(100%);
+  transition: transform .3s ease;
+  display: flex; flex-direction: column;
+}
+.bob-panel.open { transform: translateX(0); }
+
+.bob-header {
+  padding: 16px 18px; border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--s2); flex-shrink: 0;
+}
+.bob-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.bob-title-mark {
+  width: 22px; height: 22px;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: #000;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%);
+  flex-shrink: 0;
+}
+.bob-close { background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; }
+.bob-close:hover { color: var(--text); }
+
+.bob-config {
+  padding: 10px 14px; border-bottom: 1px solid var(--b1);
+  background: var(--s2);
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0;
+}
+.bob-config label { font-size: 10px; color: var(--dim); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.bob-config input {
+  width: 54px; background: var(--s0); border: 1px solid var(--b2);
+  border-radius: 4px; padding: 3px 6px; font-size: 11px; color: var(--text);
+  outline: none; font-family: var(--mono);
+}
+.bob-config input:focus { border-color: var(--gold-dim); }
+.bob-config button {
+  padding: 4px 10px; border-radius: 6px; font-size: 11px;
+  cursor: pointer; border: 1px solid var(--gold-dim);
+  background: rgba(245,197,24,.1); color: var(--gold); font-weight: 600;
+  font-family: var(--sans);
+}
+.bob-config button:hover { background: rgba(245,197,24,.18); }
+
+.bob-body { flex: 1; overflow-y: auto; padding: 14px; }
+.bob-loading { text-align: center; padding: 40px; color: var(--dim); font-size: 13px; }
+
+.bob-alert {
+  border-radius: 8px; padding: 8px 10px;
+  margin-bottom: 6px; border-left: 3px solid;
+}
+.bob-alert.critico { background: rgba(248,113,113,.07); border-color: var(--red); }
+.bob-alert.atencao { background: rgba(245,197,24,.07);  border-color: var(--amber); }
+.bob-alert.info    { background: rgba(96,165,250,.07);  border-color: var(--blue); }
+.bob-alert.ok      { background: rgba(52,211,153,.07);  border-color: var(--green); }
+.bob-alert-title   { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.bob-alert-desc    { font-size: 11px; color: var(--text2); line-height: 1.6; }
+
+.bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; }
+.bob-tag.red   { background: rgba(248,113,113,.15); color: var(--red); }
+.bob-tag.amber { background: rgba(245,197,24,.15);  color: var(--amber); }
+.bob-tag.green { background: rgba(52,211,153,.15);  color: var(--green); }
+.bob-tag.blue  { background: rgba(96,165,250,.15);  color: var(--blue); }
+
+.bob-empty   { text-align: center; padding: 40px 20px; color: var(--green); font-size: 13px; }
+.bob-section { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .8px; margin: 14px 0 8px; }
+.bob-camp-card { border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--s2); }
+
+.overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); z-index: 49; }
+.overlay-bg.open { display: block; }
+
+.periodo-badge {
+  background: var(--s3); border: 1px solid var(--b2);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 12px; color: var(--text2); font-family: var(--mono);
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">📊 Performance BMs <span>Monaco Agency</span></div>
-  <div style="display:flex;gap:8px;align-items:center;">
+<header class="hdr">
+  <a href="javascript:history.back()" class="logo">
+    <div class="logo-mark">M</div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Performance</span>
+  </a>
+  <div class="hdr-nav">
     <span class="periodo-badge" id="periodo-label">Carregando...</span>
-    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+    <a href="javascript:history.back()" class="btn">
+      <i class="ti ti-arrow-left"></i> Voltar
+    </a>
   </div>
-</div>
+</header>
 
 <div class="container">
   <div class="bm-header">
@@ -125,32 +291,32 @@ tr:hover td { background: #1a1e2a; }
       <div class="bm-title" id="bm-title">Carregando...</div>
       <div class="bm-id" id="bm-id"></div>
     </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <button onclick="abrirAnalise()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #7c3aed;background:rgba(124,58,237,.15);color:#a78bfa;font-weight:500;">
-        🔍 Análise Gestor
+    <div class="bm-actions">
+      <button onclick="abrirAnalise()" class="btn">
+        <i class="ti ti-chart-bar"></i> Análise Gestor
       </button>
-      <button onclick="abrirPublico()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #2563eb;background:rgba(37,99,235,.15);color:#60a5fa;font-weight:500;">
-        🎯 Público
+      <button onclick="abrirPublico()" class="btn">
+        <i class="ti ti-users"></i> Público
       </button>
-      <button onclick="abrirBOB()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;font-weight:500;">
-        🤖 BOB
+      <button onclick="abrirBOB()" class="btn btn-gold">
+        <i class="ti ti-cpu"></i> BOB
       </button>
       <div class="tabs">
-      <button class="tab-btn ativo" onclick="setTab('campanhas', this)">📢 Campanhas</button>
-      <button class="tab-btn" onclick="setTab('conjuntos', this)">📦 Conjuntos</button>
-      <button class="tab-btn" onclick="setTab('anuncios', this)">🎯 Anúncios</button>
+        <button class="tab-btn ativo" onclick="setTab('campanhas', this)">Campanhas</button>
+        <button class="tab-btn" onclick="setTab('conjuntos', this)">Conjuntos</button>
+        <button class="tab-btn" onclick="setTab('anuncios', this)">Anúncios</button>
       </div>
     </div>
   </div>
 
   <div class="metrics" id="metrics">
-    <div class="mc"><div class="mc-label">💰 Investido</div><div class="mc-val" id="m-gasto">—</div></div>
-    <div class="mc"><div class="mc-label">📦 Pedidos</div><div class="mc-val" id="m-pedidos">—</div></div>
-    <div class="mc"><div class="mc-label">🛒 Faturamento</div><div class="mc-val green" id="m-fat">—</div></div>
-    <div class="mc"><div class="mc-label">📉 CPR</div><div class="mc-val" id="m-cpr">—</div></div>
-    <div class="mc"><div class="mc-label">🚀 ROAS</div><div class="mc-val green" id="m-roas">—</div></div>
-    <div class="mc"><div class="mc-label">👁 Impressões</div><div class="mc-val" id="m-impr">—</div></div>
-    <div class="mc"><div class="mc-label">🖱 Cliques</div><div class="mc-val" id="m-clicks">—</div></div>
+    <div class="mc"><div class="mc-label">Investido</div><div class="mc-val" id="m-gasto">—</div></div>
+    <div class="mc"><div class="mc-label">Pedidos</div><div class="mc-val" id="m-pedidos">—</div></div>
+    <div class="mc"><div class="mc-label">Faturamento</div><div class="mc-val green" id="m-fat">—</div></div>
+    <div class="mc"><div class="mc-label">CPR</div><div class="mc-val" id="m-cpr">—</div></div>
+    <div class="mc"><div class="mc-label">ROAS</div><div class="mc-val green" id="m-roas">—</div></div>
+    <div class="mc"><div class="mc-label">Impressões</div><div class="mc-val" id="m-impr">—</div></div>
+    <div class="mc"><div class="mc-label">Cliques</div><div class="mc-val" id="m-clicks">—</div></div>
   </div>
 
   <div class="table-wrap">
@@ -169,7 +335,7 @@ tr:hover td { background: #1a1e2a; }
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="9" class="loading"><span class="spin">⟳</span> Carregando dados da API do Meta...</td></tr>
+        <tr><td colspan="9" class="loading"><span class="spin"><i class="ti ti-loader"></i></span> Carregando dados da API do Meta...</td></tr>
       </tbody>
     </table>
   </div>
@@ -221,22 +387,22 @@ function buildTimeParam() {
 
 function getStatusBadge(status) {
   const map = {
-    'ACTIVE': '<span class="status-badge badge-green"><span class="dot-ativo"></span> Ativo</span>',
-    'PAUSED': '<span class="status-badge badge-gray"><span class="dot-pausado"></span> Pausado</span>',
-    'ARCHIVED': '<span class="status-badge badge-gray">Arquivado</span>',
-    'DELETED': '<span class="status-badge badge-red">Deletado</span>',
-    'IN_PROCESS': '<span class="status-badge badge-blue">Processando</span>',
+    'ACTIVE':      '<span class="status-badge badge-green"><span class="dot-ativo"></span> Ativo</span>',
+    'PAUSED':      '<span class="status-badge badge-gray"><span class="dot-pausado"></span> Pausado</span>',
+    'ARCHIVED':    '<span class="status-badge badge-gray">Arquivado</span>',
+    'DELETED':     '<span class="status-badge badge-red">Deletado</span>',
+    'IN_PROCESS':  '<span class="status-badge badge-blue">Processando</span>',
     'WITH_ISSUES': '<span class="status-badge badge-red">Com problemas</span>',
   };
   return map[status] || `<span class="status-badge badge-gray">${status}</span>`;
 }
 
 function getRoasColor(roas) {
-  if (roas >= 10) return '#34d399';
-  if (roas >= 3) return '#60a5fa';
-  if (roas >= 1.5) return '#fbbf24';
-  if (roas > 0) return '#f87171';
-  return '#6b7280';
+  if (roas >= 10) return 'var(--green)';
+  if (roas >= 3)  return 'var(--blue)';
+  if (roas >= 1.5) return 'var(--amber)';
+  if (roas > 0)   return 'var(--red)';
+  return 'var(--dim)';
 }
 
 function parseInsights(ins) {
@@ -254,8 +420,6 @@ function parseInsights(ins) {
 
 async function fetchLevel(level, parentId) {
   const cacheKey = `${level}-${parentId}`;
-  // Cache desabilitado para garantir dados do período correto
-  // if (dadosCache[cacheKey]) return dadosCache[cacheKey];
 
   let url;
   const insightsField = dataInicio && dataFim
@@ -308,7 +472,7 @@ function buildRow(item, level, indent, maxGasto) {
                data-titulo="${adTitle.replace(/"/g,'&quot;')}"
                data-corpo="${adBody.replace(/"/g,'&quot;')}"
                onclick="abrirCriativoEl(this)">
-            ${thumbUrl ? `<img src="${thumbUrl}" alt="thumb" onerror="this.parentElement.innerHTML='<span class=\'play-icon\'>🖼</span>'">` : `<span class="play-icon">${videoUrl ? '▶' : '🖼'}</span>`}
+            ${thumbUrl ? `<img src="${thumbUrl}" alt="thumb" onerror="this.parentElement.innerHTML='<i class=\\'ti ti-photo play-icon\\'></i>'">` : `<span class="play-icon"><i class="ti ti-${videoUrl ? 'player-play' : 'photo'}"></i></span>`}
           </div>` : ''}
         <div>
           ${hasChildren ? `<button class="expand-btn" onclick="toggleExpand('${item.id}', '${level}', this)">▶</button> ` : '<span style="width:24px;display:inline-block;"></span> '}
@@ -318,16 +482,16 @@ function buildRow(item, level, indent, maxGasto) {
       </div>
     </td>
     <td>${getStatusBadge(item.effective_status || item.status)}</td>
-    <td style="font-weight:500;">
-      ${ins.gasto > 0 ? fmt(ins.gasto) : '<span style="color:#374151">—</span>'}
-      ${ins.gasto > 0 ? `<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:#3b82f6;"></div></div>` : ''}
+    <td style="font-weight:600;">
+      ${ins.gasto > 0 ? fmt(ins.gasto) : '<span style="color:var(--b3)">—</span>'}
+      ${ins.gasto > 0 ? `<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:var(--gold);opacity:.6;"></div></div>` : ''}
     </td>
-    <td>${ins.pedidos > 0 ? `<strong>${fmtN(ins.pedidos)}</strong>` : '<span style="color:#374151">0</span>'}</td>
-    <td style="color:#34d399;">${ins.fat > 0 ? fmt(ins.fat) : '<span style="color:#374151">—</span>'}</td>
-    <td>${cpr > 0 ? fmt(cpr) : '<span style="color:#374151">—</span>'}</td>
+    <td>${ins.pedidos > 0 ? `<strong>${fmtN(ins.pedidos)}</strong>` : '<span style="color:var(--b3)">0</span>'}</td>
+    <td style="color:var(--green);">${ins.fat > 0 ? fmt(ins.fat) : '<span style="color:var(--b3)">—</span>'}</td>
+    <td>${cpr > 0 ? fmt(cpr) : '<span style="color:var(--b3)">—</span>'}</td>
     <td><span class="roas-val" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</span></td>
-    <td style="color:#9ca3af;">${ins.impr > 0 ? fmtN(ins.impr) : '—'}</td>
-    <td style="color:#9ca3af;">${ctr > 0 ? ctr.toFixed(2) + '%' : '—'}</td>
+    <td style="color:var(--text2);">${ins.impr > 0 ? fmtN(ins.impr) : '—'}</td>
+    <td style="color:var(--text2);">${ctr > 0 ? ctr.toFixed(2) + '%' : '—'}</td>
   </tr>`;
 }
 
@@ -337,7 +501,6 @@ async function toggleExpand(parentId, level, btn) {
   const expanded = row.getAttribute('data-expand') === 'true';
 
   if (expanded) {
-    // Colapsar — remover filhos
     row.setAttribute('data-expand', 'false');
     btn.textContent = '▶';
     let next = row.nextSibling;
@@ -349,8 +512,7 @@ async function toggleExpand(parentId, level, btn) {
     return;
   }
 
-  // Expandir
-  btn.textContent = '⏳';
+  btn.textContent = '...';
   row.setAttribute('data-expand', 'true');
 
   try {
@@ -391,20 +553,16 @@ async function setTab(tab, el) {
 
 async function carregarTab() {
   const tbody = document.getElementById('tbody');
-  tbody.innerHTML = `<tr><td colspan="9" class="loading"><span class="spin">⟳</span> Carregando ${tabAtual}...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="9" class="loading"><span class="spin"><i class="ti ti-loader"></i></span> Carregando ${tabAtual}...</td></tr>`;
 
   if (!token) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">🔑</div><div>Token não encontrado. Volte ao dashboard e salve o token.</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon"><i class="ti ti-key"></i></div><div>Token não encontrado. Volte ao dashboard e salve o token.</div></td></tr>`;
     return;
   }
 
   try {
-    const parentId = tabAtual === 'campanhas' ? accountId :
-                     tabAtual === 'conjuntos' ? accountId : accountId;
-
     let level = tabAtual;
     let url;
-    // Para insights com período customizado, precisamos passar o time_range dentro do campo insights
     let insightsParam;
     if (dataInicio && dataFim) {
       insightsParam = `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values}`;
@@ -418,6 +576,9 @@ async function carregarTab() {
     } else if (tabAtual === 'conjuntos') {
       url = `https://graph.facebook.com/${API_VERSION}/${accountId}/adsets?fields=${fields}&limit=100&access_token=${token}`;
     } else {
+      const insightsField = dataInicio && dataFim
+        ? `insights.time_range({"since":"${dataInicio}","until":"${dataFim}"}){spend,impressions,clicks,actions,action_values}`
+        : `insights.date_preset(${periodoAtual !== 'custom' ? periodoAtual : 'last_7d'}){spend,impressions,clicks,actions,action_values}`;
       const adF = `id,name,status,effective_status,creative{title,body,thumbnail_url,video_id},${insightsField}`;
       url = `https://graph.facebook.com/${API_VERSION}/${accountId}/ads?fields=${adF}&limit=100&access_token=${token}`;
     }
@@ -427,7 +588,7 @@ async function carregarTab() {
     const items = d.data || [];
 
     if (!items.length) {
-      tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">📭</div><div>Nenhum ${tabAtual.slice(0,-1)} encontrado para este período.</div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon"><i class="ti ti-inbox"></i></div><div>Nenhum ${tabAtual.slice(0,-1)} encontrado para este período.</div></td></tr>`;
       return;
     }
 
@@ -457,13 +618,11 @@ async function carregarTab() {
     tbody.innerHTML = items.map(item => buildRow(item, level, 0, maxGasto)).join('');
 
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon">⚠️</div><div>Erro ao carregar: ${e.message}</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><div class="icon"><i class="ti ti-alert-triangle"></i></div><div>Erro ao carregar: ${e.message}</div></td></tr>`;
   }
 }
 
 // ── BOB — Gestor de Tráfego Sênior ──────────────────────────────
-// Diagnostico completo: gargalo de funil, CTR x CPA x ROAS, regras de
-// corte automaticas, hipotese de proximo teste e plano de acao priorizado.
 
 function getBobConfig() {
   const saved = JSON.parse(localStorage.getItem('monaco_bob_cfg_' + accountId) || '{}');
@@ -523,9 +682,6 @@ function actVal(actions, tipo) {
 }
 
 // ── GastroHub — Playbook de Food Delivery ───────────────────────
-// Benchmarks e checklist absorvidos do Checklist de Auditoria de
-// Cardapio e do Playbook Operacional de Trafego da GastroHub, aplicados
-// automaticamente quando a conta e identificada como cliente de food.
 
 const FOOD_IDS = [
   'act_2523170184768797','act_723575425785405','act_1131240581799095',
@@ -551,9 +707,9 @@ function isFoodAccount() {
 }
 
 function renderChecklistGastroHub() {
-  return `<div style="background:#161a24;border:1px solid #2a2d3a;border-left:3px solid #f59e0b;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
-    <div style="font-size:12px;font-weight:600;color:#fbbf24;margin-bottom:6px;">🍔 Cliente Food — Checklist GastroHub</div>
-    <div style="font-size:11px;color:#9ca3af;line-height:1.7;">
+  return `<div style="background:var(--s3);border:1px solid var(--b1);border-left:3px solid var(--amber);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+    <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:6px;">Cliente Food — Checklist GastroHub</div>
+    <div style="font-size:11px;color:var(--text2);line-height:1.7;">
       Antes de escalar tráfego, validar manualmente: <strong>fotos</strong> reais e de alta qualidade, <strong>nomes</strong> claros e apetitosos, <strong>descrições</strong> com ingredientes/gramagem, <strong>preços</strong> coerentes com o mercado local, <strong>produtos campeões</strong> em destaque na entrada do cardápio, <strong>combos</strong> visíveis, <strong>jornada de compra</strong> sem fricção (carrinho e checkout testados), <strong>mobile</strong> carregando rápido (&lt;3s) e <strong>rastreamento de eventos</strong> (LP view, add to cart, checkout, purchase) configurado.<br><br>
       <strong>Horário de veiculação:</strong> campanhas devem rodar 30 min antes da abertura até o fechamento do restaurante — fora do horário, cliques não convertem e o CPA sobe sem resultado.<br><br>
       <strong>Estética de criativo:</strong> foodporn — close no produto, queijo puxando/molho escorrendo, corte revelando o interior, fumaça/calor visível, preparo do prato.
@@ -575,7 +731,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
   const ctr = impr > 0 ? (clicks / impr * 100) : 0;
   const cpc = clicks > 0 ? gasto / clicks : 0;
 
-  // Funil completo (relevante sobretudo para SALES)
   const lpView = actVal(actions, 'landing_page_view') || actVal(actions, 'omni_landing_page_view');
   const viewContent = actVal(actions, 'view_content') || actVal(actions, 'omni_view_content');
   const addCart = actVal(actions, 'add_to_cart') || actVal(actions, 'omni_add_to_cart');
@@ -625,28 +780,24 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
   const cpaTeto = cpaAlvo * 1.5;
   const roasMin = cfg.roasMin;
 
-  // 1) Gargalo de alcance/entrega
   if (gasto > 0 && impr < 500) {
     problemas.push({ tipo: 'atencao', titulo: 'Baixa entrega/alcance', desc: `Apenas ${fmtN(impr)} impressões no período. Possível limitação de orçamento, lance ou público muito restrito.` });
     acoes.push('Revisar orçamento diário e amplitude do público — considerar Advantage+ ou ampliar interesses.');
     marcarPrioridade(3, 'atencao');
   }
 
-  // 2) Gargalo de criativo — CTR baixo (regra de corte: CTR < 0,8%)
   if (impr >= 1000 && ctr > 0 && ctr < 0.8) {
     problemas.push({ tipo: 'critico', titulo: 'CTR abaixo do mínimo — gargalo no CRIATIVO', desc: `CTR de ${ctr.toFixed(2)}%, abaixo do piso de 0,8%. O hook não está parando o scroll do público.` });
     acoes.push('Pausar o criativo atual e testar 3-4 novos hooks (estrutura 1x4x1) nos primeiros 3 segundos.');
     marcarPrioridade(1, 'critico');
   }
 
-  // 3) Fadiga de criativo — frequência > 3,5
   if (freq > 3.5) {
     problemas.push({ tipo: 'atencao', titulo: 'Frequência alta — fadiga de criativo', desc: `Frequência de ${freq.toFixed(2)}x. O público já viu o anúncio muitas vezes; tende a cansar e o custo por resultado sobe.` });
     acoes.push('Renovar criativos ou ampliar/atualizar o público para reduzir a frequência.');
     marcarPrioridade(2, 'atencao');
   }
 
-  // 4) Gargalo pós-clique — cliques sem nenhuma conversão
   if (gasto > 0 && clicks >= 50 && convQtd === 0) {
     problemas.push({ tipo: 'critico', titulo: 'Cliques sem conversão — gargalo pós-clique', desc: `${fmtN(clicks)} cliques e nenhum(a) ${convLabel}. O problema está na PÁGINA DE DESTINO, no PIXEL/rastreamento ou na OFERTA — não no criativo.` });
     acoes.push('Checar pixel/CAPI (deduplicação), velocidade da página (LCP < 2,5s) e clareza da oferta/CTA na landing page.');
@@ -657,7 +808,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     marcarPrioridade(4, 'atencao');
   }
 
-  // 4b) Funil detalhado (SALES) — aponta exatamente onde está vazando
   if (obj === 'SALES' && clicks >= 30) {
     if (lpView > 0 && lpView < clicks * 0.5) {
       problemas.push({ tipo: 'critico', titulo: 'Perda entre clique e página de destino', desc: `${fmtN(clicks)} cliques mas só ${fmtN(lpView)} visualizações de página (${(lpView / clicks * 100).toFixed(0)}%). Indica página lenta, redirecionamento com erro ou pixel mal instalado.` });
@@ -678,7 +828,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     }
   }
 
-  // 4c) Benchmarks GastroHub — Food Delivery (funil completo do cardápio)
   if (isFoodAccount() && obj === 'SALES' && lpView >= 20) {
     const taxaCarrinho = lpView > 0 ? (addCart / lpView * 100) : 0;
     const taxaCheckoutPct = addCart > 0 ? (checkout / addCart * 100) : 0;
@@ -718,7 +867,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
       problemas.push({ tipo: 'ok', titulo: 'Conversão do cardápio dentro do benchmark GastroHub', desc: `${convTotalCardapio.toFixed(1)}% de conversão total, dentro ou acima da faixa saudável (8% a 15%).` });
     }
 
-    // CPA dinâmico como % do ticket médio (regra GastroHub: CPA ideal = 10% do ticket médio)
     if (convQtd > 0 && fat > 0) {
       const ticketMedio = fat / convQtd;
       const cpaIdealGastroHub = ticketMedio * 0.10;
@@ -735,7 +883,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     }
   }
 
-  // 5) Custo por resultado acima da meta/teto (regra de corte: CPA > 1,5x meta)
   const rotuloCpa = convLabel === 'pedidos' ? 'CPR' : 'Custo por ' + convLabel.replace(/s$/, '');
   if (convQtd > 0 && cpa > cpaTeto) {
     problemas.push({ tipo: 'critico', titulo: `${rotuloCpa} acima do teto (1,5x a meta)`, desc: `${fmt(cpa)} por ${convLabel.replace(/s$/, '')}, ${(cpa / cpaAlvo).toFixed(1)}x acima da meta de ${fmt(cpaAlvo)}.` });
@@ -747,7 +894,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     marcarPrioridade(3, 'atencao');
   }
 
-  // 6) ROAS (apenas vendas) — regra de corte: ROAS < mínimo viável
   if (obj === 'SALES' && gasto > 0 && fat > 0) {
     if (roas < roasMin) {
       problemas.push({ tipo: 'critico', titulo: 'ROAS abaixo do mínimo viável', desc: `ROAS ${roas.toFixed(2)}x, abaixo do mínimo de ${roasMin}x definido. Campanha operando no prejuízo ou com margem insuficiente.` });
@@ -764,7 +910,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     }
   }
 
-  // 6b) Tendência vs período anterior comparável (evita corte por ruído de 1 dia)
   const prev = prevMap && prevMap[camp.id];
   if (prev && prev.gasto > 0) {
     const prevActions = prev.actions || [];
@@ -798,7 +943,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     }
   }
 
-  // 7) Orçamento quase esgotado
   const lifetimeBudget = parseFloat(camp.lifetime_budget || 0) / 100;
   const budgetRemaining = parseFloat(camp.budget_remaining || 0) / 100;
   const pctGasto = lifetimeBudget > 0 ? ((lifetimeBudget - budgetRemaining) / lifetimeBudget * 100) : 0;
@@ -808,7 +952,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     marcarPrioridade(1, 'critico');
   }
 
-  // 8) Encerramento próximo
   if (diasRestantes !== null && diasRestantes >= 0 && diasRestantes <= 2) {
     problemas.push({ tipo: 'critico', titulo: `Encerra em ${diasRestantes} dia(s)`, desc: 'Data de término se aproximando.' });
     acoes.push('Duplicar ou criar nova campanha para não perder continuidade de veiculação.');
@@ -818,7 +961,6 @@ function diagnosticarCampanha(camp, cfg, hoje, prevMap) {
     marcarPrioridade(4, 'atencao');
   }
 
-  // 9) Estrutura de teste — 1x4x1
   if (adsAtivos === 0 && gasto > 0) {
     problemas.push({ tipo: 'critico', titulo: 'Nenhum anúncio ativo', desc: 'Campanha ativa sem anúncios rodando.' });
     acoes.push('Verificar conjuntos/anúncios pausados por erro, reprovação ou saldo.');
@@ -842,25 +984,24 @@ function renderDiagnosticos(diags, cfg) {
   const nAtencao = diags.filter(d => d.statusGeral === 'atencao').length;
   const nOk = diags.filter(d => d.statusGeral === 'ok').length;
 
-  let html = `<div style="font-size:11px;color:#6b7280;margin-bottom:14px;line-height:1.7;">
+  let html = `<div style="font-size:11px;color:var(--dim);margin-bottom:14px;line-height:1.7;">
     ${diags.length} campanha(s) ativa(s) analisada(s) — Meta CPA ${fmt(cfg.cpaAlvo)} · ROAS mín ${cfg.roasMin}x<br>
-    <span style="color:#f87171;">🔴 ${nCritico} crítico(s)</span> · <span style="color:#fbbf24;">⚠️ ${nAtencao} atenção</span> · <span style="color:#34d399;">✅ ${nOk} saudável(is)</span>
+    <span style="color:var(--red);">${nCritico} crítico(s)</span> · <span style="color:var(--amber);">${nAtencao} atenção</span> · <span style="color:var(--green);">${nOk} saudável(is)</span>
   </div>`;
 
   diags.forEach((d, idx) => {
-    const corBorda = { critico: '#f87171', atencao: '#fbbf24', ok: '#34d399' }[d.statusGeral];
-    const iconStatus = { critico: '🔴', atencao: '⚠️', ok: '✅' }[d.statusGeral];
+    const corBorda = { critico: 'var(--red)', atencao: 'var(--amber)', ok: 'var(--green)' }[d.statusGeral];
     const roasTxt = d.obj === 'SALES' ? ` · ROAS ${d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—'}` : '';
     const funilTxt = d.obj === 'SALES' && (d.lpView || d.addCart || d.checkout)
-      ? `<div style="font-size:10px;color:#4b5563;margin:-4px 0 10px;">Funil: ${fmtN(d.clicks)} cliques → ${fmtN(d.lpView)} página → ${fmtN(d.addCart)} carrinho → ${fmtN(d.checkout)} checkout → ${fmtN(d.convQtd)} compra</div>`
+      ? `<div style="font-size:10px;color:var(--b3);margin:-4px 0 10px;">Funil: ${fmtN(d.clicks)} cliques → ${fmtN(d.lpView)} página → ${fmtN(d.addCart)} carrinho → ${fmtN(d.checkout)} checkout → ${fmtN(d.convQtd)} compra</div>`
       : '';
 
     html += `<div class="bob-camp-card" style="border-left:3px solid ${corBorda};">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-        <div style="font-size:13px;font-weight:600;color:#fff;">${iconStatus} ${d.camp.name}</div>
-        <span style="font-size:10px;color:#6b7280;white-space:nowrap;">prioridade #${idx + 1}</span>
+        <div style="font-size:13px;font-weight:600;color:var(--text);">${d.camp.name}</div>
+        <span style="font-size:10px;color:var(--dim);white-space:nowrap;">prioridade #${idx + 1}</span>
       </div>
-      <div style="font-size:10px;color:#6b7280;margin:4px 0 6px;line-height:1.6;">
+      <div style="font-size:10px;color:var(--dim);margin:4px 0 6px;line-height:1.6;">
         ${objLabelBob(d.obj)} · Gasto ${fmt(d.gasto)} · CTR ${d.ctr.toFixed(2)}% · Freq ${d.freq.toFixed(2)}x${roasTxt} · ${d.convLabel} ${fmtN(d.convQtd)} (${d.cpa > 0 ? fmt(d.cpa) : '—'}/un)
       </div>
       ${funilTxt}`;
@@ -873,8 +1014,8 @@ function renderDiagnosticos(diags, cfg) {
     });
 
     if (d.acoes.length) {
-      html += `<div style="margin-top:8px;font-size:11px;color:#a78bfa;font-weight:600;">💡 Próximo teste / plano de ação:</div>
-      <ol style="margin:4px 0 0 16px;padding:0;font-size:11px;color:#c8c8c8;line-height:1.7;">`;
+      html += `<div style="margin-top:8px;font-size:11px;color:var(--gold);font-weight:600;">Próximo teste / plano de ação:</div>
+      <ol style="margin:4px 0 0 16px;padding:0;font-size:11px;color:var(--text2);line-height:1.7;">`;
       d.acoes.forEach(a => { html += `<li>${a}</li>`; });
       html += `</ol>`;
     }
@@ -888,7 +1029,7 @@ function renderDiagnosticos(diags, cfg) {
 async function abrirBOB() {
   document.getElementById('bob-panel').classList.add('open');
   document.getElementById('overlay-bg').classList.add('open');
-  document.getElementById('bob-body').innerHTML = '<div class="bob-loading"><span class="spin">⟳</span> BOB (Gestor de Tráfego) analisando campanhas...</div>';
+  document.getElementById('bob-body').innerHTML = '<div class="bob-loading"><span class="spin"><i class="ti ti-loader"></i></span> BOB analisando campanhas...</div>';
 
   const cfg = salvarBobConfig();
   const hoje = new Date();
@@ -971,11 +1112,11 @@ function abrirCriativo(nome, thumbUrl, videoUrl, titulo, corpo) {
   document.getElementById('mc-title').textContent = nome;
   const media = document.getElementById('mc-media');
   if (videoUrl) {
-    media.innerHTML = `<video controls autoplay muted style="width:100%;border-radius:8px;max-height:400px;"><source src="${videoUrl}"><p style="color:#9ca3af;text-align:center;">Vídeo não disponível</p></video>`;
+    media.innerHTML = `<video controls autoplay muted style="width:100%;border-radius:8px;max-height:400px;"><source src="${videoUrl}"><p style="color:var(--dim);text-align:center;">Vídeo não disponível</p></video>`;
   } else if (thumbUrl) {
     media.innerHTML = `<img src="${thumbUrl}" alt="${nome}" onerror="this.style.display='none'">`;
   } else {
-    media.innerHTML = `<div style="text-align:center;padding:40px;color:#4b5563;">Sem prévia disponível</div>`;
+    media.innerHTML = `<div style="text-align:center;padding:40px;color:var(--dim);">Sem prévia disponível</div>`;
   }
   const body = document.getElementById('mc-body');
   body.innerHTML = '';
@@ -988,7 +1129,7 @@ function fecharCriativo(e) {
   if (!e || e.target === document.getElementById('modal-criativo')) {
     document.getElementById('modal-criativo').classList.remove('open');
     const media = document.getElementById('mc-media');
-    media.innerHTML = ''; // Para o vídeo
+    media.innerHTML = '';
   }
 }
 
@@ -1000,6 +1141,7 @@ if (!accountId) {
   carregarTab();
 }
 </script>
+
 <div class="modal-criativo" id="modal-criativo" onclick="fecharCriativo(event)">
   <div class="modal-criativo-inner" onclick="event.stopPropagation()">
     <button class="modal-close-btn" onclick="fecharCriativo()">✕</button>
@@ -1008,11 +1150,16 @@ if (!accountId) {
     <div class="modal-criativo-body" id="mc-body"></div>
   </div>
 </div>
+
 <div class="overlay-bg" id="overlay-bg" onclick="fecharBOB()"></div>
+
 <div class="bob-panel" id="bob-panel">
   <div class="bob-header">
-    <div class="bob-title">🤖 BOB — Gestor de Tráfego</div>
-    <button class="bob-close" onclick="fecharBOB()">✕</button>
+    <div class="bob-title">
+      <div class="bob-title-mark">B</div>
+      BOB — Gestor de Tráfego
+    </div>
+    <button class="bob-close" onclick="fecharBOB()"><i class="ti ti-x"></i></button>
   </div>
   <div class="bob-config">
     <label>CPA alvo R$ <input type="number" id="bob-cpa-alvo" step="1" min="0"></label>
@@ -1020,8 +1167,9 @@ if (!accountId) {
     <button onclick="abrirBOB()">Reanalisar</button>
   </div>
   <div class="bob-body" id="bob-body">
-    <div class="bob-loading">Clique em "🤖 BOB" para analisar esta BM</div>
+    <div class="bob-loading">Clique em "BOB" para analisar esta BM</div>
   </div>
 </div>
+
 </body>
 </html>

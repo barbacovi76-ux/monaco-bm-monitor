@@ -63,16 +63,19 @@
   }
 
   .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-box {
-    width: 32px; height: 32px; background: var(--gold);
+  .logo-mark {
+    width: 30px; height: 30px; background: var(--gold);
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 14px; font-weight: 600;
+    font-family: var(--mono); font-size: 13px; font-weight: 700;
     color: #000; flex-shrink: 0; letter-spacing: -1px;
-    box-shadow: 0 0 16px rgba(245,197,24,.3);
+    clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%);
+    box-shadow: 0 0 20px rgba(245,197,24,.2);
   }
-  .logo-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: .5px; }
-  .logo-sep { color: var(--muted); margin: 0 4px; }
-  .logo-sub { font-size: 11px; color: var(--dim); font-family: var(--mono); letter-spacing: 1px; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-name { font-size: 13px; font-weight: 600; color: #fff; letter-spacing: .4px; }
+  .logo-sub  { font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1.2px; text-transform: uppercase; }
+  .logo-divider { width: 1px; height: 20px; background: var(--b2); flex-shrink: 0; margin: 0 4px; }
+  .logo-page { font-size: 12px; color: var(--dim); letter-spacing: .3px; }
 
   .hdr-r { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
@@ -268,12 +271,15 @@
 <body>
 
 <div class="hdr">
-  <div class="logo">
-    <div class="logo-box">M</div>
-    <span class="logo-name">Monaco Agency</span>
-    <span class="logo-sep">/</span>
-    <span class="logo-sub">BM Performance</span>
-  </div>
+  <a href="dashboard.html" class="logo" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+    <div class="logo-mark">M</div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Performance</span>
+  </a>
   <div class="hdr-r">
     <div class="psw">
       <button class="psw-btn" onclick="setPeriodo('today')">HOJ</button>
@@ -294,7 +300,7 @@
     <a href="clientes.html" class="btn"><i class="ti ti-users" aria-hidden="true"></i> Clientes</a>
     <a href="relatorio_semanal.html" class="btn"><i class="ti ti-file-text" aria-hidden="true"></i> Relatório</a>
     <a href="saldos_dash.html" class="btn"><i class="ti ti-wallet" aria-hidden="true"></i> Saldos</a>
-    <a href="agente.html" class="btn gold"><i class="ti ti-robot" aria-hidden="true"></i> BOB</a>
+    <a href="bob_voice.html" class="btn gold"><i class="ti ti-robot" aria-hidden="true"></i> BOB</a>
     <button onclick="abrirRelatorio()" class="btn"><i class="ti ti-send" aria-hidden="true"></i> Exportar</button>
     <button onclick="carregarDados()" class="btn primary" id="btn-load"><i class="ti ti-refresh" aria-hidden="true"></i> Carregar</button>
   </div>

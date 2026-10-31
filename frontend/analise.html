@@ -3,95 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Análise Gestor — Monaco Agency</title>
+<title>Análise — Monaco Agency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="monaco.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
-.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
-.logo span { background: #7c3aed; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
-.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
-.back-btn:hover { background: #262a3a; }
-.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
-.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
-.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
-.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
-.section-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.section { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
-.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.mc { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
-.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
-.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
-.mc-val.green { color: #34d399; }
-.mc-val.amber { color: #fbbf24; }
-.mc-val.red { color: #f87171; }
-.mc-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
-.chart-wrap { position: relative; height: 240px; }
+.bm-header {
+  background: var(--s3);
+  border: 1px solid var(--b1);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.bm-title { font-size: 17px; font-weight: 600; color: #fff; }
+.bm-id { font-size: 11px; color: var(--dim); margin-top: 4px; font-family: var(--mono); }
+.periodo-badge {
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: 5px; padding: 4px 10px;
+  font-size: 11px; color: var(--text2);
+  font-family: var(--mono); letter-spacing: .5px;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.mc {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: 10px; padding: 12px 14px;
+}
+.mc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+.mc-val { font-size: 19px; font-weight: 700; color: #fff; font-feature-settings: 'tnum'; }
+.mc-val.green { color: var(--green); }
+.mc-val.amber { color: var(--amber); }
+.mc-val.red   { color: var(--red);   }
+.mc-sub { font-size: 11px; color: var(--dim); margin-top: 5px; }
+
+.section {
+  background: var(--s3); border: 1px solid var(--b1);
+  border-radius: 10px; padding: 16px 20px; margin-bottom: 14px;
+}
+
+.chart-wrap      { position: relative; height: 240px; }
 .chart-wrap-tall { position: relative; height: 300px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
 .funil-wrap { display: flex; flex-direction: column; gap: 6px; }
-.funil-step { display: flex; align-items: center; gap: 12px; }
-.funil-bar-bg { flex: 1; height: 32px; background: #1e2130; border-radius: 6px; overflow: hidden; position: relative; }
-.funil-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; font-size: 12px; font-weight: 500; color: #fff; transition: width .6s ease; }
-.funil-label { width: 180px; font-size: 12px; color: #9ca3af; text-align: right; flex-shrink: 0; }
-.funil-val { width: 80px; font-size: 12px; font-weight: 600; color: #fff; text-align: right; flex-shrink: 0; }
-.funil-pct { width: 50px; font-size: 11px; color: #6b7280; text-align: right; flex-shrink: 0; }
+.funil-step { display: flex; align-items: center; gap: 10px; }
+.funil-bar-bg { flex: 1; height: 30px; background: var(--s2); border-radius: 5px; overflow: hidden; position: relative; }
+.funil-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 500; color: #fff; transition: width .5s ease; }
+.funil-label { width: 160px; font-size: 11px; color: var(--text2); text-align: right; flex-shrink: 0; }
+.funil-val { width: 72px; font-size: 12px; font-weight: 600; color: var(--text); text-align: right; flex-shrink: 0; }
+.funil-pct { width: 44px; font-size: 11px; color: var(--dim); text-align: right; flex-shrink: 0; }
+
 .comparativo-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.comp-card { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 14px; }
-.comp-card-title { font-size: 12px; color: #6b7280; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .4px; }
-.comp-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1e2130; font-size: 13px; }
+.comp-card { background: var(--s2); border: 1px solid var(--b1); border-radius: 8px; padding: 14px; }
+.comp-card-title { font-size: 10px; color: var(--dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.comp-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--s4); font-size: 13px; }
 .comp-row:last-child { border-bottom: none; }
-.comp-label { color: #9ca3af; }
-.comp-val { font-weight: 500; }
-.comp-delta { font-size: 11px; padding: 2px 6px; border-radius: 99px; }
-.delta-up { background: rgba(52,211,153,.15); color: #34d399; }
-.delta-down { background: rgba(248,113,113,.15); color: #f87171; }
-.delta-neutral { background: rgba(107,114,128,.15); color: #9ca3af; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th { text-align: left; padding: 8px 12px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; background: #111318; border-bottom: 1px solid #2a2d3a; }
-td { padding: 8px 12px; border-bottom: 1px solid #1e2130; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #1a1e2a; }
-.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
-.spin { display: inline-block; animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+.comp-label { color: var(--text2); }
+.comp-val { font-weight: 500; color: var(--text); }
+.comp-delta { font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+.delta-up   { background: var(--green2); color: var(--green); }
+.delta-down { background: var(--red2);   color: var(--red);   }
+.delta-neutral { background: var(--s4);  color: var(--dim);   }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .funil-label { width: 100px; font-size: 10px; }
+}
 @media print {
-  .header { position: static; }
-  button, .back-btn { display: none !important; }
+  .hdr { position: static; }
+  .btn, .nav-btn { display: none !important; }
   body { background: #fff; color: #000; }
-  .section { background: #f9f9f9; border: 1px solid #ddd; break-inside: avoid; }
-  .mc { background: #f0f0f0; border: 1px solid #ddd; }
+  .section, .mc { background: #f9f9f9; border: 1px solid #ddd; break-inside: avoid; }
   .mc-val { color: #000 !important; }
-  .mc-val.green { color: #065f46 !important; }
-  .mc-val.amber { color: #92400e !important; }
-  .mc-val.red { color: #991b1b !important; }
-  .funil-bar-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   canvas { max-width: 100%; }
 }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">📊 Análise Gestor <span>Monaco Agency</span></div>
-  <div style="display:flex;gap:8px;align-items:center;">
+<header class="hdr">
+  <a href="dashboard.html" class="logo">
+    <div class="logo-mark">M</div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Análise</span>
+  </a>
+
+  <div class="hdr-nav">
     <span class="periodo-badge" id="periodo-label">Carregando...</span>
-    <button onclick="enviarResumoWpp()" id="btn-enviar-wpp" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #059669;background:rgba(5,150,105,.15);color:#34d399;">
-      📤 Enviar no grupo
+    <button onclick="enviarResumoWpp()" id="btn-enviar-wpp" class="btn" style="border-color:rgba(0,230,118,.3);color:var(--green);background:var(--green2);">
+      <i class="ti ti-brand-whatsapp"></i> Enviar grupo
     </button>
-    <button onclick="exportarHTML()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #2a2d3a;background:#1e2130;color:#c8c8c8;">
-      💾 Salvar HTML
+    <button onclick="exportarHTML()" class="btn">
+      <i class="ti ti-download"></i> Salvar HTML
     </button>
-    <button onclick="exportarPDF()" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid #3b82f6;background:rgba(59,130,246,.15);color:#60a5fa;">
-      📄 Exportar PDF
+    <button onclick="exportarPDF()" class="btn" style="border-color:rgba(41,121,255,.3);color:var(--blue);background:var(--blue2);">
+      <i class="ti ti-file-type-pdf"></i> Exportar PDF
     </button>
-    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+    <a href="javascript:history.back()" class="btn">
+      <i class="ti ti-arrow-left"></i> Voltar
+    </a>
   </div>
-</div>
+</header>
 
 <div class="container">
 
@@ -103,12 +126,15 @@ tr:hover td { background: #1a1e2a; }
   </div>
 
   <div id="main-content">
-    <div class="loading"><span class="spin">⟳</span> Carregando análise completa...</div>
+    <div class="loading">
+      <div class="spinner"></div>
+      Carregando análise completa...
+    </div>
   </div>
 
 </div>
 
-<div class="toast" id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;z-index:300;display:none;"></div>
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:6px;font-size:13px;font-weight:500;z-index:300;display:none;"></div>
 
 <script>
 const TOKEN_KEY = 'monaco_meta_token';
@@ -134,7 +160,7 @@ document.getElementById('bm-id').textContent = accountId;
 const periodoLabels = { today: 'Hoje', yesterday: 'Ontem', last_7d: 'Últimos 7 dias', last_14d: 'Últimos 14 dias', last_30d: 'Últimos 30 dias' };
 if (periodoAtual === 'custom' && dataInicio && dataFim) {
   const fmtD = d => new Date(d+'T12:00:00').toLocaleDateString('pt-BR');
-  document.getElementById('periodo-label').textContent = `${fmtD(dataInicio)} até ${fmtD(dataFim)}`;
+  document.getElementById('periodo-label').textContent = `${fmtD(dataInicio)} — ${fmtD(dataFim)}`;
 } else {
   document.getElementById('periodo-label').textContent = periodoLabels[periodoAtual] || periodoAtual;
 }
@@ -205,39 +231,36 @@ function renderMetrics(m, prev) {
     const good = higher_is_better ? up : !up;
     return `<span class="comp-delta ${good ? 'delta-up' : 'delta-down'}">${up ? '+' : ''}${pct.toFixed(1)}%</span>`;
   }
-
   const roasColor = m.roas >= 10 ? 'green' : m.roas >= 3 ? '' : m.roas >= 1.5 ? 'amber' : 'red';
-
   return `
   <div class="metrics-row">
-    <div class="mc"><div class="mc-label">💰 Investido</div><div class="mc-val">${fmt(m.gasto)}</div>${prev ? `<div class="mc-sub">${delta(m.gasto, prev.gasto, false)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">📦 Pedidos</div><div class="mc-val">${fmtN(m.pedidos)}</div>${prev ? `<div class="mc-sub">${delta(m.pedidos, prev.pedidos)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">🛒 Faturamento</div><div class="mc-val green">${fmt(m.fat)}</div>${prev ? `<div class="mc-sub">${delta(m.fat, prev.fat)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">🎫 Ticket médio</div><div class="mc-val green">${m.ticket > 0 ? fmt(m.ticket) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.ticket, prev.ticket)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">📉 CPR</div><div class="mc-val">${m.cpr > 0 ? fmt(m.cpr) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.cpr, prev.cpr, false)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">🚀 ROAS</div><div class="mc-val ${roasColor}">${m.roas > 0 ? m.roas.toFixed(2) + 'x' : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.roas, prev.roas)} vs período ant.</div>` : ''}</div>
-    <div class="mc"><div class="mc-label">👁 Alcance</div><div class="mc-val">${fmtN(m.reach)}</div></div>
-    <div class="mc"><div class="mc-label">🔁 Frequência</div><div class="mc-val">${m.freq > 0 ? m.freq.toFixed(2) + 'x' : '—'}</div></div>
-    <div class="mc"><div class="mc-label">💵 Custo por clique</div><div class="mc-val">${m.cpc > 0 ? fmt(m.cpc) : '—'}</div></div>
-    <div class="mc"><div class="mc-label">📄 Custo por LP</div><div class="mc-val">${m.cpLp > 0 ? fmt(m.cpLp) : '—'}</div></div>
+    <div class="mc"><div class="mc-label">Investido</div><div class="mc-val">${fmt(m.gasto)}</div>${prev ? `<div class="mc-sub">${delta(m.gasto, prev.gasto, false)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">Pedidos</div><div class="mc-val">${fmtN(m.pedidos)}</div>${prev ? `<div class="mc-sub">${delta(m.pedidos, prev.pedidos)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">Faturamento</div><div class="mc-val green">${fmt(m.fat)}</div>${prev ? `<div class="mc-sub">${delta(m.fat, prev.fat)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">Ticket médio</div><div class="mc-val green">${m.ticket > 0 ? fmt(m.ticket) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.ticket, prev.ticket)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">CPR</div><div class="mc-val">${m.cpr > 0 ? fmt(m.cpr) : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.cpr, prev.cpr, false)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">ROAS</div><div class="mc-val ${roasColor}">${m.roas > 0 ? m.roas.toFixed(2) + 'x' : '—'}</div>${prev ? `<div class="mc-sub">${delta(m.roas, prev.roas)} vs período ant.</div>` : ''}</div>
+    <div class="mc"><div class="mc-label">Alcance</div><div class="mc-val">${fmtN(m.reach)}</div></div>
+    <div class="mc"><div class="mc-label">Frequência</div><div class="mc-val">${m.freq > 0 ? m.freq.toFixed(2) + 'x' : '—'}</div></div>
+    <div class="mc"><div class="mc-label">Custo por clique</div><div class="mc-val">${m.cpc > 0 ? fmt(m.cpc) : '—'}</div></div>
+    <div class="mc"><div class="mc-label">Custo por LP</div><div class="mc-val">${m.cpLp > 0 ? fmt(m.cpLp) : '—'}</div></div>
   </div>`;
 }
 
 function renderFunil(m) {
   const steps = [
-    { label: 'Impressões', val: m.impr, color: '#3b82f6' },
+    { label: 'Impressões', val: m.impr, color: '#2979ff' },
     { label: 'Cliques no link', val: m.clicks, color: '#6366f1' },
     { label: 'Página de destino', val: m.pageView, color: '#8b5cf6' },
     { label: 'Ver conteúdo', val: m.viewContent, color: '#a78bfa' },
-    { label: 'Add ao carrinho', val: m.addCart, color: '#f59e0b' },
-    { label: 'Início de compra', val: m.checkout, color: '#f97316' },
-    { label: 'Compras', val: m.pedidos, color: '#10b981' },
+    { label: 'Add ao carrinho', val: m.addCart, color: '#f5c518' },
+    { label: 'Início de compra', val: m.checkout, color: '#ffab00' },
+    { label: 'Compras', val: m.pedidos, color: '#00e676' },
   ].filter(s => s.val > 0);
-
   const max = steps[0]?.val || 1;
   return `
   <div class="section">
-    <div class="section-title">🔽 Funil de Conversão</div>
+    <div class="section-title">Funil de Conversão</div>
     <div class="funil-wrap">
       ${steps.map((s, i) => {
         const pct = max > 0 ? (s.val / max * 100) : 0;
@@ -263,10 +286,10 @@ function renderDailyChart(dailyData) {
     const fat = parseFloat((d.action_values||[]).find(a => a.action_type==='purchase')?.value || 0);
     return gastos[i] > 0 ? (fat / gastos[i]) : 0;
   });
-
   const id1 = 'chart-diario-' + Date.now();
   const id2 = 'chart-roas-' + Date.now();
-
+  const gridColor = 'rgba(30,34,54,.8)';
+  const tickColor = '#545970';
   setTimeout(() => {
     const ctx1 = document.getElementById(id1)?.getContext('2d');
     if (ctx1) new Chart(ctx1, {
@@ -274,47 +297,45 @@ function renderDailyChart(dailyData) {
       data: {
         labels,
         datasets: [
-          { label: 'Investido (R$)', data: gastos, backgroundColor: 'rgba(59,130,246,.7)', yAxisID: 'y' },
-          { label: 'Pedidos', data: pedidos, type: 'line', borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,.1)', tension: .3, yAxisID: 'y1', pointRadius: 4 }
+          { label: 'Investido (R$)', data: gastos, backgroundColor: 'rgba(41,121,255,.6)', yAxisID: 'y' },
+          { label: 'Pedidos', data: pedidos, type: 'line', borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,.08)', tension: .3, yAxisID: 'y1', pointRadius: 4 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: tickColor, font: { size: 11, family: 'Inter' } } } },
         scales: {
-          x: { ticks: { color: '#6b7280' }, grid: { color: '#1e2130' } },
-          y: { ticks: { color: '#6b7280', callback: v => 'R$'+v }, grid: { color: '#1e2130' } },
-          y1: { position: 'right', ticks: { color: '#34d399' }, grid: { display: false } }
+          x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+          y: { ticks: { color: tickColor, callback: v => 'R$'+v }, grid: { color: gridColor } },
+          y1: { position: 'right', ticks: { color: '#00e676' }, grid: { display: false } }
         }
       }
     });
-
     const ctx2 = document.getElementById(id2)?.getContext('2d');
     if (ctx2) new Chart(ctx2, {
       type: 'line',
       data: {
         labels,
-        datasets: [{ label: 'ROAS', data: roas, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)', tension: .3, fill: true, pointRadius: 4 }]
+        datasets: [{ label: 'ROAS', data: roas, borderColor: '#f5c518', backgroundColor: 'rgba(245,197,24,.08)', tension: .3, fill: true, pointRadius: 4 }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+        plugins: { legend: { labels: { color: tickColor, font: { size: 11, family: 'Inter' } } } },
         scales: {
-          x: { ticks: { color: '#6b7280' }, grid: { color: '#1e2130' } },
-          y: { ticks: { color: '#6b7280', callback: v => v.toFixed(1)+'x' }, grid: { color: '#1e2130' } }
+          x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+          y: { ticks: { color: tickColor, callback: v => v.toFixed(1)+'x' }, grid: { color: gridColor } }
         }
       }
     });
   }, 100);
-
   return `
   <div class="grid-2">
     <div class="section">
-      <div class="section-title">📅 Investimento & Pedidos por Dia</div>
+      <div class="section-title">Investimento & Pedidos por Dia</div>
       <div class="chart-wrap"><canvas id="${id1}"></canvas></div>
     </div>
     <div class="section">
-      <div class="section-title">🚀 ROAS por Dia</div>
+      <div class="section-title">ROAS por Dia</div>
       <div class="chart-wrap"><canvas id="${id2}"></canvas></div>
     </div>
   </div>`;
@@ -331,34 +352,33 @@ function renderBreakdown(ageData, genderData, regionData) {
         const fat = parseFloat((d.action_values||[]).find(a => a.action_type==='purchase')?.value || 0);
         const roas = gasto > 0 && fat > 0 ? fat / gasto : 0;
         const cpr = pedidos > 0 ? gasto / pedidos : 0;
-        const roasColor = roas >= 10 ? '#34d399' : roas >= 3 ? '#60a5fa' : roas >= 1.5 ? '#fbbf24' : roas > 0 ? '#f87171' : '#6b7280';
+        const roasColor = roas >= 10 ? 'var(--green)' : roas >= 3 ? 'var(--blue)' : roas >= 1.5 ? 'var(--amber)' : roas > 0 ? 'var(--red)' : 'var(--dim)';
         const keyLabels = { male: 'Masculino', female: 'Feminino', unknown: 'Não informado' };
         const key = keyLabels[d[keyField]] || d[keyField];
         return `<tr>
-          <td style="color:#e8e8e8;font-weight:500;">${key}</td>
+          <td style="color:var(--text);font-weight:500;">${key}</td>
           <td>${fmt(gasto)}</td>
           <td>${pedidos > 0 ? fmtN(pedidos) : '—'}</td>
-          <td style="color:#34d399;">${fat > 0 ? fmt(fat) : '—'}</td>
+          <td style="color:var(--green);">${fat > 0 ? fmt(fat) : '—'}</td>
           <td>${cpr > 0 ? fmt(cpr) : '—'}</td>
           <td style="color:${roasColor};font-weight:600;">${roas > 0 ? roas.toFixed(2)+'x' : '—'}</td>
         </tr>`;
       }).join('');
   }
-
   return `
   <div class="grid-3">
     <div class="section">
-      <div class="section-title">👤 Por Faixa Etária</div>
+      <div class="section-title">Por Faixa Etária</div>
       <table><thead><tr><th>Idade</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
       <tbody>${tableRows(ageData, 'age')}</tbody></table>
     </div>
     <div class="section">
-      <div class="section-title">⚧ Por Gênero</div>
+      <div class="section-title">Por Gênero</div>
       <table><thead><tr><th>Gênero</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
       <tbody>${tableRows(genderData, 'gender')}</tbody></table>
     </div>
     <div class="section">
-      <div class="section-title">📍 Por Região</div>
+      <div class="section-title">Por Região</div>
       <table><thead><tr><th>Região</th><th>Gasto</th><th>Pedidos</th><th>Fat.</th><th>CPR</th><th>ROAS</th></tr></thead>
       <tbody>${tableRows(regionData, 'region')}</tbody></table>
     </div>
@@ -367,7 +387,6 @@ function renderBreakdown(ageData, genderData, regionData) {
 
 function renderComparativo(curr, prev) {
   if (!prev) return '';
-
   function row(label, currVal, prevVal, fmt_fn, higherBetter = true) {
     const delta = prevVal > 0 ? ((currVal - prevVal) / prevVal * 100) : 0;
     const up = delta > 0;
@@ -381,10 +400,9 @@ function renderComparativo(curr, prev) {
       </div>
     </div>`;
   }
-
   return `
   <div class="section">
-    <div class="section-title">📊 Comparativo com Período Anterior</div>
+    <div class="section-title">Comparativo com Período Anterior</div>
     <div class="comparativo-wrap">
       <div class="comp-card">
         <div class="comp-card-title">Período atual</div>
@@ -417,12 +435,10 @@ async function carregar() {
     document.getElementById('main-content').innerHTML = '<div class="loading">Token não encontrado. Volte ao dashboard e salve o token.</div>';
     return;
   }
-
   try {
     const timeParam = getTimeParam();
     const prev = getPrevPeriod();
     const prevTimeParam = `time_range=${encodeURIComponent(JSON.stringify(prev))}`;
-
     const [mainRes, dailyRes, prevRes, ageRes, genderRes, regionRes] = await Promise.all([
       fetchInsights('', timeParam),
       fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&time_increment=1&limit=90&access_token=${token}`).then(r=>r.json()),
@@ -431,26 +447,22 @@ async function carregar() {
       fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&breakdowns=gender&limit=100&access_token=${token}`).then(r=>r.json()),
       fetch(`https://graph.facebook.com/${API_VERSION}/${accountId}/insights?fields=spend,impressions,clicks,actions,action_values&${timeParam}&breakdowns=region&limit=100&access_token=${token}`).then(r=>r.json()),
     ]);
-
     const curr = parseMain(mainRes.data);
     metricsAtuais = curr;
     const prevM = parseMain(prevRes.data);
     const daily = dailyRes.data || [];
-
     if (!curr) {
       document.getElementById('main-content').innerHTML = '<div class="loading">Sem dados para este período.</div>';
       return;
     }
-
     document.getElementById('main-content').innerHTML =
       renderMetrics(curr, prevM) +
       renderFunil(curr) +
       (daily.length > 1 ? renderDailyChart(daily) : '') +
       renderComparativo(curr, prevM) +
       renderBreakdown(ageRes.data || [], genderRes.data || [], regionRes.data || []);
-
   } catch(e) {
-    document.getElementById('main-content').innerHTML = `<div class="loading">Erro: ${e.message}</div>`;
+    document.getElementById('main-content').innerHTML = `<div class="loading">Erro ao carregar: ${e.message}</div>`;
     console.error(e);
   }
 }
@@ -458,8 +470,9 @@ async function carregar() {
 function showToast(msg, tipo) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.style.background = tipo === 'ok' ? '#059669' : '#dc2626';
-  t.style.color = '#fff';
+  t.style.background = tipo === 'ok' ? '#065f46' : '#7f1d1d';
+  t.style.color = tipo === 'ok' ? '#00e676' : '#ff3d57';
+  t.style.border = tipo === 'ok' ? '1px solid rgba(0,230,118,.3)' : '1px solid rgba(255,61,87,.3)';
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 3000);
 }
@@ -470,22 +483,19 @@ async function enviarResumoWpp() {
   const periodoTxt = document.getElementById('periodo-label').textContent;
   const roas = m.roas > 0 ? m.roas.toFixed(2) : '0';
   const cpr = m.cpr > 0 ? fmt(m.cpr) : 'R$ 0,00';
-
-  const mensagem = '🤖 Mano BOB informa:\n\n' +
-    '📊 Análise — ' + bmNome + '\n' +
+  const mensagem = 'Monaco Agency — Análise:\n\n' +
+    'BM: ' + bmNome + '\n' +
     'Período: ' + periodoTxt + '\n\n' +
-    '📦 Pedidos: ' + fmtN(m.pedidos) + '\n' +
-    '🛒 Faturamento: ' + fmt(m.fat) + '\n' +
-    '💰 Investido: ' + fmt(m.gasto) + '\n' +
-    '📉 CPR: ' + cpr + '\n' +
-    '🚀 ROAS: ' + roas + '\n' +
-    '🎫 Ticket médio: ' + (m.ticket > 0 ? fmt(m.ticket) : '—') + '\n' +
-    '👁 Alcance: ' + fmtN(m.reach);
-
+    'Pedidos: ' + fmtN(m.pedidos) + '\n' +
+    'Faturamento: ' + fmt(m.fat) + '\n' +
+    'Investido: ' + fmt(m.gasto) + '\n' +
+    'CPR: ' + cpr + '\n' +
+    'ROAS: ' + roas + '\n' +
+    'Ticket médio: ' + (m.ticket > 0 ? fmt(m.ticket) : '—') + '\n' +
+    'Alcance: ' + fmtN(m.reach);
   const btn = document.getElementById('btn-enviar-wpp');
-  btn.textContent = '⏳ Enviando...';
   btn.disabled = true;
-
+  btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
   try {
     const r = await fetch(`${WPP_URL}/message/sendText/${WPP_INSTANCIA}`, {
       method: 'POST',
@@ -493,70 +503,35 @@ async function enviarResumoWpp() {
       body: JSON.stringify({ number: GRUPO_OPERACOES, textMessage: { text: mensagem } })
     });
     if (r.ok) {
-      btn.textContent = '✅ Enviado!';
-      showToast('Resumo enviado para o grupo!', 'ok');
-      setTimeout(() => { btn.textContent = '📤 Enviar no grupo'; btn.disabled = false; }, 3000);
+      btn.innerHTML = '<i class="ti ti-check"></i> Enviado';
+      showToast('Resumo enviado ao grupo!', 'ok');
+      setTimeout(() => { btn.innerHTML = '<i class="ti ti-brand-whatsapp"></i> Enviar grupo'; btn.disabled = false; }, 3000);
     } else { throw new Error(r.status); }
   } catch(e) {
-    btn.textContent = '❌ Erro';
+    btn.innerHTML = '<i class="ti ti-x"></i> Erro';
     showToast('Erro ao enviar resumo', 'err');
-    setTimeout(() => { btn.textContent = '📤 Enviar no grupo'; btn.disabled = false; }, 3000);
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-brand-whatsapp"></i> Enviar grupo'; btn.disabled = false; }, 3000);
   }
 }
 
-function exportarPDF() {
-  window.print();
-}
+function exportarPDF() { window.print(); }
 
 function exportarHTML() {
   document.querySelectorAll('canvas').forEach(canvas => {
     try {
       const img = document.createElement('img');
       img.src = canvas.toDataURL('image/png');
-      img.style.width = '100%';
-      img.style.borderRadius = '8px';
+      img.style.width = '100%'; img.style.borderRadius = '8px';
       canvas.parentNode.replaceChild(img, canvas);
     } catch(e) {}
   });
-
   const conteudo = document.getElementById('main-content').innerHTML;
   const bmTitulo = document.getElementById('bm-title').textContent;
   const periodoTxt = document.getElementById('periodo-label').textContent;
-
-  const htmlCompleto = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Análise — ${bmNome}</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>
-<style>
-${document.querySelector('style').textContent}
-body { background: #0f1117; }
-</style>
-</head>
-<body>
-<div class="header" style="position:static;">
-  <div class="logo">📊 Análise Gestor <span style="background:#7c3aed;color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;">Monaco Agency</span></div>
-  <span style="background:#1e2130;border:1px solid #2a2d3a;border-radius:6px;padding:4px 10px;font-size:12px;color:#9ca3af;">${periodoTxt}</span>
-</div>
-<div class="container">
-  <div class="bm-header">
-    <div>
-      <div class="bm-title">${bmTitulo}</div>
-      <div class="bm-id">${accountId}</div>
-    </div>
-  </div>
-  <div id="main-content">${conteudo}</div>
-</div>
-</body>
-</html>`;
-
-  const blob = new Blob([htmlCompleto], { type: 'text/html;charset=utf-8' });
+  const blob = new Blob([`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Análise — ${bmNome}</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"><link rel="stylesheet" href="monaco.css"><style>${document.querySelector('style').textContent}</style></head><body><header class="hdr"><span class="logo-name" style="color:#fff;">${bmTitulo}</span><span class="periodo-badge">${periodoTxt}</span></header><div class="container"><div id="main-content">${conteudo}</div></div></body></html>`], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
-  const nome = bmTitulo.replace(/[^a-zA-Z0-9]/g, '_');
-  const periodo = periodoTxt.replace(/[^a-zA-Z0-9]/g, '_');
   a.href = URL.createObjectURL(blob);
-  a.download = `analise_${nome}_${periodo}.html`;
+  a.download = `analise_${bmTitulo.replace(/[^a-zA-Z0-9]/g,'_')}_${periodoTxt.replace(/[^a-zA-Z0-9]/g,'_')}.html`;
   a.click();
 }
 
