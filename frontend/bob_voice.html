@@ -208,7 +208,10 @@ body::before {
       </div>
     </div>
     <div class="bob-status" id="status">Clique no anel ou no microfone para falar</div>
-    <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+    <div style="display:flex;gap:12px;align-items:center">
+      <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+      <button class="mic-btn" id="pause-btn" onclick="pausarFala()" title="Pausar fala" style="font-size:18px">⏸️</button>
+    </div>
   </div>
 
   <!-- Transcript -->
@@ -575,6 +578,24 @@ function falar(texto) {
 }
 
 if (synth) { synth.onvoiceschanged = ()=>synth.getVoices(); synth.getVoices(); }
+
+function pausarFala() {
+  if (!synth) return;
+  if (synth.paused) {
+    synth.resume();
+    document.getElementById('pause-btn').textContent = '⏸️';
+    setEstado('falando','BOB está falando...');
+  } else if (synth.speaking) {
+    synth.pause();
+    document.getElementById('pause-btn').textContent = '▶️';
+    setEstado('','Em pausa — clique ▶️ para continuar');
+  } else {
+    synth.cancel();
+    document.getElementById('pause-btn').textContent = '⏸️';
+    setEstado('','Clique no anel ou no microfone para falar');
+    document.getElementById('ring').classList.remove('falando');
+  }
+}
 
 // Saudação inicial
 setTimeout(() => {
