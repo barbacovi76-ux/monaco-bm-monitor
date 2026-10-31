@@ -219,6 +219,171 @@
       "whatsapp_numero": "45 920033459",
       "limite_critico": null,
       "limite_baixo": null
+    },
+    {
+      "nome": "CA- Leni ADS 02",
+      "account_id": "act_1569287454130140",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA- BISTROGOURMETPIZZARIA",
+      "account_id": "act_3379098802257981",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA1 - Doces Mania (Principal)",
+      "account_id": "act_105301940058633",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Bistro Gourmet Foods",
+      "account_id": "act_218943216626025",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA2- BISTROGOURMETPIZZARIA",
+      "account_id": "act_626472496317271",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Ótica Scherer",
+      "account_id": "act_1179077680434286",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Coonecta",
+      "account_id": "act_566362413094185",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "MIL BR SVA LTDA",
+      "account_id": "act_1054071956093512",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA- Leni ADS",
+      "account_id": "act_822576607197907",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "CA - Bella Capri Uberlândia Sabiá",
+      "account_id": "act_2379679152502158",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Villa Grano Pizzaria",
+      "account_id": "act_909424425271250",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "ALHO DOURADO",
+      "account_id": "act_1166398428853886",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Duba lanches",
+      "account_id": "act_933386533018776",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Fornalha Pizzaria",
+      "account_id": "act_1618084519451450",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
+    },
+    {
+      "nome": "Maverick Tech",
+      "account_id": "act_1117971404378887",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null
     }
   ]
 }
