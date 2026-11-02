@@ -16,7 +16,7 @@
     {
       "nome": "Dia de Pizza Dourados",
       "account_id": "act_723575425785405",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -107,7 +107,7 @@
     {
       "nome": "Brava Pizza",
       "account_id": "act_4279801688941861",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -120,7 +120,7 @@
     {
       "nome": "Pavao",
       "account_id": "act_1759603645448352",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -198,7 +198,7 @@
     {
       "nome": "BRUNA MACHADO - DOTCON",
       "account_id": "act_1102427261426373",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -224,7 +224,7 @@
     {
       "nome": "JS - UNIFORME",
       "account_id": "act_1452225369942067",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -263,7 +263,7 @@
     {
       "nome": "CA- Leni ADS 02",
       "account_id": "act_1569287454130140",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -341,7 +341,7 @@
     {
       "nome": "Coonecta",
       "account_id": "act_566362413094185",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -380,7 +380,7 @@
     {
       "nome": "CA - Bella Capri Uberlândia Sabiá",
       "account_id": "act_2379679152502158",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
