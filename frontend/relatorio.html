@@ -729,7 +729,8 @@ function montarMensagem(d, since, until) {
     ? 'Seguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.\nDesejo a todos um excelente mês!'
     : 'Seguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.\nDesejo a todos um excelente final de semana!';
 
-  let msg = `Olá pessoal, segue abaixo um resumo com os principais dados e atividades ${periodTipo2 === 'mes' ? 'do mês' : 'da semana'}:\n\n`;
+  const nomeCliente = d.conta.nome_exibicao || d.conta.nome;
+  let msg = `Olá pessoal, segue abaixo um resumo com os principais dados e atividades ${periodTipo2 === 'mes' ? 'do mês' : 'da semana'} de *${nomeCliente}*:\n\n`;
   msg += `🚀 ${header} :\n\n`;
   if (multi) {
     msg += `Valor investido: ${totalSpendStr}\n\n`;

@@ -242,8 +242,9 @@ def montar_mensagem_mensal(dado: dict, since: str, until: str) -> str:
 
     total_str = fmt_brl(dado["total_spend"])
 
+    nome_cliente = dado["conta"].get("nome_exibicao") or dado["conta"]["nome"]
     msg = (
-        f"Olá pessoal, segue abaixo um resumo com os principais dados e atividades do mês:\n\n"
+        f"Olá pessoal, segue abaixo um resumo com os principais dados e atividades do mês de *{nome_cliente}*:\n\n"
         f"🚀 Resultados de {mes}, {s_str} até {u_str} :\n\n"
         f"Valor investido: {total_str}\n\n"
         + "\n\n".join(blocos)
