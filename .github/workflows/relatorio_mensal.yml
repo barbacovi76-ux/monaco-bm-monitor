@@ -1,0 +1,36 @@
+name: Relatório Mensal
+
+on:
+  schedule:
+    # Dia 1º de cada mês às 09:00 BRT (12:00 UTC)
+    - cron: '0 12 1 * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (não envia WhatsApp, só loga)'
+        required: false
+        default: 'false'
+
+jobs:
+  relatorio-mensal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run relatório mensal
+        env:
+          META_TOKEN:       ${{ secrets.META_TOKEN }}
+          WPP_API_KEY:      ${{ secrets.WPP_API_KEY }}
+          WPP_API_URL:      ${{ secrets.WPP_API_URL }}
+          WPP_INSTANCIA:    ${{ secrets.WPP_INSTANCIA }}
+          GRUPO_RELATORIOS: ${{ secrets.GRUPO_RELATORIOS }}
+        run: python backend/run_relatorio_mensal.py

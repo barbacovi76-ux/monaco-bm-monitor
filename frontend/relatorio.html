@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório — Monaco Agency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="monaco.css">
+<style>
+/* ── Period selector ── */
+.periodo-bar {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;
+}
+.periodo-btn {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--b2);
+  background: var(--s3); color: var(--text2); font-size: 12px; cursor: pointer;
+  transition: all var(--t-fast);
+}
+.periodo-btn.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 600; }
+.date-inputs { display: flex; gap: 8px; align-items: center; }
+.date-inputs input[type=date] {
+  background: var(--s3); border: 1px solid var(--b2); color: var(--text);
+  border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: var(--mono);
+}
+
+/* ── Summary cards ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px; margin-bottom: 20px;
+}
+.sc { background: var(--s3); border: 1px solid var(--b1); border-radius: 10px; padding: 14px 16px; }
+.sc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+.sc-val { font-size: 22px; font-weight: 700; font-feature-settings: 'tnum'; color: #fff; }
+.sc-delta { font-size: 11px; margin-top: 4px; font-family: var(--mono); }
+.sc-delta.up { color: var(--green); }
+.sc-delta.down { color: var(--red); }
+.sc-delta.neutral { color: var(--dim); }
+
+/* ── Method tabs ── */
+.method-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
+.method-tab {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--b2);
+  background: var(--s3); color: var(--text2); font-size: 12px; cursor: pointer;
+  transition: all var(--t-fast); display: flex; align-items: center; gap: 6px;
+}
+.method-tab.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 600; }
+.method-tab .tab-count {
+  background: rgba(255,255,255,.12); border-radius: 10px; padding: 1px 6px; font-size: 10px;
+}
+.method-tab.active .tab-count { background: rgba(0,0,0,.15); }
+
+/* ── Client cards ── */
+.clientes-grid { display: flex; flex-direction: column; gap: 10px; }
+
+.cliente-card {
+  background: var(--s2); border: 1px solid var(--b1); border-radius: 10px;
+  overflow: hidden; transition: border-color var(--t-fast);
+}
+.cliente-card:hover { border-color: var(--b2); }
+
+.cliente-head {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  cursor: pointer; user-select: none;
+}
+.cliente-head-name { font-weight: 600; font-size: 13px; flex: 1; }
+.cliente-head-invest { font-size: 12px; color: var(--text2); font-family: var(--mono); font-weight: 500; }
+.cliente-head-roas { font-size: 12px; font-weight: 700; }
+.cliente-head-roas.good { color: var(--green); }
+.cliente-head-roas.ok { color: var(--amber); }
+.cliente-head-roas.bad { color: var(--red); }
+.cliente-head-chevron { color: var(--dim); font-size: 16px; transition: transform .2s; }
+.cliente-card.expanded .cliente-head-chevron { transform: rotate(180deg); }
+
+.cliente-body { display: none; border-top: 1px solid var(--b1); padding: 16px; }
+.cliente-card.expanded .cliente-body { display: block; }
+
+/* Method block inside card */
+.metodo-block { margin-bottom: 16px; }
+.metodo-block:last-child { margin-bottom: 0; }
+.metodo-titulo {
+  font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.metodo-linha { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--b1); font-size: 13px; }
+.metodo-linha:last-child { border-bottom: none; }
+.metodo-linha-label { color: var(--text2); }
+.metodo-linha-val { font-weight: 600; font-family: var(--mono); color: var(--text); }
+.metodo-delta { font-size: 11px; font-family: var(--mono); }
+.metodo-delta.up { color: var(--green); }
+.metodo-delta.down { color: var(--red); }
+
+/* Message panel */
+.msg-panel { margin-top: 14px; }
+.msg-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.msg-box {
+  background: var(--s4); border: 1px solid var(--b2); border-radius: 8px;
+  padding: 14px; font-size: 13px; color: var(--text); white-space: pre-wrap;
+  line-height: 1.6; font-family: inherit; max-height: 280px; overflow-y: auto;
+}
+.msg-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Send all */
+.send-all-bar {
+  background: var(--s3); border: 1px solid var(--b1); border-radius: 10px;
+  padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.send-all-info { flex: 1; font-size: 13px; color: var(--text2); }
+.send-all-info strong { color: var(--text); }
+
+/* Progress overlay */
+.send-progress {
+  background: var(--s3); border: 1px solid var(--gold-dim); border-radius: 10px;
+  padding: 16px; margin-bottom: 16px; display: none;
+}
+.send-progress.visible { display: block; }
+.sp-title { font-size: 12px; font-weight: 600; color: var(--gold); margin-bottom: 10px; }
+.sp-log { font-size: 12px; font-family: var(--mono); color: var(--text2); max-height: 140px; overflow-y: auto; line-height: 1.8; }
+.sp-log .ok  { color: var(--green); }
+.sp-log .err { color: var(--red); }
+.sp-log .cur { color: var(--amber); }
+
+/* Empty / loading states */
+.state-empty { text-align: center; padding: 48px 16px; color: var(--dim); font-size: 13px; }
+.state-empty i { font-size: 32px; display: block; margin-bottom: 12px; color: var(--b2); }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a href="dashboard.html" class="logo">
+    <div class="logo-mark">M</div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Relatório</span>
+  </a>
+  <div class="hdr-nav">
+    <span id="lbl-periodo" style="font-size:11px;color:var(--dim);font-family:var(--mono);"></span>
+    <button class="btn btn-gold" id="btn-carregar" onclick="carregar()">
+      <i class="ti ti-refresh"></i> Gerar relatório
+    </button>
+    <a href="dashboard.html" class="btn"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Period selector -->
+  <div class="periodo-bar">
+    <button class="periodo-btn" id="pb-semana" onclick="setPeriodo('semana')">Semana (sex–qui)</button>
+    <button class="periodo-btn active" id="pb-mes" onclick="setPeriodo('mes')">Mês fechado</button>
+    <button class="periodo-btn" id="pb-livre" onclick="setPeriodo('livre')">Datas livres</button>
+    <div class="date-inputs" id="datas-livres" style="display:none;">
+      <input type="date" id="dt-ini"> <span style="color:var(--dim)">até</span> <input type="date" id="dt-fim">
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="summary-row" id="summary-row" style="display:none;">
+    <div class="sc">
+      <div class="sc-label">Investimento total</div>
+      <div class="sc-val" id="s-invest">—</div>
+      <div class="sc-delta neutral" id="sd-invest"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">Faturamento (Vendas)</div>
+      <div class="sc-val" id="s-fat">—</div>
+      <div class="sc-delta neutral" id="sd-fat"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">ROAS médio (Vendas)</div>
+      <div class="sc-val" id="s-roas">—</div>
+      <div class="sc-delta neutral" id="sd-roas"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">Conversas WhatsApp</div>
+      <div class="sc-val" id="s-conv">—</div>
+      <div class="sc-delta neutral" id="sd-conv"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">Leads recebidos</div>
+      <div class="sc-val" id="s-leads">—</div>
+      <div class="sc-delta neutral" id="sd-leads"></div>
+    </div>
+    <div class="sc">
+      <div class="sc-label">Clientes ativos</div>
+      <div class="sc-val" id="s-ativos">—</div>
+      <div class="sc-delta neutral" id="sd-ativos"></div>
+    </div>
+  </div>
+
+  <!-- Send all bar -->
+  <div class="send-all-bar" id="send-all-bar" style="display:none;">
+    <i class="ti ti-brand-whatsapp" style="font-size:20px;color:var(--green);"></i>
+    <div class="send-all-info">
+      Enviar relatório de <strong id="sa-count">0</strong> clientes para o grupo de relatórios
+    </div>
+    <button class="btn btn-gold" onclick="enviarTodos()" id="btn-enviar-todos">
+      <i class="ti ti-send"></i> Enviar todos
+    </button>
+  </div>
+
+  <!-- Send progress -->
+  <div class="send-progress" id="send-progress">
+    <div class="sp-title"><i class="ti ti-loader"></i> Enviando mensagens...</div>
+    <div class="sp-log" id="sp-log"></div>
+  </div>
+
+  <!-- Method tabs -->
+  <div class="method-tabs" id="method-tabs" style="display:none;">
+    <button class="method-tab active" data-tab="todos" onclick="setTab('todos')">
+      <i class="ti ti-layout-list"></i> Todos <span class="tab-count" id="cnt-todos">0</span>
+    </button>
+    <button class="method-tab" data-tab="Vendas" onclick="setTab('Vendas')">
+      <i class="ti ti-shopping-cart"></i> Vendas <span class="tab-count" id="cnt-Vendas">0</span>
+    </button>
+    <button class="method-tab" data-tab="Conversas WhatsApp" onclick="setTab('Conversas WhatsApp')">
+      <i class="ti ti-brand-whatsapp"></i> WhatsApp <span class="tab-count" id="cnt-conv">0</span>
+    </button>
+    <button class="method-tab" data-tab="Leads" onclick="setTab('Leads')">
+      <i class="ti ti-forms"></i> Leads <span class="tab-count" id="cnt-Leads">0</span>
+    </button>
+    <button class="method-tab" data-tab="Tráfego" onclick="setTab('Tráfego')">
+      <i class="ti ti-click"></i> Tráfego <span class="tab-count" id="cnt-Trafego">0</span>
+    </button>
+  </div>
+
+  <!-- Clients list -->
+  <div id="clientes-area">
+    <div class="state-empty">
+      <i class="ti ti-chart-bar"></i>
+      Selecione o período e clique em <strong>Gerar relatório</strong>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────────
+const TOKEN_KEY   = 'monaco_meta_token';
+const API_VER     = 'v19.0';
+const CONFIG_URL  = 'https://raw.githubusercontent.com/barbacovi76-ux/monaco-bm-monitor/main/backend/config.json';
+const EVOLUTION_URL = 'https://evolution-api-production-2227.up.railway.app';
+const EVOLUTION_INSTANCE = 'teste';
+const GRUPO_RELATORIOS = '120363403884174816@g.us';
+
+// Nomes de food clients → force Vendas
+const FOOD_KEYWORDS = ['pizza','grano','berlin','berlim','rosa sul','mollinari','brados','pavao','paváo',
+  'dia de pizza','brava','mrg','favorita','fornalha','alho','duba','bistrô','bistro','villas','perché','perche',
+  'bari','eskinado','pizza e cia','masters'];
+
+const fmtR  = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const fmtN  = v => v.toLocaleString('pt-BR');
+const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+
+let token = localStorage.getItem(TOKEN_KEY);
+let contas = [];           // all active accounts from config.json
+let dadosAtual = [];       // processed data for current period
+let dadosAnterior = [];    // processed data for previous period
+let tabAtiva = 'todos';
+let periodoTipo = 'mes';
+
+// ─── Period logic ─────────────────────────────────────────────────────────────
+function getPeriodo(tipo) {
+  const hoje = new Date();
+  let since, until;
+
+  if (tipo === 'semana') {
+    // Latest completed week: fri–thu
+    const dow = hoje.getDay(); // 0=sun
+    // Find last thursday
+    let thu = new Date(hoje);
+    let daysToThu = (dow + 3) % 7; // days since last thursday
+    if (daysToThu === 0) daysToThu = 7;
+    thu.setDate(hoje.getDate() - daysToThu);
+    let fri = new Date(thu);
+    fri.setDate(thu.getDate() - 6);
+    since = dateStr(fri);
+    until = dateStr(thu);
+  } else if (tipo === 'mes') {
+    // Previous full month
+    const y = hoje.getMonth() === 0 ? hoje.getFullYear() - 1 : hoje.getFullYear();
+    const m = hoje.getMonth() === 0 ? 11 : hoje.getMonth() - 1;
+    since = dateStr(new Date(y, m, 1));
+    until = dateStr(new Date(y, m + 1, 0));
+  } else {
+    since = document.getElementById('dt-ini').value;
+    until = document.getElementById('dt-fim').value;
+  }
+  return { since, until };
+}
+
+function getPeriodoAnterior(since, until) {
+  const d1 = new Date(since), d2 = new Date(until);
+  const diff = d2 - d1; // ms
+  const iniAnt = new Date(d1.getTime() - diff - 86400000);
+  const fimAnt = new Date(d1.getTime() - 86400000);
+  return { since: dateStr(iniAnt), until: dateStr(fimAnt) };
+}
+
+function dateStr(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function nomeMes(dateStr) {
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const d = new Date(dateStr + 'T12:00:00');
+  return meses[d.getMonth()];
+}
+
+function labelPeriodo(since, until) {
+  return since.split('-').reverse().join('/') + ' a ' + until.split('-').reverse().join('/');
+}
+
+function setPeriodo(tipo) {
+  periodoTipo = tipo;
+  ['semana','mes','livre'].forEach(t => document.getElementById('pb-'+t).classList.remove('active'));
+  document.getElementById('pb-'+tipo).classList.add('active');
+  document.getElementById('datas-livres').style.display = tipo === 'livre' ? 'flex' : 'none';
+  atualizarLblPeriodo();
+}
+
+function atualizarLblPeriodo() {
+  try {
+    const { since, until } = getPeriodo(periodoTipo);
+    if (since && until) document.getElementById('lbl-periodo').textContent = labelPeriodo(since, until);
+  } catch {}
+}
+
+// ─── Load config ──────────────────────────────────────────────────────────────
+async function loadContas() {
+  try {
+    const r = await fetch(CONFIG_URL + '?_=' + Date.now());
+    const d = await r.json();
+    contas = (d.contas || []).filter(c => c.ativo !== false);
+  } catch (e) {
+    contas = [];
+  }
+}
+
+// ─── Meta API ─────────────────────────────────────────────────────────────────
+function getActions(actions, type) {
+  if (!actions) return 0;
+  const a = actions.find(x => x.action_type === type);
+  return a ? parseFloat(a.value) : 0;
+}
+function getActionVal(action_values, type) {
+  if (!action_values) return 0;
+  const a = action_values.find(x => x.action_type === type);
+  return a ? parseFloat(a.value) : 0;
+}
+
+async function fetchInsights(accountId, since, until) {
+  const fields = 'campaign_name,campaign_id,objective,spend,reach,impressions,inline_link_clicks,actions,action_values';
+  const url = `https://graph.facebook.com/${API_VER}/${accountId}/insights?level=campaign&time_range={"since":"${since}","until":"${until}"}&fields=${fields}&limit=200&access_token=${token}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  return d.data || [];
+}
+
+async function fetchAdsets(accountId) {
+  const url = `https://graph.facebook.com/${API_VER}/${accountId}/adsets?fields=campaign_id,optimization_goal,destination_type&limit=300&access_token=${token}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.error) return {};
+  // Build map: campaign_id → optimization_goal
+  const map = {};
+  for (const as of (d.data || [])) {
+    if (!map[as.campaign_id]) map[as.campaign_id] = as.optimization_goal;
+  }
+  return map;
+}
+
+function isFood(conta) {
+  const n = (conta.nome || '').toLowerCase();
+  if (conta.metodo_forcado === 'Vendas') return true;
+  return FOOD_KEYWORDS.some(k => n.includes(k));
+}
+
+function classificarCampanha(camp, optGoalMap, conta) {
+  if (conta.metodo_forcado) return conta.metodo_forcado;
+  const og = (optGoalMap[camp.campaign_id] || '').toUpperCase();
+  const obj = (camp.objective || '').toUpperCase();
+  if (og === 'CONVERSATIONS') return 'Conversas WhatsApp';
+  if (obj === 'OUTCOME_SALES' || isFood(conta)) return 'Vendas';
+  if (obj === 'OUTCOME_LEADS') return 'Leads';
+  if (obj === 'OUTCOME_AWARENESS') return 'Alcance';
+  if (obj === 'OUTCOME_TRAFFIC' || obj === 'LINK_CLICKS') return 'Tráfego';
+  return 'Engajamento';
+}
+
+async function processarConta(conta, since, until) {
+  try {
+    const [insights, optGoalMap] = await Promise.all([
+      fetchInsights(conta.account_id, since, until),
+      fetchAdsets(conta.account_id)
+    ]);
+
+    // Aggregate by method
+    const metodos = {};
+    for (const camp of insights) {
+      const metodo = classificarCampanha(camp, optGoalMap, conta);
+      if (!metodos[metodo]) metodos[metodo] = {
+        spend: 0, reach: 0, impressions: 0, clicks: 0,
+        purchases: 0, purchaseValue: 0, cartAdds: 0, pageViews: 0,
+        conversations: 0, leads: 0
+      };
+      const m = metodos[metodo];
+      m.spend       += parseFloat(camp.spend || 0);
+      m.reach       += parseFloat(camp.reach || 0);
+      m.impressions += parseFloat(camp.impressions || 0);
+      m.clicks      += parseFloat(camp.inline_link_clicks || 0);
+      m.purchases   += getActions(camp.actions, 'omni_purchase') || getActions(camp.actions, 'purchase');
+      m.purchaseValue += getActionVal(camp.action_values, 'omni_purchase') || getActionVal(camp.action_values, 'purchase');
+      m.cartAdds    += getActions(camp.actions, 'omni_add_to_cart') || getActions(camp.actions, 'add_to_cart');
+      m.pageViews   += getActions(camp.actions, 'landing_page_view') || getActions(camp.actions, 'omni_landing_page_view');
+      m.conversations += getActions(camp.actions, 'onsite_conversion.messaging_conversation_started_7d');
+      m.leads       += getActions(camp.actions, 'lead') || getActions(camp.actions, 'onsite_conversion.lead_grouped');
+    }
+
+    const totalSpend = Object.values(metodos).reduce((s, m) => s + m.spend, 0);
+
+    return { conta, metodos, totalSpend, erro: false };
+  } catch (e) {
+    return { conta, metodos: {}, totalSpend: 0, erro: true, erroMsg: e.message };
+  }
+}
+
+// ─── Carry / load ─────────────────────────────────────────────────────────────
+async function carregar() {
+  if (!token) {
+    alert('Token Meta não encontrado. Volte ao dashboard e salve o token.');
+    return;
+  }
+
+  const { since, until } = getPeriodo(periodoTipo);
+  if (!since || !until) { alert('Preencha as datas.'); return; }
+
+  const btn = document.getElementById('btn-carregar');
+  btn.innerHTML = '<i class="ti ti-loader"></i> Carregando...';
+  btn.disabled = true;
+  document.getElementById('clientes-area').innerHTML =
+    `<div class="state-empty"><i class="ti ti-loader"></i>Consultando ${contas.length} contas...</div>`;
+  document.getElementById('summary-row').style.display = 'none';
+  document.getElementById('method-tabs').style.display = 'none';
+  document.getElementById('send-all-bar').style.display = 'none';
+
+  const ant = getPeriodoAnterior(since, until);
+
+  // Fetch current and previous periods in parallel per account
+  [dadosAtual, dadosAnterior] = await Promise.all([
+    Promise.all(contas.map(c => processarConta(c, since, until))),
+    Promise.all(contas.map(c => processarConta(c, ant.since, ant.until)))
+  ]);
+
+  // Filter accounts with spend > 0
+  const ativos = dadosAtual.filter(d => d.totalSpend > 0);
+
+  renderSummary(ativos, dadosAnterior);
+  renderTabs(ativos);
+  renderClientes(ativos, dadosAnterior, since, until);
+
+  document.getElementById('sa-count').textContent = ativos.length;
+  document.getElementById('summary-row').style.display = '';
+  document.getElementById('method-tabs').style.display = '';
+  document.getElementById('send-all-bar').style.display = '';
+  document.getElementById('lbl-periodo').textContent = labelPeriodo(since, until);
+
+  btn.innerHTML = '<i class="ti ti-refresh"></i> Gerar relatório';
+  btn.disabled = false;
+}
+
+// ─── Summary cards ────────────────────────────────────────────────────────────
+function renderSummary(dados, ant) {
+  const totalInvest = dados.reduce((s, d) => s + d.totalSpend, 0);
+  const totalFat    = dados.reduce((s, d) => s + (d.metodos['Vendas']?.purchaseValue || 0), 0);
+  const totalCompras = dados.reduce((s, d) => s + (d.metodos['Vendas']?.purchases || 0), 0);
+  const roasMedio   = totalInvest > 0 && totalFat > 0 ? totalFat / (dados.reduce((s, d) => s + (d.metodos['Vendas']?.spend || 0), 0)) : 0;
+  const totalConv   = dados.reduce((s, d) => s + (d.metodos['Conversas WhatsApp']?.conversations || 0), 0);
+  const totalLeads  = dados.reduce((s, d) => s + (d.metodos['Leads']?.leads || 0), 0);
+
+  const antDados    = ant.filter(d => d.totalSpend > 0);
+  const antInvest   = antDados.reduce((s, d) => s + d.totalSpend, 0);
+  const antFat      = antDados.reduce((s, d) => s + (d.metodos['Vendas']?.purchaseValue || 0), 0);
+  const antRoas     = antDados.reduce((s, d) => s + (d.metodos['Vendas']?.spend || 0), 0);
+  const antConv     = antDados.reduce((s, d) => s + (d.metodos['Conversas WhatsApp']?.conversations || 0), 0);
+  const antLeads    = antDados.reduce((s, d) => s + (d.metodos['Leads']?.leads || 0), 0);
+
+  function delta(cur, prev, isGoodUp = true) {
+    if (!prev) return '';
+    const pct = ((cur - prev) / prev) * 100;
+    const cls = (pct >= 0) === isGoodUp ? 'up' : 'down';
+    return `<span class="sc-delta ${cls}">${fmtPct(pct)} vs período ant.</span>`;
+  }
+
+  document.getElementById('s-invest').textContent = fmtR(totalInvest);
+  document.getElementById('sd-invest').innerHTML  = delta(totalInvest, antInvest, false);
+  document.getElementById('s-fat').textContent    = fmtR(totalFat);
+  document.getElementById('sd-fat').innerHTML     = delta(totalFat, antFat);
+  document.getElementById('s-roas').textContent   = roasMedio > 0 ? roasMedio.toFixed(2).replace('.',',') : '—';
+  document.getElementById('s-conv').textContent   = fmtN(totalConv);
+  document.getElementById('sd-conv').innerHTML    = delta(totalConv, antConv);
+  document.getElementById('s-leads').textContent  = fmtN(totalLeads);
+  document.getElementById('sd-leads').innerHTML   = delta(totalLeads, antLeads);
+  document.getElementById('s-ativos').textContent = dados.length;
+}
+
+// ─── Method tabs ──────────────────────────────────────────────────────────────
+function renderTabs(dados) {
+  const counts = { todos: dados.length, Vendas: 0, 'Conversas WhatsApp': 0, Leads: 0, Tráfego: 0 };
+  for (const d of dados) {
+    if (d.metodos['Vendas']) counts.Vendas++;
+    if (d.metodos['Conversas WhatsApp']) counts['Conversas WhatsApp']++;
+    if (d.metodos['Leads']) counts.Leads++;
+    if (d.metodos['Tráfego'] || d.metodos['Alcance'] || d.metodos['Engajamento']) counts.Tráfego++;
+  }
+  document.getElementById('cnt-todos').textContent  = counts.todos;
+  document.getElementById('cnt-Vendas').textContent = counts.Vendas;
+  document.getElementById('cnt-conv').textContent   = counts['Conversas WhatsApp'];
+  document.getElementById('cnt-Leads').textContent  = counts.Leads;
+  document.getElementById('cnt-Trafego').textContent = counts.Tráfego;
+}
+
+function setTab(tab) {
+  tabAtiva = tab;
+  document.querySelectorAll('.method-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  // Re-filter displayed cards
+  document.querySelectorAll('.cliente-card').forEach(el => {
+    if (tab === 'todos') {
+      el.style.display = '';
+    } else {
+      const metodos = JSON.parse(el.dataset.metodos || '[]');
+      el.style.display = metodos.includes(tab) ||
+        (tab === 'Tráfego' && (metodos.includes('Tráfego') || metodos.includes('Alcance') || metodos.includes('Engajamento')))
+        ? '' : 'none';
+    }
+  });
+}
+
+// ─── Client cards ─────────────────────────────────────────────────────────────
+function renderClientes(dados, antDados, since, until) {
+  const { since: antSince, until: antUntil } = getPeriodoAnterior(since, until);
+
+  if (!dados.length) {
+    document.getElementById('clientes-area').innerHTML =
+      '<div class="state-empty"><i class="ti ti-inbox"></i>Nenhum cliente com investimento no período</div>';
+    return;
+  }
+
+  // Sort: most spend first
+  dados.sort((a, b) => b.totalSpend - a.totalSpend);
+
+  const area = document.getElementById('clientes-area');
+  area.innerHTML = '<div class="clientes-grid" id="clientes-grid"></div>';
+  const grid = document.getElementById('clientes-grid');
+
+  for (let i = 0; i < dados.length; i++) {
+    const d = dados[i];
+    const antD = antDados.find(x => x.conta.account_id === d.conta.account_id) || { metodos: {}, totalSpend: 0 };
+    const msg = montarMensagem(d, since, until);
+
+    const metodoKeys = Object.keys(d.metodos).filter(k => d.metodos[k].spend > 0);
+    const vendas = d.metodos['Vendas'];
+    const roas = vendas ? (vendas.purchaseValue / vendas.spend) : 0;
+    const roasCls = roas >= 6 ? 'good' : roas >= 3 ? 'ok' : 'bad';
+    const nomeExib = d.conta.nome_exibicao || d.conta.nome;
+
+    const card = document.createElement('div');
+    card.className = 'cliente-card';
+    card.dataset.metodos = JSON.stringify(metodoKeys);
+    card.dataset.index = i;
+    card.innerHTML = `
+      <div class="cliente-head" onclick="toggleCard(${i})">
+        <div class="cliente-head-name">${nomeExib}</div>
+        <div class="cliente-head-invest">${fmtR(d.totalSpend)}</div>
+        ${roas > 0 ? `<div class="cliente-head-roas ${roasCls}">ROAS ${roas.toFixed(2).replace('.',',')}</div>` : ''}
+        <i class="ti ti-chevron-down cliente-head-chevron"></i>
+      </div>
+      <div class="cliente-body">
+        ${renderMetodosHTML(d, antD)}
+        <div class="msg-panel">
+          <div class="msg-label">Mensagem pronta</div>
+          <div class="msg-box" id="msgbox-${i}">${escapeHtml(msg)}</div>
+          <div class="msg-actions">
+            <button class="btn" onclick="copiarMsg(${i})"><i class="ti ti-copy"></i> Copiar</button>
+            <button class="btn btn-gold" onclick="enviarCliente(${i}, '${d.conta.nome}')">
+              <i class="ti ti-brand-whatsapp"></i> Enviar no grupo
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function toggleCard(idx) {
+  const card = document.querySelector(`.cliente-card[data-index="${idx}"]`);
+  card.classList.toggle('expanded');
+}
+
+function renderMetodosHTML(d, antD) {
+  const ORDEM = ['Vendas', 'Conversas WhatsApp', 'Leads', 'Tráfego', 'Alcance', 'Engajamento'];
+  const ativos = ORDEM.filter(m => d.metodos[m] && d.metodos[m].spend > 0);
+  if (!ativos.length) return '<p style="color:var(--dim);font-size:13px;">Sem dados de campanha.</p>';
+
+  const multi = ativos.length > 1;
+
+  return ativos.map(metodo => {
+    const m = d.metodos[metodo];
+    const ma = antD.metodos?.[metodo];
+
+    const rows = [];
+    if (multi) rows.push(['Investido', fmtR(m.spend)]);
+
+    if (metodo === 'Vendas') {
+      rows.push(['Visualizações no cardápio', fmtN(m.pageViews)]);
+      rows.push(['Carrinhos adicionados', fmtN(m.cartAdds)]);
+      rows.push(['Compras', fmtN(m.purchases)]);
+      rows.push(['Valor vendido', fmtR(m.purchaseValue)]);
+      if (m.spend > 0 && m.purchaseValue > 0) rows.push(['ROAS', (m.purchaseValue / m.spend).toFixed(2).replace('.',',')]);
+    } else if (metodo === 'Conversas WhatsApp') {
+      rows.push(['Pessoas alcançadas', fmtN(m.reach)]);
+      rows.push(['Conversas iniciadas', fmtN(m.conversations)]);
+      if (m.conversations > 0) rows.push(['Custo por conversa', fmtR(m.spend / m.conversations)]);
+    } else if (metodo === 'Leads') {
+      rows.push(['Pessoas alcançadas', fmtN(m.reach)]);
+      rows.push(['Leads recebidos', fmtN(m.leads)]);
+      if (m.leads > 0) rows.push(['Custo por lead', fmtR(m.spend / m.leads)]);
+    } else {
+      rows.push(['Pessoas alcançadas', fmtN(m.reach)]);
+      rows.push(['Cliques', fmtN(m.clicks)]);
+      if (m.clicks > 0 && m.spend > 0) rows.push(['Custo por clique', fmtR(m.spend / m.clicks)]);
+    }
+
+    const tituloLabel = {
+      'Vendas': 'Vendas',
+      'Conversas WhatsApp': 'Conversas WhatsApp',
+      'Leads': 'Leads',
+      'Tráfego': 'Tráfego',
+      'Alcance': 'Alcance',
+      'Engajamento': 'Engajamento'
+    }[metodo] || metodo;
+
+    return `
+      <div class="metodo-block">
+        ${multi ? `<div class="metodo-titulo">${tituloLabel}</div>` : ''}
+        ${rows.map(([label, val]) => `
+          <div class="metodo-linha">
+            <span class="metodo-linha-label">${label}</span>
+            <span class="metodo-linha-val">${val}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── Message builder ──────────────────────────────────────────────────────────
+function montarMensagem(d, since, until) {
+  const { tipo: periodTipo2 } = detectarTipoPeriodo(since, until);
+  const s = since.split('-').reverse().join('/');
+  const u = until.split('-').reverse().join('/');
+
+  let header;
+  if (periodTipo2 === 'mes') {
+    header = `Resultados de ${nomeMes(since)}, ${s} até ${u}`;
+  } else {
+    header = `Resultados da Última Semana ${s} até ${u}`;
+  }
+
+  const ORDEM = ['Vendas', 'Conversas WhatsApp', 'Leads', 'Tráfego', 'Alcance', 'Engajamento'];
+  const ativos = ORDEM.filter(m => d.metodos[m] && d.metodos[m].spend > 0);
+  const multi = ativos.length > 1;
+
+  let blocos = [];
+
+  for (const metodo of ativos) {
+    const m = d.metodos[metodo];
+    let linhas = [];
+
+    if (multi) {
+      const emojiMap = {
+        'Vendas': '🚀',
+        'Conversas WhatsApp': '💬',
+        'Leads': '📋',
+        'Tráfego': '👀',
+        'Alcance': '📣',
+        'Engajamento': '❤️'
+      };
+      linhas.push(`${emojiMap[metodo] || ''} ${metodo}`);
+      linhas.push(`Valor investido: ${fmtR(m.spend)}`);
+      linhas.push('');
+    }
+
+    if (metodo === 'Vendas') {
+      if (m.pageViews > 0)    linhas.push(`Visualizações no cardápio: ${fmtN(m.pageViews)}`);
+      if (m.cartAdds > 0)     linhas.push(`Carrinhos adicionados: ${fmtN(m.cartAdds)}`);
+      if (m.purchases > 0)    linhas.push(`Compras: ${fmtN(m.purchases)}`);
+      linhas.push(`Valor vendido: ${fmtR(m.purchaseValue)}`);
+      if (m.spend > 0)        linhas.push(`ROAS: ${(m.purchaseValue / m.spend).toFixed(2).replace('.',',')}`);
+    } else if (metodo === 'Conversas WhatsApp') {
+      linhas.push(`Pessoas alcançadas: ${fmtN(m.reach)}`);
+      linhas.push(`Conversas iniciadas: ${fmtN(m.conversations)}`);
+      if (m.conversations > 0) linhas.push(`Custo por conversa: ${fmtR(m.spend / m.conversations)}`);
+    } else if (metodo === 'Leads') {
+      linhas.push(`Pessoas alcançadas: ${fmtN(m.reach)}`);
+      linhas.push(`Leads recebidos: ${fmtN(m.leads)}`);
+      if (m.leads > 0) linhas.push(`Custo por lead: ${fmtR(m.spend / m.leads)}`);
+    } else {
+      linhas.push(`Pessoas alcançadas: ${fmtN(m.reach)}`);
+      linhas.push(`Cliques: ${fmtN(m.clicks)}`);
+      if (m.clicks > 0 && m.spend > 0) linhas.push(`Custo por clique: ${fmtR(m.spend / m.clicks)}`);
+    }
+
+    blocos.push(linhas.join('\n'));
+  }
+
+  const totalSpendStr = fmtR(d.totalSpend);
+  const rodape = periodTipo2 === 'mes'
+    ? 'Seguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.\nDesejo a todos um excelente mês!'
+    : 'Seguimos firmes na evolução do projeto, com foco total em performance e melhoria contínua.\nDesejo a todos um excelente final de semana!';
+
+  let msg = `Olá pessoal, segue abaixo um resumo com os principais dados e atividades ${periodTipo2 === 'mes' ? 'do mês' : 'da semana'}:\n\n`;
+  msg += `🚀 ${header} :\n\n`;
+  if (multi) {
+    msg += `Valor investido: ${totalSpendStr}\n\n`;
+  } else {
+    msg += `Valor investido: ${totalSpendStr}\n\n`;
+  }
+  msg += blocos.join('\n\n');
+  msg += `\n\n🚀 ${rodape}`;
+
+  return msg;
+}
+
+function detectarTipoPeriodo(since, until) {
+  // If since is 1st and until is last day of month → mes
+  const d1 = new Date(since + 'T12:00:00');
+  const d2 = new Date(until + 'T12:00:00');
+  const lastDay = new Date(d1.getFullYear(), d1.getMonth() + 1, 0);
+  if (d1.getDate() === 1 && d2.getDate() === lastDay.getDate() && d1.getMonth() === d2.getMonth()) {
+    return { tipo: 'mes' };
+  }
+  return { tipo: 'semana' };
+}
+
+// ─── Copy / send ──────────────────────────────────────────────────────────────
+function getMsgText(idx) {
+  return document.getElementById(`msgbox-${idx}`)?.textContent || '';
+}
+
+async function copiarMsg(idx) {
+  const txt = getMsgText(idx);
+  await navigator.clipboard.writeText(txt);
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="ti ti-check"></i> Copiado!';
+  setTimeout(() => { btn.innerHTML = orig; }, 2000);
+}
+
+async function enviarEvolution(texto) {
+  const wppKey = localStorage.getItem('monaco_wpp_key') || prompt('Chave da Evolution API (WPP_KEY):');
+  if (!wppKey) throw new Error('Chave não informada');
+  localStorage.setItem('monaco_wpp_key', wppKey);
+
+  const url = `${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': wppKey },
+    body: JSON.stringify({ number: GRUPO_RELATORIOS, text: texto })
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${r.status}`);
+  }
+  return await r.json();
+}
+
+async function enviarCliente(idx, nome) {
+  const txt = getMsgText(idx);
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+  btn.disabled = true;
+  try {
+    await enviarEvolution(txt);
+    btn.innerHTML = '<i class="ti ti-check"></i> Enviado!';
+    btn.style.background = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => {
+      btn.innerHTML = orig; btn.disabled = false;
+      btn.style.background = ''; btn.style.borderColor = '';
+    }, 3000);
+  } catch (e) {
+    alert('Erro ao enviar ' + nome + ': ' + e.message);
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
+}
+
+async function enviarTodos() {
+  const cards = [...document.querySelectorAll('.cliente-card')].filter(c => c.style.display !== 'none');
+  if (!cards.length) return;
+
+  const ok = confirm(`Enviar relatório de ${cards.length} cliente(s) para o grupo de relatórios?\n\nAs mensagens serão enviadas em sequência.`);
+  if (!ok) return;
+
+  const prog = document.getElementById('send-progress');
+  const log  = document.getElementById('sp-log');
+  prog.classList.add('visible');
+  log.innerHTML = '';
+
+  document.getElementById('btn-enviar-todos').disabled = true;
+
+  for (const card of cards) {
+    const idx  = card.dataset.index;
+    const nome = card.querySelector('.cliente-head-name').textContent;
+    const txt  = getMsgText(idx);
+
+    log.innerHTML += `<div class="cur">Enviando: ${nome}...</div>`;
+    log.scrollTop = log.scrollHeight;
+
+    try {
+      await enviarEvolution(txt);
+      log.innerHTML += `<div class="ok">✓ ${nome}</div>`;
+    } catch (e) {
+      log.innerHTML += `<div class="err">✗ ${nome}: ${e.message}</div>`;
+    }
+    log.scrollTop = log.scrollHeight;
+    await sleep(1200); // throttle
+  }
+
+  log.innerHTML += '<div class="ok" style="margin-top:8px;font-weight:600;">Envio concluído.</div>';
+  document.getElementById('btn-enviar-todos').disabled = false;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(async function init() {
+  await loadContas();
+  setPeriodo('mes');
+  atualizarLblPeriodo();
+  document.getElementById('dt-ini').addEventListener('change', atualizarLblPeriodo);
+  document.getElementById('dt-fim').addEventListener('change', atualizarLblPeriodo);
+})();
+</script>
+</body>
+</html>

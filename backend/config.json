@@ -9,7 +9,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Dia de Pizza Dourados",
@@ -20,18 +22,22 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "IH Campo Grande",
       "account_id": "act_1131240581799095",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Mollinari",
@@ -42,29 +48,35 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "MrGabs",
       "account_id": "act_728296823243425",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "IH Dourados",
       "account_id": "act_831936562721815",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Berlim",
@@ -75,18 +87,22 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "A Favorita",
       "account_id": "act_969681458906352",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Brava Pizza",
@@ -97,7 +113,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Pavao",
@@ -108,7 +126,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA RJK SHOP",
@@ -119,7 +139,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - Miotto Construtora",
@@ -130,7 +152,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - ICGP",
@@ -141,29 +165,35 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - Miotto Backup",
       "account_id": "act_533683308259417",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - Monaco Agency",
       "account_id": "act_732966175219099",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "BRUNA MACHADO - DOTCON",
@@ -174,7 +204,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - AMK Estetica",
@@ -185,7 +217,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "JS - UNIFORME",
@@ -196,7 +230,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "SH Tijolos",
@@ -207,7 +243,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Rose moda intima",
@@ -218,7 +256,9 @@
       ],
       "whatsapp_numero": "45 920033459",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA- Leni ADS 02",
@@ -229,18 +269,22 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA- BISTROGOURMETPIZZARIA",
       "account_id": "act_3379098802257981",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA1 - Doces Mania (Principal)",
@@ -251,29 +295,35 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Bistro Gourmet Foods",
       "account_id": "act_218943216626025",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA2- BISTROGOURMETPIZZARIA",
       "account_id": "act_626472496317271",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Ótica Scherer",
@@ -284,7 +334,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Coonecta",
@@ -295,7 +347,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "MIL BR SVA LTDA",
@@ -306,18 +360,22 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA- Leni ADS",
       "account_id": "act_822576607197907",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "CA - Bella Capri Uberlândia Sabiá",
@@ -328,51 +386,61 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Villa Grano Pizzaria",
       "account_id": "act_909424425271250",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "ALHO DOURADO",
       "account_id": "act_1166398428853886",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Duba lanches",
       "account_id": "act_933386533018776",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Fornalha Pizzaria",
       "account_id": "act_1618084519451450",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     },
     {
       "nome": "Maverick Tech",
@@ -383,7 +451,9 @@
       ],
       "whatsapp_numero": "",
       "limite_critico": null,
-      "limite_baixo": null
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     }
   ]
 }
