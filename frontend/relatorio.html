@@ -776,7 +776,7 @@ async function enviarEvolution(texto) {
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'apikey': wppKey },
-    body: JSON.stringify({ number: GRUPO_RELATORIOS, text: texto })
+    body: JSON.stringify({ number: GRUPO_RELATORIOS, textMessage: { text: texto } })
   });
   if (!r.ok) {
     const err = await r.json().catch(() => ({}));
