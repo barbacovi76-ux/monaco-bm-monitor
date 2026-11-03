@@ -740,5 +740,24 @@ def rodar_loop():
         time.sleep(60)
 
 
+def rodar_agente_automatico():
+    """Executa motivacional + encerramentos + comparativo uma única vez.
+    Usado pelo GitHub Actions (bob_automatico.yml)."""
+    log.info("=== BOB Agente Automático iniciado ===")
+    try:
+        enviar_motivacional()
+    except Exception as e:
+        log.exception(f"Erro motivacional: {e}")
+    try:
+        verificar_encerramentos()
+    except Exception as e:
+        log.exception(f"Erro encerramentos: {e}")
+    try:
+        analisar_comparativo()
+    except Exception as e:
+        log.exception(f"Erro comparativo: {e}")
+    log.info("=== BOB Agente Automático concluído ===")
+
+
 if __name__ == "__main__":
     rodar_loop()
