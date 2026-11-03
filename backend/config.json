@@ -727,6 +727,162 @@
       "limite_baixo": null,
       "metodo_forcado": null,
       "nome_exibicao": null
+    },
+    {
+      "nome": "CA - VILLLAS",
+      "account_id": "act_839271441844874",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA-KVAgro",
+      "account_id": "act_1949417395697365",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Estúdio Vitória Daronch",
+      "account_id": "act_1517516869463790",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Facilita Cell",
+      "account_id": "act_1537434933967334",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Farmais conta2",
+      "account_id": "act_883217132319518",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Pizza Masters CA01",
+      "account_id": "act_1549880946376699",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Pizza e Cia",
+      "account_id": "act_1284872655528904",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "QUIOSQUE BARAO",
+      "account_id": "act_1438844094505821",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Shineray Cascavel",
+      "account_id": "act_1704232320268521",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Shineray Francisco Beltrao",
+      "account_id": "act_4119452628365493",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Shineray Toledo",
+      "account_id": "act_776486155195221",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Black Tie",
+      "account_id": "act_331624477543247",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     }
   ]
 }
