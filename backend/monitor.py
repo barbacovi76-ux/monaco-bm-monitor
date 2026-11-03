@@ -147,16 +147,39 @@ def verificar_e_alertar():
     cfg             = carregar_config()
     alertas_enviados = carregar_alertas_enviados()
     hoje            = str(date.today())
-    limite_critico  = cfg["alertas"]["limite_critico"]
-    limite_baixo    = cfg["alertas"]["limite_baixo"]
-    uma_vez_por_dia = cfg["alertas"]["alertar_uma_vez_por_dia"]
-    api_version     = cfg["meta"]["api_version"]
-    cfg_wpp         = cfg["whatsapp"]
-    numeros         = cfg_wpp["numeros_destino"]
+
+    # Suporta tanto config.json novo {"contas":[...]} quanto formato legado {"alertas":{...},"meta":{...}}
+    _alertas        = cfg.get("alertas", {})
+    limite_critico  = _alertas.get("limite_critico", 50)
+    limite_baixo    = _alertas.get("limite_baixo", 100)
+    uma_vez_por_dia = _alertas.get("alertar_uma_vez_por_dia", True)
+    api_version     = cfg.get("meta", {}).get("api_version", "v19.0")
+
+    # WhatsApp: usa variáveis de ambiente (formato novo) ou cfg["whatsapp"] (formato legado)
+    _wpp_url  = os.getenv("WPP_API_URL", cfg.get("whatsapp", {}).get("api_url", ""))
+    _wpp_key  = os.getenv("WPP_API_KEY", cfg.get("whatsapp", {}).get("api_key", ""))
+    _wpp_inst = os.getenv("WPP_INSTANCIA", cfg.get("whatsapp", {}).get("instancia", ""))
+    _wpp_dest = os.getenv("GRUPO_OPERACOES", "")
+    numeros   = [_wpp_dest] if _wpp_dest else cfg.get("whatsapp", {}).get("numeros_destino", [])
+    cfg_wpp   = {"api_url": _wpp_url, "api_key": _wpp_key, "instancia": _wpp_inst}
+
+    # Contas: formato novo tem "contas" na raiz; legado tem "meta"."contas"
+    contas_cfg = cfg.get("contas") or cfg.get("meta", {}).get("contas", [])
+    # No formato novo cada conta tem "account_id" mas não "access_token" (usa META_TOKEN)
+    meta_token = os.getenv("META_TOKEN", "")
+    contas_list = []
+    for c in contas_cfg:
+        if not c.get("ativo", True):
+            continue
+        contas_list.append({
+            "account_id":   c["account_id"],
+            "access_token": c.get("access_token") or meta_token,
+            "nome":         c.get("nome_exibicao") or c.get("nome", c["account_id"]),
+        })
 
     log.info(f"=== Verificacao de saldo — {datetime.now().strftime('%d/%m/%Y %H:%M')} ===")
 
-    for conta_cfg in cfg["meta"]["contas"]:
+    for conta_cfg in contas_list:
         account_id = conta_cfg["account_id"]
         token      = conta_cfg["access_token"]
         nome       = conta_cfg["nome"]
