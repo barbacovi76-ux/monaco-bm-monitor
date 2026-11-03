@@ -393,8 +393,8 @@ let _enc = [], _encDias = 7;
 const fmt = v => v.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
 const fmtN = v => Number(v).toLocaleString('pt-BR');
 
-// Contas carregadas dinamicamente da API do Meta
-let CONTAS = JSON.parse(localStorage.getItem('monaco_contas') || '[]');
+// Contas — fonte primária: config.json; fallback: API do Meta
+let CONTAS = [];
 
 const FOOD_KEYWORDS = ['pizza','lanche','burger','food','grill','gourmet','bistro',
   'fornalha','brados','berlim','mrgabs','mollinari','pavao','favorita','brava',
@@ -410,19 +410,27 @@ function inferirSeg(nome) {
   return FOOD_KEYWORDS.some(k => n.includes(k)) ? 'food' : 'outros';
 }
 
-// Reclassifica contas ja em cache (corrige nomes acentuados classificados
-// errado antes da normalizacao acima existir) sem precisar recarregar da API.
-if (CONTAS.length) {
-  let mudou = false;
-  CONTAS = CONTAS.map(c => {
-    const novoSeg = inferirSeg(c.nome);
-    if (novoSeg !== c.seg) mudou = true;
-    return { ...c, seg: novoSeg };
-  });
-  if (mudou) localStorage.setItem('monaco_contas', JSON.stringify(CONTAS));
+async function buscarContasConfig() {
+  try {
+    const r = await fetch('../backend/config.json?_=' + Date.now());
+    if (!r.ok) throw new Error('config.json not found');
+    const cfg = await r.json();
+    const contas = (cfg.contas || [])
+      .filter(c => c.ativo !== false)
+      .map(c => ({
+        nome: c.nome_exibicao || c.nome,
+        id: c.account_id,
+        seg: inferirSeg(c.nome_exibicao || c.nome)
+      }));
+    if (contas.length > 0) return contas;
+    throw new Error('nenhuma conta ativa no config');
+  } catch(e) {
+    console.warn('config.json falhou:', e.message, '— usando fallback API Meta');
+    return null;
+  }
 }
 
-async function buscarContas(tok) {
+async function buscarContasAPI(tok) {
   const contas = [];
   let url = 'https://graph.facebook.com/'+API+'/me/adaccounts?fields=name,account_id,account_status&limit=100&access_token='+tok;
   while (url) {
@@ -430,9 +438,7 @@ async function buscarContas(tok) {
     const d = await r.json();
     if (d.error) throw new Error(d.error.message);
     (d.data || []).forEach(c => {
-      if (c.account_status === 1) {
-        contas.push({ nome: c.name, id: 'act_' + c.account_id, seg: inferirSeg(c.name) });
-      }
+      contas.push({ nome: c.name, id: 'act_' + c.account_id, seg: inferirSeg(c.name) });
     });
     url = (d.paging && d.paging.next) ? d.paging.next : null;
   }
@@ -538,17 +544,22 @@ async function carregarDados() {
   btn.innerHTML = '<i class="ti ti-loader-2 spin" aria-hidden="true"></i> Carregando';
   btn.disabled = true;
 
-  // Buscar contas dinamicamente se ainda nao tiver
+  // Buscar contas: config.json primeiro (fonte de verdade), fallback API Meta
   if (!CONTAS.length) {
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">◌</span> Buscando contas da API do Meta...</td></tr>';
-    try {
-      CONTAS = await buscarContas(tok);
-      localStorage.setItem('monaco_contas', JSON.stringify(CONTAS));
-    } catch(e) {
-      document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading">Erro ao buscar contas: ' + e.message + '</td></tr>';
-      btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Carregar';
-      btn.disabled = false;
-      return;
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">◌</span> Carregando lista de contas...</td></tr>';
+    const contasConfig = await buscarContasConfig();
+    if (contasConfig) {
+      CONTAS = contasConfig;
+    } else {
+      document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading"><span class="spin">◌</span> Buscando contas na API do Meta...</td></tr>';
+      try {
+        CONTAS = await buscarContasAPI(tok);
+      } catch(e) {
+        document.getElementById('tbody').innerHTML = '<tr><td colspan="9" class="loading">Erro ao buscar contas: ' + e.message + '</td></tr>';
+        btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Carregar';
+        btn.disabled = false;
+        return;
+      }
     }
   }
 
