@@ -454,6 +454,32 @@
       "limite_baixo": null,
       "metodo_forcado": null,
       "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Facilita cell",
+      "account_id": "act_1288527439639093",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Facilita cell 2",
+      "account_id": "act_1632381294729040",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     }
   ]
 }
