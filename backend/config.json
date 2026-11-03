@@ -532,6 +532,201 @@
       "limite_baixo": null,
       "metodo_forcado": null,
       "nome_exibicao": null
+    },
+    {
+      "nome": "Arkatel - Conta 01",
+      "account_id": "act_2317790051757458",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Backup 02",
+      "account_id": "act_922699022912695",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "C.A 01 - Everton Dot",
+      "account_id": "act_1242530613606108",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Estetica",
+      "account_id": "act_941394071428313",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - IZEE SECURITIZAD",
+      "account_id": "act_1571125566708805",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - LINK NET",
+      "account_id": "act_4132757293661168",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Michelle Pedrosa 02",
+      "account_id": "act_558702713333411",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Videz Store 02",
+      "account_id": "act_373070978235059",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "MT Store unidade 03 (backup)",
+      "account_id": "act_2554483734982269",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "IH Campo Grande MS",
+      "account_id": "act_534484382623100",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "FRUTOS",
+      "account_id": "act_1954681411492070",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "PIZZAS DA MI",
+      "account_id": "act_435579423245411",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Pizzas da Mi 02",
+      "account_id": "act_501816445774801",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Restaurante da Samires 2",
+      "account_id": "act_1304028087651228",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "CA - Conta 676495",
+      "account_id": "act_676495468011602",
+      "ativo": false,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     }
   ]
 }
