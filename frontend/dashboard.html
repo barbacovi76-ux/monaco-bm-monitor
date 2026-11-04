@@ -352,6 +352,8 @@ tr:hover .bm-name { color: var(--hi); }
     <div class="mc"><div class="mc-lbl">ROAS médio</div><div class="mc-val gold" id="m-roas">—</div><div class="mc-sub">retorno sobre invest.</div></div>
   </div>
 
+  <div id="obj-tabs" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;"></div>
+
   <div class="ctrl">
     <div class="srch">
       <i class="ti ti-search" aria-hidden="true"></i>
@@ -415,6 +417,7 @@ let dIni = null, dFim = null;
 let dados = [];
 let sCol = 'gasto', sDir = 'desc';
 let _enc = [], _encDias = 7;
+let filtroObj = '';
 
 const fmt  = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
 const fmtN = v => Number(v).toLocaleString('pt-BR');
@@ -653,12 +656,47 @@ async function carregarDados() {
   document.getElementById('periodo').textContent = (labels[periodo]||'PER')+'  ·  '+now;
   btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Atualizar';
   btn.disabled = false;
+  filtroObj = '';
+  buildObjTabs();
+  updateMetrics();
+  filtrar();
+}
+
+function buildObjTabs() {
+  const labels = {'':'Todos','SALES':'Vendas','MESSAGES':'WhatsApp','LEADS':'Leads','TRAFFIC':'Tráfego','AWARENESS':'Alcance'};
+  const present = new Set(dados.map(x => x.objetivo||'SALES'));
+  const order = ['','SALES','MESSAGES','LEADS','TRAFFIC','AWARENESS'];
+  const container = document.getElementById('obj-tabs');
+  container.innerHTML = order
+    .filter(k => k==='' || present.has(k))
+    .map(k => {
+      const cnt = k==='' ? dados.length : dados.filter(x=>(x.objetivo||'SALES')===k).length;
+      const active = filtroObj===k;
+      return `<button onclick="setObjTab('${k}')" style="
+        display:inline-flex;align-items:center;gap:5px;
+        padding:5px 13px;border-radius:999px;font-size:12px;cursor:pointer;
+        font-family:var(--mono);letter-spacing:.04em;font-weight:${active?'600':'400'};
+        border:1px solid ${active?'var(--hi)':'var(--line)'};
+        background:${active?'var(--hi)':'transparent'};
+        color:${active?'var(--bg)':'var(--mute)'};
+        transition:all .12s;
+      ">${labels[k]}<span style="
+        background:${active?'rgba(0,0,0,.18)':'var(--card2)'};
+        color:${active?'var(--bg)':'var(--dim)'};
+        padding:1px 6px;border-radius:999px;font-size:10px;
+      ">${cnt}</span></button>`;
+    }).join('');
+}
+
+function setObjTab(obj) {
+  filtroObj = obj;
+  buildObjTabs();
   updateMetrics();
   filtrar();
 }
 
 function updateMetrics() {
-  const d = dados;
+  const d = filtroObj ? dados.filter(x=>(x.objetivo||'SALES')===filtroObj) : dados;
   document.getElementById('m-total').textContent   = d.length;
   document.getElementById('m-green').textContent   = d.filter(x=>x.st==='g').length;
   document.getElementById('m-amber').textContent   = d.filter(x=>x.st==='a').length;
@@ -696,7 +734,8 @@ function filtrar() {
   let d = dados.filter(x =>
     x.nome.toLowerCase().includes(b) &&
     (!fs || x.st===fs) &&
-    (!ft || x.seg===ft)
+    (!ft || x.seg===ft) &&
+    (!filtroObj || (x.objetivo||'SALES')===filtroObj)
   );
 
   const dir = sDir==='asc'?1:-1;
