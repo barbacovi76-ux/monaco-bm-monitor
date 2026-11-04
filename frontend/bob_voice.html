@@ -13,7 +13,7 @@
 
 /* ── Token config ── */
 .token-bar {
-  background: var(--s3); border: 1px solid var(--b1); border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--line); border-radius: 10px;
   padding: 12px 16px; margin-bottom: 32px;
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
@@ -84,9 +84,9 @@
 
 .mic-btn {
   width: 48px; height: 48px; border-radius: 50%;
-  border: 1px solid var(--b2); background: var(--s4);
+  border: 1px solid var(--line2); background: var(--bg2);
   font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all var(--t-fast); color: var(--text2);
+  transition: all var(--t-fast); color: var(--ink2);
 }
 .mic-btn i { font-size: 20px; }
 .mic-btn:hover { border-color: var(--gold-dim); background: var(--gold-bg); color: var(--gold); }
@@ -97,35 +97,35 @@
 
 /* ── Transcript ── */
 .transcript {
-  background: var(--s3); border: 1px solid var(--b1); border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 18px; margin-bottom: 16px; font-size: 13px;
   color: var(--dim); font-style: italic; min-height: 48px;
   transition: border-color var(--t-fast);
 }
-.transcript.ativo { border-color: rgba(245,197,24,.3); color: var(--text); font-style: normal; }
+.transcript.ativo { border-color: rgba(245,197,24,.3); color: var(--ink); font-style: normal; }
 
 /* ── Resposta BOB ── */
 .resposta {
-  background: var(--s3); border: 1px solid rgba(245,197,24,.2);
+  background: var(--card2); border: 1px solid rgba(245,197,24,.2);
   border-radius: 10px; padding: 20px; margin-bottom: 24px;
   display: none; animation: fadeUp .3s ease;
 }
 .resposta.show { display: block; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 .resposta-label { font-size: 10px; color: var(--gold); font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 10px; font-family: var(--mono); display: flex; align-items: center; gap: 6px; }
-.resposta-txt { font-size: 14px; line-height: 1.9; color: var(--text); }
+.resposta-txt { font-size: 14px; line-height: 1.9; color: var(--ink); }
 
 /* ── Comandos ── */
 .cmds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin-bottom: 32px; }
 .cmd {
-  background: var(--s3); border: 1px solid var(--b1);
+  background: var(--card2); border: 1px solid var(--line);
   border-radius: 8px; padding: 12px 14px; font-size: 12px;
   color: var(--dim); cursor: pointer; text-align: left;
   transition: all var(--t-fast); line-height: 1.5; font-family: var(--sans);
   display: flex; align-items: flex-start; gap: 10px;
 }
-.cmd:hover { border-color: var(--gold-dim); color: var(--text); background: var(--s4); }
-.cmd i { font-size: 16px; color: var(--dimmer); flex-shrink: 0; margin-top: 1px; transition: color var(--t-fast); }
+.cmd:hover { border-color: var(--gold-dim); color: var(--ink); background: var(--bg2); }
+.cmd i { font-size: 16px; color: var(--dim); flex-shrink: 0; margin-top: 1px; transition: color var(--t-fast); }
 .cmd:hover i { color: var(--gold); }
 
 /* ── Histórico ── */
@@ -141,9 +141,9 @@
   border: 1px solid rgba(245,197,24,.3);
   font-size: 12px; font-weight: 700; color: var(--gold); font-family: var(--mono);
 }
-.msg.user .msg-av { background: var(--s4); border: 1px solid var(--b2); font-size: 9px; font-weight: 700; color: var(--dim); }
+.msg.user .msg-av { background: var(--bg2); border: 1px solid var(--line2); font-size: 9px; font-weight: 700; color: var(--dim); }
 .msg-bubble { max-width: 78%; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.7; }
-.msg.bob .msg-bubble { background: var(--s3); border: 1px solid var(--b1); color: var(--text); }
+.msg.bob .msg-bubble { background: var(--card2); border: 1px solid var(--line); color: var(--ink); }
 .msg.user .msg-bubble { background: var(--gold-bg); border: 1px solid rgba(245,197,24,.2); color: var(--gold); }
 
 .dots { display: inline-flex; gap: 4px; }

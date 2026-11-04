@@ -4,65 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Análise de Público — Monaco Agency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="monaco.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
-.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
-.logo span { background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
-.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
-.back-btn:hover { background: #262a3a; }
-.container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
-.bm-header { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.bm-title { font-size: 16px; font-weight: 600; color: #fff; }
-.bm-id { font-size: 11px; color: #6b7280; margin-top: 3px; }
-.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
-.section-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.section { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+.bm-header {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 20px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.bm-title { font-size: 16px; font-weight: 600; color: var(--hi); letter-spacing: -.03em; }
+.bm-id { font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--mono); letter-spacing: .04em; }
+.periodo-badge {
+  background: var(--card2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; color: var(--mute); font-family: var(--mono); letter-spacing: .05em;
+}
+.section-title {
+  font-size: 11px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--mute); font-family: var(--mono);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+  content: ''; display: block; width: 3px; height: 12px;
+  background: var(--hi); border-radius: 2px; opacity: .5;
+}
+.section {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 18px 20px; margin-bottom: 16px;
+}
 .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
-.mc { background: #111318; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
-.mc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
-.mc-val { font-size: 20px; font-weight: 600; color: #fff; }
-.mc-val.green { color: #34d399; }
-.mc-val.amber { color: #fbbf24; }
-.mc-val.red { color: #f87171; }
-.mc-sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.mc {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+}
+.mc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
+.mc-val { font-size: 20px; font-weight: 600; color: var(--hi); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
+.mc-val.green { color: var(--green); }
+.mc-val.amber { color: var(--amber); }
+.mc-val.red { color: var(--red); }
+.mc-sub { font-size: 11px; color: var(--dim); margin-top: 4px; font-family: var(--mono); }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th { text-align: left; padding: 8px 12px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; background: #111318; border-bottom: 1px solid #2a2d3a; }
-td { padding: 8px 12px; border-bottom: 1px solid #1e2130; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #1a1e2a; }
-.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
-.spin { display: inline-block; animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.sugestao { border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid; font-size: 12px; line-height: 1.6; }
-.sugestao.critico { background: rgba(248,113,113,.08); border-color: #f87171; color: #fca5a5; }
-.sugestao.atencao { background: rgba(251,191,36,.08); border-color: #fbbf24; color: #fde68a; }
-.sugestao.ok { background: rgba(52,211,153,.08); border-color: #34d399; color: #6ee7b7; }
-.sugestao b { color: #fff; }
+
+.sugestao { border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border-left: 3px solid; font-size: 12px; line-height: 1.6; }
+.sugestao.critico { background: var(--red2); border-color: var(--red); color: var(--ink2); }
+.sugestao.atencao { background: var(--amber2); border-color: var(--amber); color: var(--ink2); }
+.sugestao.ok { background: var(--green2); border-color: var(--green); color: var(--ink2); }
+.sugestao b { color: var(--hi); }
+
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag-item { font-size: 11px; padding: 4px 10px; border-radius: 99px; background: #1e2130; border: 1px solid #2a2d3a; color: #c8c8c8; }
-.plano-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #1e2130; }
+.tag-item {
+  font-size: 11px; padding: 4px 11px; border-radius: 999px;
+  background: var(--card2); border: 1px solid var(--line2); color: var(--ink2);
+  font-family: var(--mono); letter-spacing: .04em;
+}
+.plano-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .plano-item:last-child { border-bottom: none; }
-.plano-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: #1e2130; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #9ca3af; }
-.plano-num.critico { background: rgba(248,113,113,.2); color: #f87171; }
-.plano-num.atencao { background: rgba(251,191,36,.2); color: #fbbf24; }
-.plano-num.ok { background: rgba(52,211,153,.2); color: #34d399; }
-.plano-texto { font-size: 12px; color: #d1d5db; line-height: 1.6; }
-.empty-ok { text-align: center; padding: 24px; color: #34d399; font-size: 13px; }
+.plano-num {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--card2); display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--mute); font-family: var(--mono);
+}
+.plano-num.critico { background: var(--red2); color: var(--red); }
+.plano-num.atencao { background: var(--amber2); color: var(--amber); }
+.plano-num.ok { background: var(--green2); color: var(--green); }
+.plano-texto { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+.empty-ok { text-align: center; padding: 24px; color: var(--green); font-size: 13px; font-family: var(--mono); }
 @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">🎯 Análise de Público <span>Monaco Agency</span></div>
-  <div style="display:flex;gap:8px;align-items:center;">
+<header class="hdr">
+  <a href="javascript:history.back()" class="logo">
+    <div class="logo-mark"><span>M</span></div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Análise de Público</span>
+  </a>
+  <div class="hdr-nav">
     <span class="periodo-badge" id="periodo-label">Carregando...</span>
-    <a href="javascript:history.back()" class="back-btn">← Voltar</a>
+    <a href="javascript:history.back()" class="btn">
+      <i class="ti ti-arrow-left"></i> Voltar
+    </a>
   </div>
-</div>
+</header>
 
 <div class="container">
   <div class="bm-header">
@@ -190,9 +219,9 @@ function renderSecaoSeg(titulo, icone, resultado, colResultLabel) {
   const rows = resultado.parsed.slice(0, 12).map(s => {
     const c = conv(s);
     const custo = custoConv(s);
-    const roasColor = s.roas >= 3 ? '#34d399' : s.roas >= 1.5 ? '#fbbf24' : s.roas > 0 ? '#f87171' : '#6b7280';
+    const roasColor = s.roas >= 3 ? 'var(--green)' : s.roas >= 1.5 ? 'var(--amber)' : s.roas > 0 ? 'var(--red)' : 'var(--mute)';
     return `<tr>
-      <td style="color:#e8e8e8;font-weight:500;">${s.chave}</td>
+      <td style="color:var(--ink);font-weight:600;">${s.chave}</td>
       <td>${fmt(s.gasto)}</td>
       <td>${fmtN(c)}</td>
       <td>${custo > 0 ? fmt(custo) : '—'}</td>

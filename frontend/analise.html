@@ -9,9 +9,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 .bm-header {
-  background: var(--s3);
-  border: 1px solid var(--b1);
-  border-radius: 10px;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 16px 20px;
   margin-bottom: 20px;
   display: flex; align-items: center; justify-content: space-between;
@@ -20,9 +20,9 @@
 .bm-title { font-size: 17px; font-weight: 600; color: #fff; }
 .bm-id { font-size: 11px; color: var(--dim); margin-top: 4px; font-family: var(--mono); }
 .periodo-badge {
-  background: var(--s2); border: 1px solid var(--b2);
+  background: var(--card); border: 1px solid var(--line2);
   border-radius: 5px; padding: 4px 10px;
-  font-size: 11px; color: var(--text2);
+  font-size: 11px; color: var(--ink2);
   font-family: var(--mono); letter-spacing: .5px;
 }
 
@@ -32,8 +32,8 @@
   gap: 10px; margin-bottom: 16px;
 }
 .mc {
-  background: var(--s2); border: 1px solid var(--b1);
-  border-radius: 10px; padding: 12px 14px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 14px;
 }
 .mc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
 .mc-val { font-size: 19px; font-weight: 700; color: #fff; font-feature-settings: 'tnum'; }
@@ -43,8 +43,8 @@
 .mc-sub { font-size: 11px; color: var(--dim); margin-top: 5px; }
 
 .section {
-  background: var(--s3); border: 1px solid var(--b1);
-  border-radius: 10px; padding: 16px 20px; margin-bottom: 14px;
+  background: var(--card2); border: 1px solid var(--line);
+  border-radius: 14px; padding: 16px 20px; margin-bottom: 14px;
 }
 
 .chart-wrap      { position: relative; height: 240px; }
@@ -54,23 +54,23 @@
 
 .funil-wrap { display: flex; flex-direction: column; gap: 6px; }
 .funil-step { display: flex; align-items: center; gap: 10px; }
-.funil-bar-bg { flex: 1; height: 30px; background: var(--s2); border-radius: 5px; overflow: hidden; position: relative; }
+.funil-bar-bg { flex: 1; height: 30px; background: var(--card); border-radius: 5px; overflow: hidden; position: relative; }
 .funil-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 500; color: #fff; transition: width .5s ease; }
-.funil-label { width: 160px; font-size: 11px; color: var(--text2); text-align: right; flex-shrink: 0; }
-.funil-val { width: 72px; font-size: 12px; font-weight: 600; color: var(--text); text-align: right; flex-shrink: 0; }
+.funil-label { width: 160px; font-size: 11px; color: var(--ink2); text-align: right; flex-shrink: 0; }
+.funil-val { width: 72px; font-size: 12px; font-weight: 600; color: var(--ink); text-align: right; flex-shrink: 0; }
 .funil-pct { width: 44px; font-size: 11px; color: var(--dim); text-align: right; flex-shrink: 0; }
 
 .comparativo-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.comp-card { background: var(--s2); border: 1px solid var(--b1); border-radius: 8px; padding: 14px; }
+.comp-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
 .comp-card-title { font-size: 10px; color: var(--dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-.comp-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--s4); font-size: 13px; }
+.comp-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--card); font-size: 13px; }
 .comp-row:last-child { border-bottom: none; }
-.comp-label { color: var(--text2); }
-.comp-val { font-weight: 500; color: var(--text); }
+.comp-label { color: var(--ink2); }
+.comp-val { font-weight: 500; color: var(--ink); }
 .comp-delta { font-size: 11px; padding: 2px 6px; border-radius: 4px; }
 .delta-up   { background: var(--green2); color: var(--green); }
 .delta-down { background: var(--red2);   color: var(--red);   }
-.delta-neutral { background: var(--s4);  color: var(--dim);   }
+.delta-neutral { background: var(--card);  color: var(--dim);   }
 
 @media (max-width: 768px) {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -356,7 +356,7 @@ function renderBreakdown(ageData, genderData, regionData) {
         const keyLabels = { male: 'Masculino', female: 'Feminino', unknown: 'Não informado' };
         const key = keyLabels[d[keyField]] || d[keyField];
         return `<tr>
-          <td style="color:var(--text);font-weight:500;">${key}</td>
+          <td style="color:var(--ink);font-weight:500;">${key}</td>
           <td>${fmt(gasto)}</td>
           <td>${pedidos > 0 ? fmtN(pedidos) : '—'}</td>
           <td style="color:var(--green);">${fat > 0 ? fmt(fat) : '—'}</td>

@@ -8,51 +8,46 @@
 <link rel="stylesheet" href="monaco.css">
 <style>
 .summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px; margin-bottom: 20px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px; margin-bottom: 24px;
 }
 .sc {
-  background: var(--s3); border: 1px solid var(--b1);
-  border-radius: 10px; padding: 14px 16px;
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px;
 }
-.sc-label { font-size: 10px; color: var(--dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-.sc-val { font-size: 24px; font-weight: 700; font-feature-settings: 'tnum'; }
+.sc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase;
+  letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
+.sc-val { font-size: 24px; font-weight: 600; font-feature-settings: 'tnum'; letter-spacing: -.04em; line-height: 1; }
 .sc-val.red   { color: var(--red);   }
 .sc-val.amber { color: var(--amber); }
 .sc-val.green { color: var(--green); }
-.sc-val.white { color: #fff;         }
+.sc-val.white { color: var(--hi);    }
 
-.filters {
-  display: flex; gap: 10px; margin-bottom: 14px;
-  flex-wrap: wrap; align-items: center;
-}
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 
 .search-wrap {
   display: flex; align-items: center; gap: 8px;
-  background: var(--s3); border: 1px solid var(--b2);
-  border-radius: 6px; padding: 7px 12px;
-  flex: 1; min-width: 200px;
-  transition: border-color var(--t-fast);
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  flex: 1; min-width: 200px; transition: border-color .12s;
 }
-.search-wrap:focus-within { border-color: var(--gold-dim); }
-.search-wrap i { color: var(--dim); font-size: 16px; }
-.search-wrap input { background: transparent; border: none; color: var(--text); font-size: 13px; outline: none; width: 100%; }
+.search-wrap:focus-within { border-color: var(--line2); }
+.search-wrap i { color: var(--dim); font-size: 15px; }
+.search-wrap input { background: transparent; border: none; color: var(--ink); font-size: 13px; outline: none; width: 100%; font-family: var(--sans); }
 .search-wrap input::placeholder { color: var(--dim); }
 
-.nome-cell { font-weight: 500; color: var(--text); font-size: 13px; }
-.id-cell { font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--mono); }
-.saldo-val { font-weight: 700; font-size: 14px; font-feature-settings: 'tnum'; }
+.nome-cell { font-weight: 600; color: var(--ink); font-size: 13px; letter-spacing: -.02em; }
+.id-cell { font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--mono); letter-spacing: .04em; }
+.saldo-val { font-weight: 600; font-size: 14px; font-feature-settings: 'tnum'; font-family: var(--mono); }
 .saldo-val.red   { color: var(--red);   }
 .saldo-val.amber { color: var(--amber); }
 .saldo-val.green { color: var(--green); }
 
-.bar-wrap { width: 100px; height: 4px; background: var(--b2); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; }
+.bar-wrap { width: 90px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; }
 .bar-fill  { height: 100%; border-radius: 2px; transition: width .4s ease; }
 .progress-row { display: flex; align-items: center; gap: 8px; }
-.limit-val { font-size: 11px; color: var(--dim); }
+.limit-val { font-size: 11px; color: var(--dim); font-family: var(--mono); }
 
-.last-upd { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+.last-upd { font-size: 11px; color: var(--dim); font-family: var(--mono); letter-spacing: .05em; }
 </style>
 </head>
 <body>
@@ -70,7 +65,7 @@
 
   <div class="hdr-nav">
     <span class="last-upd" id="last-upd"></span>
-    <button class="btn btn-gold" onclick="carregarSaldos()" id="btn-atualizar">
+    <button class="btn btn-primary" onclick="carregarSaldos()" id="btn-atualizar">
       <i class="ti ti-refresh"></i> Atualizar
     </button>
     <a href="dashboard.html" class="btn">
@@ -241,7 +236,7 @@ function filtrar() {
         <div class="id-cell">${d.id}</div>
       </td>
       <td><span class="saldo-val ${saldoClass}">${fmt(d.saldo)}</span></td>
-      <td style="color:var(--text2);">${d.spendCap > 0 ? fmt(d.spendCap) : '—'}</td>
+      <td style="color:var(--ink2);">${d.spendCap > 0 ? fmt(d.spendCap) : '—'}</td>
       <td>
         ${d.spendCap > 0 ? `
           <div class="progress-row">

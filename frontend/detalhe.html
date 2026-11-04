@@ -4,17 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Detalhe BM — Monaco Agency</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="monaco.css">
 <style>
 /* ── Page-specific overrides ── */
 .bm-header {
-  background: var(--s2);
-  border: 1px solid var(--b1);
-  border-radius: 12px;
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 16px 20px;
   margin-bottom: 20px;
   display: flex;
@@ -23,7 +20,7 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.bm-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.bm-title { font-size: 16px; font-weight: 600; color: var(--hi); }
 .bm-id { font-size: 11px; color: var(--dim); margin-top: 3px; font-family: var(--mono); }
 
 .bm-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -31,25 +28,26 @@
 .tabs {
   display: flex;
   gap: 4px;
-  background: var(--s0);
-  border: 1px solid var(--b1);
-  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
   padding: 3px;
   width: fit-content;
 }
 .tab-btn {
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 5px 16px;
+  border-radius: 999px;
+  font-size: 12px;
   cursor: pointer;
   border: none;
   background: transparent;
-  color: var(--dim);
+  color: var(--mute);
   transition: all var(--t-fast);
   font-family: var(--sans);
+  font-weight: 500;
 }
-.tab-btn:hover { color: var(--text2); }
-.tab-btn.ativo { background: var(--gold); color: #000; font-weight: 600; }
+.tab-btn:hover { color: var(--ink2); }
+.tab-btn.ativo { background: var(--hi); color: var(--bg); font-weight: 600; }
 
 .metrics {
   display: grid;
@@ -58,20 +56,21 @@
   margin-bottom: 20px;
 }
 .mc {
-  background: var(--s2);
-  border: 1px solid var(--b1);
-  border-radius: 10px;
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 12px 14px;
 }
 .mc-label {
   font-size: 11px;
-  color: var(--dim);
+  color: var(--mute);
   margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: .5px;
+  letter-spacing: .07em;
   font-weight: 500;
+  font-family: var(--mono);
 }
-.mc-val { font-size: 20px; font-weight: 700; color: var(--text); font-feature-settings: 'tnum'; }
+.mc-val { font-size: 20px; font-weight: 700; color: var(--ink); font-feature-settings: 'tnum'; }
 .mc-val.green { color: var(--green); }
 .mc-val.amber { color: var(--amber); }
 .mc-val.red   { color: var(--red);   }
@@ -79,7 +78,7 @@
 /* Table */
 .nome-cell {
   font-weight: 500;
-  color: var(--text);
+  color: var(--ink);
   font-size: 13px;
   max-width: 280px;
   overflow: hidden;
@@ -87,7 +86,7 @@
   white-space: nowrap;
   cursor: pointer;
 }
-.nome-cell:hover { color: var(--gold); }
+.nome-cell:hover { color: var(--hi); }
 
 .status-badge {
   display: inline-flex;
@@ -95,22 +94,22 @@
   gap: 4px;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 99px;
+  border-radius: 999px;
   font-weight: 500;
   white-space: nowrap;
 }
-.badge-green { background: rgba(52,211,153,.12); color: var(--green); }
-.badge-amber { background: rgba(245,197,24,.12);  color: var(--amber); }
-.badge-red   { background: rgba(248,113,113,.12); color: var(--red);   }
-.badge-gray  { background: rgba(107,114,128,.12); color: var(--dim);   }
-.badge-blue  { background: rgba(96,165,250,.12);  color: var(--blue);  }
+.badge-green { background: var(--green2); color: var(--green); }
+.badge-amber { background: var(--amber2); color: var(--amber); }
+.badge-red   { background: var(--red2);   color: var(--red);   }
+.badge-gray  { background: var(--card2);  color: var(--mute);  }
+.badge-blue  { background: var(--blue2);  color: var(--blue);  }
 
 .dot-ativo   { width: 6px; height: 6px; border-radius: 50%; background: var(--green);  display: inline-block; }
 .dot-pausado { width: 6px; height: 6px; border-radius: 50%; background: var(--dim);    display: inline-block; }
 
 .expand-btn {
   background: none;
-  border: 1px solid var(--b2);
+  border: 1px solid var(--line2);
   border-radius: 4px;
   color: var(--dim);
   cursor: pointer;
@@ -119,7 +118,7 @@
   font-family: var(--mono);
   transition: all var(--t-fast);
 }
-.expand-btn:hover { background: var(--s3); color: var(--text); }
+.expand-btn:hover { background: var(--card2); color: var(--ink); }
 
 .spin { display: inline-block; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -142,24 +141,24 @@
 .level-ad   { background: rgba(52,211,153,.18);  color: var(--green); }
 
 .roas-val { font-weight: 700; }
-.bar-wrap  { width: 80px; height: 3px; background: var(--b2); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+.bar-wrap  { width: 80px; height: 3px; background: var(--line2); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
 .bar-fill  { height: 100%; border-radius: 2px; }
 
 .empty-state { text-align: center; padding: 60px 20px; color: var(--dim); }
-.empty-state .icon { font-size: 36px; margin-bottom: 12px; color: var(--b3); }
+.empty-state .icon { font-size: 36px; margin-bottom: 12px; color: var(--mute); }
 
 /* Creative modal */
 .thumb-wrap {
   width: 48px; height: 48px;
-  border-radius: 6px; overflow: hidden;
-  background: var(--s3); border: 1px solid var(--b2);
+  border-radius: 8px; overflow: hidden;
+  background: var(--card2); border: 1px solid var(--line);
   display: inline-flex; align-items: center; justify-content: center;
   flex-shrink: 0; cursor: pointer;
   transition: border-color var(--t-fast);
 }
 .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .thumb-wrap .play-icon { font-size: 18px; color: var(--dim); }
-.thumb-wrap:hover { border-color: var(--gold-dim); }
+.thumb-wrap:hover { border-color: var(--line2); }
 .nome-ad-cell { display: flex; align-items: center; gap: 10px; }
 
 .modal-criativo {
@@ -170,21 +169,21 @@
 }
 .modal-criativo.open { display: flex; }
 .modal-criativo-inner {
-  background: var(--s2); border: 1px solid var(--b2);
-  border-radius: 14px; padding: 20px;
+  background: var(--card); border: 1px solid var(--line2);
+  border-radius: 16px; padding: 20px;
   max-width: 540px; width: 90%;
 }
 .modal-criativo-inner img   { width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain; }
 .modal-criativo-inner video { width: 100%; border-radius: 8px; max-height: 400px; }
-.modal-criativo-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
-.modal-criativo-body  { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.6; }
+.modal-criativo-title { font-size: 13px; font-weight: 600; color: var(--hi); margin-bottom: 12px; }
+.modal-criativo-body  { font-size: 12px; color: var(--ink2); margin-top: 8px; line-height: 1.6; }
 .modal-close-btn { float: right; background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; }
-.modal-close-btn:hover { color: var(--text); }
+.modal-close-btn:hover { color: var(--ink); }
 
 /* BOB side panel */
 .bob-panel {
   position: fixed; right: 0; top: 0; height: 100vh; width: 420px;
-  background: var(--s1); border-left: 1px solid var(--b1);
+  background: var(--bg2); border-left: 1px solid var(--line);
   z-index: 50; transform: translateX(100%);
   transition: transform .3s ease;
   display: flex; flex-direction: column;
@@ -192,76 +191,76 @@
 .bob-panel.open { transform: translateX(0); }
 
 .bob-header {
-  padding: 16px 18px; border-bottom: 1px solid var(--b1);
+  padding: 16px 18px; border-bottom: 1px solid var(--line);
   display: flex; align-items: center; justify-content: space-between;
-  background: var(--s2); flex-shrink: 0;
+  background: var(--card); flex-shrink: 0;
 }
 .bob-title {
-  font-size: 14px; font-weight: 600; color: var(--text);
+  font-size: 14px; font-weight: 600; color: var(--hi);
   display: flex; align-items: center; gap: 8px;
 }
 .bob-title-mark {
   width: 22px; height: 22px;
-  background: var(--gold);
+  background: var(--hi);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 11px; font-weight: 700; color: #000;
-  clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%);
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--bg);
+  transform: rotate(45deg); border-radius: 2px;
   flex-shrink: 0;
 }
 .bob-close { background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; }
-.bob-close:hover { color: var(--text); }
+.bob-close:hover { color: var(--ink); }
 
 .bob-config {
-  padding: 10px 14px; border-bottom: 1px solid var(--b1);
-  background: var(--s2);
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+  background: var(--card);
   display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex-shrink: 0;
 }
 .bob-config label { font-size: 10px; color: var(--dim); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 .bob-config input {
-  width: 54px; background: var(--s0); border: 1px solid var(--b2);
-  border-radius: 4px; padding: 3px 6px; font-size: 11px; color: var(--text);
+  width: 54px; background: var(--bg); border: 1px solid var(--line2);
+  border-radius: 4px; padding: 3px 6px; font-size: 11px; color: var(--ink);
   outline: none; font-family: var(--mono);
 }
-.bob-config input:focus { border-color: var(--gold-dim); }
+.bob-config input:focus { border-color: var(--mute); }
 .bob-config button {
-  padding: 4px 10px; border-radius: 6px; font-size: 11px;
-  cursor: pointer; border: 1px solid var(--gold-dim);
-  background: rgba(245,197,24,.1); color: var(--gold); font-weight: 600;
+  padding: 4px 10px; border-radius: 999px; font-size: 11px;
+  cursor: pointer; border: 1px solid var(--line2);
+  background: var(--card2); color: var(--ink2); font-weight: 500;
   font-family: var(--sans);
 }
-.bob-config button:hover { background: rgba(245,197,24,.18); }
+.bob-config button:hover { background: var(--line); color: var(--ink); }
 
 .bob-body { flex: 1; overflow-y: auto; padding: 14px; }
 .bob-loading { text-align: center; padding: 40px; color: var(--dim); font-size: 13px; }
 
 .bob-alert {
-  border-radius: 8px; padding: 8px 10px;
+  border-radius: 10px; padding: 8px 10px;
   margin-bottom: 6px; border-left: 3px solid;
 }
-.bob-alert.critico { background: rgba(248,113,113,.07); border-color: var(--red); }
-.bob-alert.atencao { background: rgba(245,197,24,.07);  border-color: var(--amber); }
-.bob-alert.info    { background: rgba(96,165,250,.07);  border-color: var(--blue); }
-.bob-alert.ok      { background: rgba(52,211,153,.07);  border-color: var(--green); }
-.bob-alert-title   { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.bob-alert-desc    { font-size: 11px; color: var(--text2); line-height: 1.6; }
+.bob-alert.critico { background: var(--red2);   border-color: var(--red); }
+.bob-alert.atencao { background: var(--amber2); border-color: var(--amber); }
+.bob-alert.info    { background: var(--blue2);  border-color: var(--blue); }
+.bob-alert.ok      { background: var(--green2); border-color: var(--green); }
+.bob-alert-title   { font-size: 12px; font-weight: 600; color: var(--hi); margin-bottom: 3px; }
+.bob-alert-desc    { font-size: 11px; color: var(--ink2); line-height: 1.6; }
 
-.bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; }
-.bob-tag.red   { background: rgba(248,113,113,.15); color: var(--red); }
-.bob-tag.amber { background: rgba(245,197,24,.15);  color: var(--amber); }
-.bob-tag.green { background: rgba(52,211,153,.15);  color: var(--green); }
-.bob-tag.blue  { background: rgba(96,165,250,.15);  color: var(--blue); }
+.bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 999px; }
+.bob-tag.red   { background: var(--red2);   color: var(--red); }
+.bob-tag.amber { background: var(--amber2); color: var(--amber); }
+.bob-tag.green { background: var(--green2); color: var(--green); }
+.bob-tag.blue  { background: var(--blue2);  color: var(--blue); }
 
 .bob-empty   { text-align: center; padding: 40px 20px; color: var(--green); font-size: 13px; }
-.bob-section { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .8px; margin: 14px 0 8px; }
-.bob-camp-card { border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--s2); }
+.bob-section { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .07em; margin: 14px 0 8px; font-family: var(--mono); }
+.bob-camp-card { border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; background: var(--card2); border: 1px solid var(--line); }
 
 .overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); z-index: 49; }
 .overlay-bg.open { display: block; }
 
 .periodo-badge {
-  background: var(--s3); border: 1px solid var(--b2);
-  border-radius: 6px; padding: 4px 10px;
-  font-size: 12px; color: var(--text2); font-family: var(--mono);
+  background: var(--card2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 12px; color: var(--ink2); font-family: var(--mono);
 }
 </style>
 </head>
@@ -298,7 +297,7 @@
       <button onclick="abrirPublico()" class="btn">
         <i class="ti ti-users"></i> Público
       </button>
-      <button onclick="abrirBOB()" class="btn btn-gold">
+      <button onclick="abrirBOB()" class="btn btn-primary">
         <i class="ti ti-cpu"></i> BOB
       </button>
       <div class="tabs">
@@ -483,15 +482,15 @@ function buildRow(item, level, indent, maxGasto) {
     </td>
     <td>${getStatusBadge(item.effective_status || item.status)}</td>
     <td style="font-weight:600;">
-      ${ins.gasto > 0 ? fmt(ins.gasto) : '<span style="color:var(--b3)">—</span>'}
+      ${ins.gasto > 0 ? fmt(ins.gasto) : '<span style="color:var(--dim)">—</span>'}
       ${ins.gasto > 0 ? `<div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:var(--gold);opacity:.6;"></div></div>` : ''}
     </td>
-    <td>${ins.pedidos > 0 ? `<strong>${fmtN(ins.pedidos)}</strong>` : '<span style="color:var(--b3)">0</span>'}</td>
-    <td style="color:var(--green);">${ins.fat > 0 ? fmt(ins.fat) : '<span style="color:var(--b3)">—</span>'}</td>
-    <td>${cpr > 0 ? fmt(cpr) : '<span style="color:var(--b3)">—</span>'}</td>
+    <td>${ins.pedidos > 0 ? `<strong>${fmtN(ins.pedidos)}</strong>` : '<span style="color:var(--dim)">0</span>'}</td>
+    <td style="color:var(--green);">${ins.fat > 0 ? fmt(ins.fat) : '<span style="color:var(--dim)">—</span>'}</td>
+    <td>${cpr > 0 ? fmt(cpr) : '<span style="color:var(--dim)">—</span>'}</td>
     <td><span class="roas-val" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</span></td>
-    <td style="color:var(--text2);">${ins.impr > 0 ? fmtN(ins.impr) : '—'}</td>
-    <td style="color:var(--text2);">${ctr > 0 ? ctr.toFixed(2) + '%' : '—'}</td>
+    <td style="color:var(--ink2);">${ins.impr > 0 ? fmtN(ins.impr) : '—'}</td>
+    <td style="color:var(--ink2);">${ctr > 0 ? ctr.toFixed(2) + '%' : '—'}</td>
   </tr>`;
 }
 
@@ -707,9 +706,9 @@ function isFoodAccount() {
 }
 
 function renderChecklistGastroHub() {
-  return `<div style="background:var(--s3);border:1px solid var(--b1);border-left:3px solid var(--amber);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+  return `<div style="background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
     <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:6px;">Cliente Food — Checklist GastroHub</div>
-    <div style="font-size:11px;color:var(--text2);line-height:1.7;">
+    <div style="font-size:11px;color:var(--ink2);line-height:1.7;">
       Antes de escalar tráfego, validar manualmente: <strong>fotos</strong> reais e de alta qualidade, <strong>nomes</strong> claros e apetitosos, <strong>descrições</strong> com ingredientes/gramagem, <strong>preços</strong> coerentes com o mercado local, <strong>produtos campeões</strong> em destaque na entrada do cardápio, <strong>combos</strong> visíveis, <strong>jornada de compra</strong> sem fricção (carrinho e checkout testados), <strong>mobile</strong> carregando rápido (&lt;3s) e <strong>rastreamento de eventos</strong> (LP view, add to cart, checkout, purchase) configurado.<br><br>
       <strong>Horário de veiculação:</strong> campanhas devem rodar 30 min antes da abertura até o fechamento do restaurante — fora do horário, cliques não convertem e o CPA sobe sem resultado.<br><br>
       <strong>Estética de criativo:</strong> foodporn — close no produto, queijo puxando/molho escorrendo, corte revelando o interior, fumaça/calor visível, preparo do prato.
@@ -993,7 +992,7 @@ function renderDiagnosticos(diags, cfg) {
     const corBorda = { critico: 'var(--red)', atencao: 'var(--amber)', ok: 'var(--green)' }[d.statusGeral];
     const roasTxt = d.obj === 'SALES' ? ` · ROAS ${d.roas > 0 ? d.roas.toFixed(2) + 'x' : '—'}` : '';
     const funilTxt = d.obj === 'SALES' && (d.lpView || d.addCart || d.checkout)
-      ? `<div style="font-size:10px;color:var(--b3);margin:-4px 0 10px;">Funil: ${fmtN(d.clicks)} cliques → ${fmtN(d.lpView)} página → ${fmtN(d.addCart)} carrinho → ${fmtN(d.checkout)} checkout → ${fmtN(d.convQtd)} compra</div>`
+      ? `<div style="font-size:10px;color:var(--dim);margin:-4px 0 10px;">Funil: ${fmtN(d.clicks)} cliques → ${fmtN(d.lpView)} página → ${fmtN(d.addCart)} carrinho → ${fmtN(d.checkout)} checkout → ${fmtN(d.convQtd)} compra</div>`
       : '';
 
     html += `<div class="bob-camp-card" style="border-left:3px solid ${corBorda};">
@@ -1015,7 +1014,7 @@ function renderDiagnosticos(diags, cfg) {
 
     if (d.acoes.length) {
       html += `<div style="margin-top:8px;font-size:11px;color:var(--gold);font-weight:600;">Próximo teste / plano de ação:</div>
-      <ol style="margin:4px 0 0 16px;padding:0;font-size:11px;color:var(--text2);line-height:1.7;">`;
+      <ol style="margin:4px 0 0 16px;padding:0;font-size:11px;color:var(--ink2);line-height:1.7;">`;
       d.acoes.forEach(a => { html += `<li>${a}</li>`; });
       html += `</ol>`;
     }

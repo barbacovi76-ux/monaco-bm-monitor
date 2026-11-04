@@ -4,75 +4,115 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Relatório Semanal — Monaco Agency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="monaco.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8e8e8; min-height: 100vh; }
-.header { background: #161a24; border-bottom: 1px solid #2a2d3a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 10; }
-.logo { font-size: 14px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
-.logo span { background: #7c3aed; color: #fff; padding: 2px 8px; border-radius: 6px; font-size: 11px; }
-.back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; text-decoration: none; }
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; transition: all .15s; }
-.btn:hover { background: #262a3a; }
-.btn-primary { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-.btn-green { background: #059669; color: #fff; border-color: #059669; }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px 24px; }
-.periodo-card { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.periodo-label { font-size: 13px; color: #6b7280; }
-.periodo-datas { font-size: 15px; font-weight: 600; color: #fff; }
-.periodo-badge { background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; }
-.semana-nav { display: flex; align-items: center; gap: 8px; }
-.semana-nav button { padding: 5px 10px; border-radius: 6px; border: 1px solid #2a2d3a; background: #1e2130; color: #c8c8c8; cursor: pointer; font-size: 13px; }
-.semana-nav span { font-size: 12px; color: #6b7280; min-width: 80px; text-align: center; }
+.periodo-card {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px 20px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.periodo-label { font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: .07em; font-family: var(--mono); }
+.periodo-datas { font-size: 15px; font-weight: 600; color: var(--hi); letter-spacing: -.03em; margin-top: 3px; }
+.periodo-badge {
+  background: var(--card2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; color: var(--mute); font-family: var(--mono); letter-spacing: .05em;
+}
+.semana-nav { display: flex; align-items: center; gap: 6px; }
+.semana-nav button {
+  padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line2); background: transparent; color: var(--ink2);
+  cursor: pointer; font-size: 12px; transition: all var(--t-fast);
+}
+.semana-nav button:hover { background: var(--card2); color: var(--hi); }
+.semana-nav span { font-size: 11px; color: var(--mute); min-width: 90px; text-align: center; font-family: var(--mono); }
+
 .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.sc { background: #161a24; border: 1px solid #2a2d3a; border-radius: 10px; padding: 12px 14px; }
-.sc-label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; }
-.sc-val { font-size: 20px; font-weight: 700; color: #fff; }
-.sc-val.green { color: #34d399; }
-.filters { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
-.search-box { display: flex; align-items: center; gap: 8px; background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; flex: 1; min-width: 200px; }
-.search-box input { background: transparent; border: none; color: #e8e8e8; font-size: 13px; outline: none; width: 100%; }
-select { background: #161a24; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 12px; font-size: 13px; color: #c8c8c8; outline: none; }
-.table-wrap { background: #161a24; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th { text-align: left; padding: 10px 14px; color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; background: #111318; border-bottom: 1px solid #2a2d3a; white-space: nowrap; }
-td { padding: 10px 14px; border-bottom: 1px solid #1e2130; vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #1a1e2a; }
-.nome-cell { font-weight: 500; color: #fff; font-size: 13px; }
-.id-cell { font-size: 11px; color: #4b5563; margin-top: 2px; }
-.btn-enviar { padding: 4px 10px; font-size: 11px; border-radius: 6px; border: 1px solid #059669; background: transparent; color: #34d399; cursor: pointer; white-space: nowrap; transition: all .15s; }
-.btn-enviar:hover { background: #059669; color: #fff; }
-.btn-enviar.enviando { opacity: .6; cursor: wait; }
-.btn-enviar.enviado { background: #059669; color: #fff; }
-.preview-btn { padding: 3px 8px; font-size: 11px; border-radius: 6px; border: 1px solid #374151; background: transparent; color: #6b7280; cursor: pointer; }
-.loading { text-align: center; padding: 48px; color: #4b5563; font-size: 14px; }
-.spin { display: inline-block; animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.8); z-index: 100; align-items: center; justify-content: center; }
+.sc {
+  background: linear-gradient(180deg, var(--card2), var(--card));
+  border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+}
+.sc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
+.sc-val { font-size: 20px; font-weight: 600; color: var(--hi); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
+.sc-val.green { color: var(--green); }
+
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  flex: 1; min-width: 200px; transition: border-color .12s;
+}
+.search-wrap:focus-within { border-color: var(--line2); }
+.search-wrap i { color: var(--dim); font-size: 14px; }
+.search-wrap input { background: transparent; border: none; color: var(--ink); font-size: 13px; outline: none; width: 100%; font-family: var(--sans); }
+.search-wrap input::placeholder { color: var(--dim); }
+
+.nome-cell { font-weight: 600; color: var(--ink); font-size: 13px; letter-spacing: -.02em; }
+.id-cell { font-size: 10px; color: var(--dim); margin-top: 2px; font-family: var(--mono); letter-spacing: .04em; }
+
+.btn-enviar {
+  padding: 4px 11px; font-size: 11px; border-radius: 999px;
+  border: 1px solid rgba(74,222,128,.3); background: var(--green2);
+  color: var(--green); cursor: pointer; white-space: nowrap;
+  transition: all var(--t-fast); font-family: var(--mono); letter-spacing: .04em;
+}
+.btn-enviar:hover { background: rgba(74,222,128,.2); border-color: var(--green); }
+.btn-enviar.enviando { opacity: .5; cursor: wait; }
+.btn-enviar.enviado { background: var(--green2); color: var(--green); border-color: rgba(74,222,128,.3); opacity: .7; }
+
+.preview-btn {
+  padding: 3px 10px; font-size: 11px; border-radius: 999px;
+  border: 1px solid var(--line2); background: transparent; color: var(--mute);
+  cursor: pointer; transition: all var(--t-fast);
+}
+.preview-btn:hover { background: var(--card2); color: var(--ink); }
+
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.7); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 .modal-overlay.open { display: flex; }
-.modal { background: #161a24; border: 1px solid #2a2d3a; border-radius: 14px; padding: 24px; width: 90%; max-width: 500px; }
-.modal-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-.modal-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; }
-.wpp-preview { background: #075e54; border-radius: 10px; padding: 14px; }
-.wpp-bubble { background: #dcf8c6; border-radius: 8px; padding: 10px 14px; display: inline-block; max-width: 100%; }
+.modal { background: var(--card); border: 1px solid var(--line2); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; }
+.modal-title { font-size: 15px; font-weight: 600; color: var(--hi); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; letter-spacing: -.02em; }
+.modal-close { background: none; border: none; color: var(--mute); font-size: 20px; cursor: pointer; transition: color var(--t-fast); }
+.modal-close:hover { color: var(--ink); }
+
+.wpp-preview { background: #075e54; border-radius: 12px; padding: 14px; }
+.wpp-bubble { background: #dcf8c6; border-radius: 10px; padding: 10px 14px; display: inline-block; max-width: 100%; }
 .wpp-text { font-size: 13px; color: #111; line-height: 1.7; white-space: pre-wrap; }
 .wpp-time { font-size: 10px; color: #777; text-align: right; margin-top: 4px; }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 300; display: none; }
-.toast.ok { background: #059669; color: #fff; }
-.toast.err { background: #dc2626; color: #fff; }
-.roas-val { font-weight: 600; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 999px; font-size: 12px; z-index: 300; display: none; font-family: var(--mono); letter-spacing: .04em; }
+.toast.ok { background: var(--green); color: #000; }
+.toast.err { background: var(--red); color: #000; }
+
+.roas-val { font-weight: 600; font-family: var(--mono); font-feature-settings: 'tnum'; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">Relatorio Semanal <span>Monaco Agency</span></div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <button class="btn btn-primary" onclick="carregarTodos()" id="btn-carregar">Carregar dados</button>
-    <button class="btn btn-green" onclick="enviarTodos()" id="btn-enviar-todos" style="display:none;">Enviar todos</button>
-    <a href="dashboard.html" class="back-btn">Dashboard</a>
+<header class="hdr">
+  <a href="dashboard.html" class="logo">
+    <div class="logo-mark"><span>M</span></div>
+    <div class="logo-text">
+      <span class="logo-name">Monaco Agency</span>
+      <span class="logo-sub">BM Monitor</span>
+    </div>
+    <div class="logo-divider"></div>
+    <span class="logo-page">Relatório Semanal</span>
+  </a>
+  <div class="hdr-nav">
+    <button class="btn btn-primary" onclick="carregarTodos()" id="btn-carregar">
+      <i class="ti ti-refresh"></i> Carregar dados
+    </button>
+    <button class="btn btn-primary" onclick="enviarTodos()" id="btn-enviar-todos" style="display:none;">
+      <i class="ti ti-send"></i> Enviar todos
+    </button>
+    <a href="dashboard.html" class="btn">
+      <i class="ti ti-arrow-left"></i> Dashboard
+    </a>
   </div>
-</div>
+</header>
 
 <div class="container">
   <div class="periodo-card">
@@ -100,7 +140,10 @@ tr:hover td { background: #1a1e2a; }
   </div>
 
   <div class="filters">
-    <div class="search-box">Buscar <input type="text" id="busca" placeholder="Nome da BM..." oninput="filtrar()"></div>
+    <div class="search-wrap">
+      <i class="ti ti-search"></i>
+      <input type="text" id="busca" placeholder="Nome da BM..." oninput="filtrar()">
+    </div>
     <select id="filtro-tipo" onchange="filtrar()">
       <option value="">Todos</option>
       <option value="food">Food</option>
@@ -329,7 +372,7 @@ function filtrar() {
   dados.sort(function(a,b){return b.gasto-a.gasto;});
   var tbody = document.getElementById('tbody');
   if (!dados.length) { tbody.innerHTML = '<tr><td colspan="10" class="loading">Nenhuma BM encontrada</td></tr>'; return; }
-  function rc(roas) { return roas>=10?'#34d399':roas>=3?'#60a5fa':roas>=1.5?'#fbbf24':roas>0?'#f87171':'#6b7280'; }
+  function rc(roas) { return roas>=10?'var(--green)':roas>=3?'var(--blue)':roas>=1.5?'var(--amber)':roas>0?'var(--red)':'var(--mute)'; }
   tbody.innerHTML = dados.map(function(d) {
     return '<tr>' +
       '<td><div class="nome-cell">'+d.nome+'</div><div class="id-cell">'+d.id+'</div></td>' +
@@ -337,7 +380,7 @@ function filtrar() {
       '<td>'+(d.pageView>0?fmtN(d.pageView):'-')+'</td>' +
       '<td>'+(d.addCart>0?fmtN(d.addCart):'-')+'</td>' +
       '<td>'+(d.pedidos>0?'<strong>'+fmtN(d.pedidos)+'</strong>':'0')+'</td>' +
-      '<td style="color:#34d399;">'+(d.fat>0?fmt(d.fat):'-')+'</td>' +
+      '<td style="color:var(--green);">'+(d.fat>0?fmt(d.fat):'-')+'</td>' +
       '<td>'+(d.cpr>0?fmt(d.cpr):'-')+'</td>' +
       '<td><span class="roas-val" style="color:'+rc(d.roas)+'">'+(d.roas>0?d.roas.toFixed(2)+'x':'-')+'</span></td>' +
       '<td><button class="preview-btn" onclick="abrirPreview(\''+d.id+'\')">Ver</button></td>' +

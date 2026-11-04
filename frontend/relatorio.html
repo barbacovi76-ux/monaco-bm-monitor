@@ -12,14 +12,14 @@
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;
 }
 .periodo-btn {
-  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--b2);
-  background: var(--s3); color: var(--text2); font-size: 12px; cursor: pointer;
+  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line2);
+  background: var(--card2); color: var(--ink2); font-size: 12px; cursor: pointer;
   transition: all var(--t-fast);
 }
-.periodo-btn.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 600; }
+.periodo-btn.active { background: var(--hi); color: var(--bg); border-color: var(--hi); font-weight: 600; }
 .date-inputs { display: flex; gap: 8px; align-items: center; }
 .date-inputs input[type=date] {
-  background: var(--s3); border: 1px solid var(--b2); color: var(--text);
+  background: var(--card2); border: 1px solid var(--line2); color: var(--text);
   border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: var(--mono);
 }
 
@@ -29,7 +29,7 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px; margin-bottom: 20px;
 }
-.sc { background: var(--s3); border: 1px solid var(--b1); border-radius: 10px; padding: 14px 16px; }
+.sc { background: linear-gradient(180deg,var(--card2),var(--card)); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
 .sc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
 .sc-val { font-size: 22px; font-weight: 700; font-feature-settings: 'tnum'; color: #fff; }
 .sc-delta { font-size: 11px; margin-top: 4px; font-family: var(--mono); }
@@ -40,11 +40,11 @@
 /* ── Method tabs ── */
 .method-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
 .method-tab {
-  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--b2);
-  background: var(--s3); color: var(--text2); font-size: 12px; cursor: pointer;
+  padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line2);
+  background: var(--card2); color: var(--ink2); font-size: 12px; cursor: pointer;
   transition: all var(--t-fast); display: flex; align-items: center; gap: 6px;
 }
-.method-tab.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 600; }
+.method-tab.active { background: var(--hi); color: var(--bg); border-color: var(--hi); font-weight: 600; }
 .method-tab .tab-count {
   background: rgba(255,255,255,.12); border-radius: 10px; padding: 1px 6px; font-size: 10px;
 }
@@ -54,17 +54,17 @@
 .clientes-grid { display: flex; flex-direction: column; gap: 10px; }
 
 .cliente-card {
-  background: var(--s2); border: 1px solid var(--b1); border-radius: 10px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   overflow: hidden; transition: border-color var(--t-fast);
 }
-.cliente-card:hover { border-color: var(--b2); }
+.cliente-card:hover { border-color: var(--line2); }
 
 .cliente-head {
   display: flex; align-items: center; gap: 12px; padding: 14px 16px;
   cursor: pointer; user-select: none;
 }
 .cliente-head-name { font-weight: 600; font-size: 13px; flex: 1; }
-.cliente-head-invest { font-size: 12px; color: var(--text2); font-family: var(--mono); font-weight: 500; }
+.cliente-head-invest { font-size: 12px; color: var(--ink2); font-family: var(--mono); font-weight: 500; }
 .cliente-head-roas { font-size: 12px; font-weight: 700; }
 .cliente-head-roas.good { color: var(--green); }
 .cliente-head-roas.ok { color: var(--amber); }
@@ -72,7 +72,7 @@
 .cliente-head-chevron { color: var(--dim); font-size: 16px; transition: transform .2s; }
 .cliente-card.expanded .cliente-head-chevron { transform: rotate(180deg); }
 
-.cliente-body { display: none; border-top: 1px solid var(--b1); padding: 16px; }
+.cliente-body { display: none; border-top: 1px solid var(--line); padding: 16px; }
 .cliente-card.expanded .cliente-body { display: block; }
 
 /* Method block inside card */
@@ -82,9 +82,9 @@
   font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase;
   letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
 }
-.metodo-linha { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--b1); font-size: 13px; }
+.metodo-linha { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
 .metodo-linha:last-child { border-bottom: none; }
-.metodo-linha-label { color: var(--text2); }
+.metodo-linha-label { color: var(--ink2); }
 .metodo-linha-val { font-weight: 600; font-family: var(--mono); color: var(--text); }
 .metodo-delta { font-size: 11px; font-family: var(--mono); }
 .metodo-delta.up { color: var(--green); }
@@ -94,7 +94,7 @@
 .msg-panel { margin-top: 14px; }
 .msg-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 .msg-box {
-  background: var(--s4); border: 1px solid var(--b2); border-radius: 8px;
+  background: var(--card); border: 1px solid var(--line2); border-radius: 8px;
   padding: 14px; font-size: 13px; color: var(--text); white-space: pre-wrap;
   line-height: 1.6; font-family: inherit; max-height: 280px; overflow-y: auto;
 }
@@ -102,28 +102,28 @@
 
 /* Send all */
 .send-all-bar {
-  background: var(--s3); border: 1px solid var(--b1); border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; display: flex; align-items: center; gap: 12px;
   margin-bottom: 20px; flex-wrap: wrap;
 }
-.send-all-info { flex: 1; font-size: 13px; color: var(--text2); }
+.send-all-info { flex: 1; font-size: 13px; color: var(--ink2); }
 .send-all-info strong { color: var(--text); }
 
 /* Progress overlay */
 .send-progress {
-  background: var(--s3); border: 1px solid var(--gold-dim); border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--gold-dim); border-radius: 10px;
   padding: 16px; margin-bottom: 16px; display: none;
 }
 .send-progress.visible { display: block; }
 .sp-title { font-size: 12px; font-weight: 600; color: var(--gold); margin-bottom: 10px; }
-.sp-log { font-size: 12px; font-family: var(--mono); color: var(--text2); max-height: 140px; overflow-y: auto; line-height: 1.8; }
+.sp-log { font-size: 12px; font-family: var(--mono); color: var(--ink2); max-height: 140px; overflow-y: auto; line-height: 1.8; }
 .sp-log .ok  { color: var(--green); }
 .sp-log .err { color: var(--red); }
 .sp-log .cur { color: var(--amber); }
 
 /* Empty / loading states */
 .state-empty { text-align: center; padding: 48px 16px; color: var(--dim); font-size: 13px; }
-.state-empty i { font-size: 32px; display: block; margin-bottom: 12px; color: var(--b2); }
+.state-empty i { font-size: 32px; display: block; margin-bottom: 12px; color: var(--line2); }
 </style>
 </head>
 <body>
@@ -140,7 +140,7 @@
   </a>
   <div class="hdr-nav">
     <span id="lbl-periodo" style="font-size:11px;color:var(--dim);font-family:var(--mono);"></span>
-    <button class="btn btn-gold" id="btn-carregar" onclick="carregar()">
+    <button class="btn btn-primary" id="btn-carregar" onclick="carregar()">
       <i class="ti ti-refresh"></i> Gerar relatório
     </button>
     <a href="dashboard.html" class="btn"><i class="ti ti-arrow-left"></i> Dashboard</a>
@@ -199,7 +199,7 @@
     <div class="send-all-info">
       Enviar relatório de <strong id="sa-count">0</strong> clientes para o grupo de relatórios
     </div>
-    <button class="btn btn-gold" onclick="enviarTodos()" id="btn-enviar-todos">
+    <button class="btn btn-primary" onclick="enviarTodos()" id="btn-enviar-todos">
       <i class="ti ti-send"></i> Enviar todos
     </button>
   </div>
@@ -591,7 +591,7 @@ function renderClientes(dados, antDados, since, until) {
           <div class="msg-box" id="msgbox-${i}">${escapeHtml(msg)}</div>
           <div class="msg-actions">
             <button class="btn" onclick="copiarMsg(${i})"><i class="ti ti-copy"></i> Copiar</button>
-            <button class="btn btn-gold" onclick="enviarCliente(${i}, '${d.conta.nome}')">
+            <button class="btn btn-primary" onclick="enviarCliente(${i}, '${d.conta.nome}')">
               <i class="ti ti-brand-whatsapp"></i> Enviar no grupo
             </button>
           </div>
