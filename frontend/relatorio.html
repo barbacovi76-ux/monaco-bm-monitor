@@ -532,6 +532,7 @@ function setTab(tab) {
   document.querySelectorAll('.method-tab').forEach(el => {
     el.classList.toggle('active', el.dataset.tab === tab);
   });
+
   // Re-filter displayed cards
   document.querySelectorAll('.cliente-card').forEach(el => {
     if (tab === 'todos') {
@@ -543,6 +544,23 @@ function setTab(tab) {
         ? '' : 'none';
     }
   });
+
+  // Recalcula cards de métricas para o segmento ativo
+  if (tab === 'todos') {
+    renderSummary(dadosAtual.filter(d => d.totalSpend > 0), dadosAnterior);
+  } else {
+    const filtrado = dadosAtual.filter(d => {
+      const metodos = Object.keys(d.metodos).filter(k => d.metodos[k].spend > 0);
+      return metodos.includes(tab) ||
+        (tab === 'Tráfego' && (metodos.includes('Tráfego') || metodos.includes('Alcance') || metodos.includes('Engajamento')));
+    });
+    const antFiltrado = dadosAnterior.filter(d => {
+      const metodos = Object.keys(d.metodos).filter(k => d.metodos[k].spend > 0);
+      return metodos.includes(tab) ||
+        (tab === 'Tráfego' && (metodos.includes('Tráfego') || metodos.includes('Alcance') || metodos.includes('Engajamento')));
+    });
+    renderSummary(filtrado, antFiltrado);
+  }
 }
 
 // ─── Client cards ─────────────────────────────────────────────────────────────
