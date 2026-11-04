@@ -139,6 +139,8 @@
     <div class="sc"><div class="sc-label">BMs</div><div class="sc-val" id="s-bms">...</div></div>
   </div>
 
+  <div id="obj-tabs" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;"></div>
+
   <div class="filters">
     <div class="search-wrap">
       <i class="ti ti-search"></i>
@@ -226,37 +228,38 @@ var GRUPOS = {
 };
 
 var CONTAS = [
-  { nome: 'CA - ROSA SUL NOVA', id: 'act_2523170184768797', tipo: 'food' },
-  { nome: 'CA1 - Doces Mania', id: 'act_105301940058633', tipo: 'outros' },
-  { nome: 'CA RJK SHOP', id: 'act_297417165372711', tipo: 'outros' },
-  { nome: 'CA - Miotto Construtora', id: 'act_213109970735074', tipo: 'outros' },
-  { nome: 'CA - ICGP', id: 'act_360815898753195', tipo: 'outros' },
-  { nome: 'CA - Miotto Backup', id: 'act_533683308259417', tipo: 'outros' },
-  { nome: 'CA - Monaco Agency', id: 'act_732966175219099', tipo: 'outros' },
-  { nome: 'Dia de Pizza - Dourados', id: 'act_723575425785405', tipo: 'food' },
-  { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food' },
-  { nome: 'BRUNA MACHADO - DOTCON', id: 'act_1102427261426373', tipo: 'outros' },
-  { nome: 'CA - AMK Estetica', id: 'act_590117117342811', tipo: 'outros' },
-  { nome: 'Otica Scherer', id: 'act_1179077680434286', tipo: 'food' },
-  { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food' },
-  { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food' },
-  { nome: 'CA - Facilita cell', id: 'act_1288527439639093', tipo: 'outros' },
-  { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food' },
-  { nome: 'CA - Bella Capri Uberlandia', id: 'act_2379679152502158', tipo: 'food' },
-  { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food' },
-  { nome: 'JS - UNIFORME', id: 'act_1452225369942067', tipo: 'outros' },
-  { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food' },
-  { nome: 'Berlim Pizzaria', id: 'act_836447545843342', tipo: 'food' },
-  { nome: 'A FAVORITA', id: 'act_969681458906352', tipo: 'food' },
-  { nome: 'CA - BRAVA PIZZA', id: 'act_4279801688941861', tipo: 'food' },
-  { nome: 'Pavao Lanchonete', id: 'act_1759603645448352', tipo: 'food' },
-  { nome: 'SH Tijolos', id: 'act_3858259327816511', tipo: 'outros' },
-  { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food' }
+  { nome: 'CA - ROSA SUL NOVA', id: 'act_2523170184768797', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'CA1 - Doces Mania', id: 'act_105301940058633', tipo: 'outros', objetivo: 'SALES' },
+  { nome: 'CA RJK SHOP', id: 'act_297417165372711', tipo: 'outros', objetivo: 'MESSAGES' },
+  { nome: 'CA - Miotto Construtora', id: 'act_213109970735074', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'CA - ICGP', id: 'act_360815898753195', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'CA - Miotto Backup', id: 'act_533683308259417', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'CA - Monaco Agency', id: 'act_732966175219099', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'Dia de Pizza - Dourados', id: 'act_723575425785405', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'IH CAMPO GRANDE MS', id: 'act_1131240581799095', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'BRUNA MACHADO - DOTCON', id: 'act_1102427261426373', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'CA - AMK Estetica', id: 'act_590117117342811', tipo: 'outros', objetivo: 'MESSAGES' },
+  { nome: 'Otica Scherer', id: 'act_1179077680434286', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'Mollinari Pizzaria', id: 'act_459274303920372', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'MrGabs', id: 'act_728296823243425', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'CA - Facilita cell', id: 'act_1288527439639093', tipo: 'outros', objetivo: 'MESSAGES' },
+  { nome: 'IH DOURADOS', id: 'act_831936562721815', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'CA - Bella Capri Uberlandia', id: 'act_2379679152502158', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'Villa Grano Pizzaria', id: 'act_909424425271250', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'JS - UNIFORME', id: 'act_1452225369942067', tipo: 'outros', objetivo: 'LEADS' },
+  { nome: 'Brados Pizzaria', id: 'act_972023765779926', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'Berlim Pizzaria', id: 'act_836447545843342', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'A FAVORITA', id: 'act_969681458906352', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'CA - BRAVA PIZZA', id: 'act_4279801688941861', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'Pavao Lanchonete', id: 'act_1759603645448352', tipo: 'food', objetivo: 'SALES' },
+  { nome: 'SH Tijolos', id: 'act_3858259327816511', tipo: 'outros', objetivo: 'MESSAGES' },
+  { nome: 'Fornalha Pizzaria', id: 'act_1618084519451450', tipo: 'food', objetivo: 'SALES' }
 ];
 
 var dadosCarregados = [];
 var semanaOffset = 0;
 var modalContaId = null;
+var filtroObj = '';
 
 function fmt(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 function fmtN(v) { return Number(v).toLocaleString('pt-BR'); }
@@ -328,27 +331,18 @@ async function carregarTodos() {
       var addCart = parseInt((aci&&aci.value)||0);
       var cpr = pedidos > 0 ? gasto/pedidos : 0;
       var roas = gasto > 0 && fat > 0 ? fat/gasto : 0;
-      dadosCarregados.push({ nome:conta.nome, id:conta.id, tipo:conta.tipo, gasto:gasto, pedidos:pedidos, fat:fat, pageView:pageView, addCart:addCart, cpr:cpr, roas:roas, enviado:false });
+      dadosCarregados.push({ nome:conta.nome, id:conta.id, tipo:conta.tipo, objetivo:conta.objetivo||'SALES', gasto:gasto, pedidos:pedidos, fat:fat, pageView:pageView, addCart:addCart, cpr:cpr, roas:roas, enviado:false });
     } catch(e) {
-      dadosCarregados.push({ nome:conta.nome, id:conta.id, tipo:conta.tipo, gasto:0, pedidos:0, fat:0, pageView:0, addCart:0, cpr:0, roas:0, enviado:false });
+      dadosCarregados.push({ nome:conta.nome, id:conta.id, tipo:conta.tipo, objetivo:conta.objetivo||'SALES', gasto:0, pedidos:0, fat:0, pageView:0, addCart:0, cpr:0, roas:0, enviado:false });
     }
   }
 
-  var totalInv = dadosCarregados.reduce(function(s,d){return s+d.gasto;},0);
-  var totalPed = dadosCarregados.reduce(function(s,d){return s+d.pedidos;},0);
-  var totalFat = dadosCarregados.reduce(function(s,d){return s+d.fat;},0);
-  var roasMedio = totalInv > 0 && totalFat > 0 ? totalFat/totalInv : 0;
-  var cprMedio = totalPed > 0 ? totalInv/totalPed : 0;
-
-  document.getElementById('s-inv').textContent = fmt(totalInv);
-  document.getElementById('s-ped').textContent = fmtN(totalPed);
-  document.getElementById('s-fat').textContent = fmt(totalFat);
-  document.getElementById('s-roas').textContent = roasMedio > 0 ? roasMedio.toFixed(2)+'x' : '-';
-  document.getElementById('s-cpr').textContent = cprMedio > 0 ? fmt(cprMedio) : '-';
-  document.getElementById('s-bms').textContent = dadosCarregados.length;
+  filtroObj = '';
   btn.innerHTML = 'Atualizar';
   btn.disabled = false;
   document.getElementById('btn-enviar-todos').style.display = 'inline-flex';
+  buildObjTabs();
+  updateSummary();
   filtrar();
 }
 
@@ -360,6 +354,53 @@ function montarMensagem(d) {
   return '🤖 Mano BOB informa:\n\nOla pessoal! Excelente semana a todos!\n\n📊 ' + d.nome + '\nSegue o resumo das campanhas de Meta Ads\nPeriodo: ' + periodo + '\n\n📦 Pedidos: ' + fmtN(d.pedidos) + '\n🛒 Faturamento: ' + fmt(d.fat) + '\n💰 Valor investido: ' + fmt(d.gasto) + '\n📉 Custo por compra: ' + cpr + '\n🚀 ROAS: ' + roas + '\n\nSeguimos firmes na evolucao do projeto, com foco total em performance e melhoria continua.\nDesejo a todos um excelente final de semana!';
 }
 
+function buildObjTabs() {
+  var labels = {'':'Todos','SALES':'Vendas','MESSAGES':'WhatsApp','LEADS':'Leads','TRAFFIC':'Tráfego'};
+  var present = new Set(dadosCarregados.map(function(d){ return d.objetivo||'SALES'; }));
+  var order = ['','SALES','MESSAGES','LEADS','TRAFFIC'];
+  var container = document.getElementById('obj-tabs');
+  container.innerHTML = order
+    .filter(function(k){ return k==='' || (dadosCarregados.length > 0 && present.has(k)); })
+    .map(function(k) {
+      var cnt = k==='' ? dadosCarregados.length : dadosCarregados.filter(function(d){ return (d.objetivo||'SALES')===k; }).length;
+      var active = filtroObj===k;
+      return '<button onclick="setObjTab(\''+k+'\')" style="'+
+        'display:inline-flex;align-items:center;gap:5px;'+
+        'padding:5px 13px;border-radius:999px;font-size:12px;cursor:pointer;'+
+        'font-family:var(--mono);letter-spacing:.04em;font-weight:'+(active?'600':'400')+';'+
+        'border:1px solid '+(active?'var(--hi)':'var(--line)')+';'+
+        'background:'+(active?'var(--hi)':'transparent')+';'+
+        'color:'+(active?'var(--bg)':'var(--mute)')+';'+
+        'transition:all .12s;">'+
+        labels[k]+
+        '<span style="background:'+(active?'rgba(0,0,0,.18)':'var(--card2)')+
+        ';color:'+(active?'var(--bg)':'var(--dim)')+
+        ';padding:1px 6px;border-radius:999px;font-size:10px;">'+cnt+'</span></button>';
+    }).join('');
+}
+
+function setObjTab(obj) {
+  filtroObj = obj;
+  buildObjTabs();
+  updateSummary();
+  filtrar();
+}
+
+function updateSummary() {
+  var d = filtroObj ? dadosCarregados.filter(function(x){ return (x.objetivo||'SALES')===filtroObj; }) : dadosCarregados;
+  var totalInv  = d.reduce(function(s,x){return s+x.gasto;},0);
+  var totalPed  = d.reduce(function(s,x){return s+x.pedidos;},0);
+  var totalFat  = d.reduce(function(s,x){return s+x.fat;},0);
+  var roasMedio = totalInv > 0 && totalFat > 0 ? totalFat/totalInv : 0;
+  var cprMedio  = totalPed > 0 ? totalInv/totalPed : 0;
+  document.getElementById('s-inv').textContent  = fmt(totalInv);
+  document.getElementById('s-ped').textContent  = fmtN(totalPed);
+  document.getElementById('s-fat').textContent  = fmt(totalFat);
+  document.getElementById('s-roas').textContent = roasMedio > 0 ? roasMedio.toFixed(2)+'x' : '-';
+  document.getElementById('s-cpr').textContent  = cprMedio > 0 ? fmt(cprMedio) : '-';
+  document.getElementById('s-bms').textContent  = d.length;
+}
+
 function filtrar() {
   var busca = document.getElementById('busca').value.toLowerCase();
   var filtroTipo = document.getElementById('filtro-tipo').value;
@@ -367,7 +408,8 @@ function filtrar() {
   var dados = dadosCarregados.filter(function(d) {
     return (!busca || d.nome.toLowerCase().indexOf(busca) >= 0) &&
            (!filtroTipo || d.tipo === filtroTipo) &&
-           (!filtroStatus || (filtroStatus==='enviado' ? d.enviado : !d.enviado));
+           (!filtroStatus || (filtroStatus==='enviado' ? d.enviado : !d.enviado)) &&
+           (!filtroObj || (d.objetivo||'SALES')===filtroObj);
   });
   dados.sort(function(a,b){return b.gasto-a.gasto;});
   var tbody = document.getElementById('tbody');
@@ -466,6 +508,7 @@ function showToast(msg, tipo) {
 }
 
 atualizarPeriodo();
+buildObjTabs();
 </script>
 </body>
 </html>
