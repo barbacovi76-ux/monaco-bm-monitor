@@ -1,65 +1,32 @@
 #!/usr/bin/env python3
 """
 Verificação automática de saldos das BMs — Monaco Agency
-Roda diariamente às 16h (BRT) e envia alerta no grupo de operações via WhatsApp
+Roda diariamente às 16h (BRT).
+Abre a página saldos_dash.html via browser headless, injeta o token,
+executa a verificação e envia alerta no grupo de operações via WhatsApp
 se houver contas críticas (≤ R$50) ou baixas (≤ R$100).
 """
 
 import json
 import os
+import sys
 import requests
-from datetime import datetime
 from pathlib import Path
+from playwright.sync_api import sync_playwright
 
 # ── Configuração ──────────────────────────────────────────────────
 
 BACKEND_DIR = Path(__file__).parent
 
-# Credenciais WhatsApp (Evolution API)
-WPP_URL       = os.getenv("WPP_API_URL",    "https://evolution-api-production-2227.up.railway.app")
-WPP_KEY       = os.getenv("WPP_API_KEY",    "monaco123")
-WPP_INSTANCIA = os.getenv("WPP_INSTANCIA",  "teste")
-GRUPO_OPS     = os.getenv("GRUPO_OPERACOES", "120363403884174816@g.us")
-
-# Meta API
-API_VERSION    = "v19.0"
-META_TOKEN_ENV = os.getenv("META_TOKEN", "")
-
-LIMITE_CRITICO = 50
-LIMITE_BAIXO   = 100
-
-CONTAS = [
-    {"nome": "Rosa Sul Nova",           "id": "act_2523170184768797"},
-    {"nome": "Mollinari",               "id": "act_459274303920372"},
-    {"nome": "Villa Grano",             "id": "act_909424425271250"},
-    {"nome": "Brados",                  "id": "act_972023765779926"},
-    {"nome": "Berlim",                  "id": "act_836447545843342"},
-    {"nome": "CA RJK SHOP",             "id": "act_297417165372711"},
-    {"nome": "CA - Miotto Construtora", "id": "act_213109970735074"},
-    {"nome": "CA - ICGP",               "id": "act_360815898753195"},
-    {"nome": "CA - Monaco Agency",      "id": "act_732966175219099"},
-    {"nome": "BRUNA MACHADO - DOTCON",  "id": "act_1102427261426373"},
-    {"nome": "CA - AMK Estética",       "id": "act_590117117342811"},
-    {"nome": "JS - UNIFORME",           "id": "act_1452225369942067"},
-    {"nome": "SH Tijolos",              "id": "act_3858259327816511"},
-]
-
-
-# ── Helpers ───────────────────────────────────────────────────────
-
-def fmt_brl(v: float) -> str:
-    return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-
+# Token Meta — pode vir de variável de ambiente ou config.json
 def obter_token() -> str:
-    """Tenta META_TOKEN env → config.json → vazio."""
-    if META_TOKEN_ENV:
-        return META_TOKEN_ENV
+    t = os.getenv("META_TOKEN", "")
+    if t:
+        return t
     cfg_path = BACKEND_DIR / "config.json"
     if cfg_path.exists():
         try:
             cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-            # formato legado: meta.contas[0].access_token
             contas = cfg.get("meta", {}).get("contas", [])
             if contas:
                 return contas[0].get("access_token", "")
@@ -67,29 +34,22 @@ def obter_token() -> str:
             pass
     return ""
 
+# Credenciais WhatsApp (Evolution API)
+WPP_URL       = os.getenv("WPP_API_URL",    "https://evolution-api-production-2227.up.railway.app")
+WPP_KEY       = os.getenv("WPP_API_KEY",    "monaco123")
+WPP_INSTANCIA = os.getenv("WPP_INSTANCIA",  "teste")
+GRUPO_OPS     = os.getenv("GRUPO_OPERACOES", "120363403884174816@g.us")
 
-def consultar_saldo(account_id: str, token: str) -> dict | None:
-    try:
-        url = f"https://graph.facebook.com/{API_VERSION}/{account_id}"
-        r = requests.get(
-            url,
-            params={"fields": "name,balance,spend_cap,amount_spent", "access_token": token},
-            timeout=15,
-        )
-        d = r.json()
-        if "error" in d:
-            print(f"[ERRO] {account_id}: {d['error'].get('message')}")
-            return None
-        raw_sc = int(d.get("spend_cap", 0))
-        raw_as = int(d.get("amount_spent", 0))
-        raw_bal = int(d.get("balance", 0))
-        spend_cap    = raw_sc / 100
-        amount_spent = raw_as / 100
-        saldo = (spend_cap - amount_spent) if spend_cap > 0 else raw_bal / 100
-        return {"saldo": saldo}
-    except Exception as e:
-        print(f"[ERRO] {account_id}: {e}")
-        return None
+DASHBOARD_URL = "https://barbacovi76-ux.github.io/monaco-bm-monitor/saldos_dash.html"
+
+LIMITE_CRITICO = 50
+LIMITE_BAIXO   = 100
+
+
+# ── Helpers ───────────────────────────────────────────────────────
+
+def fmt_brl(v: float) -> str:
+    return f"R$ {v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
 def enviar_whatsapp(mensagem: str) -> bool:
@@ -105,47 +65,74 @@ def enviar_whatsapp(mensagem: str) -> bool:
         return False
 
 
+def consultar_via_browser(token: str) -> list:
+    """Abre a página via Playwright, injeta o token e coleta os saldos."""
+    resultados = []
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        # Injeta o token no localStorage antes da página carregar
+        page.goto(DASHBOARD_URL)
+        page.evaluate(f"localStorage.setItem('monaco_meta_token', '{token}')")
+
+        # Recarrega para a página usar o token
+        page.reload()
+        page.wait_for_load_state("networkidle", timeout=5000)
+
+        # Clica em Atualizar e aguarda carregar todos os saldos
+        print("Iniciando consulta via browser headless...")
+        page.click("#btn-atualizar")
+
+        # Aguarda até a tabela ter linhas reais (máx 60s para 13 contas)
+        page.wait_for_function(
+            "document.querySelectorAll('#tbody tr td:first-child .nome-cell').length >= 13",
+            timeout=60000
+        )
+
+        # Coleta os dados de dadosSaldos via JS
+        resultados = page.evaluate("""
+            () => dadosSaldos.map(d => ({
+                nome: d.nome,
+                saldo: d.saldo,
+                status: d.status,
+                erro: d.erro || false
+            }))
+        """)
+        browser.close()
+    return resultados
+
+
 # ── Main ─────────────────────────────────────────────────────────
 
 def main():
+    from datetime import datetime
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
     print(f"=== Verificação de saldos — {agora} ===")
 
     token = obter_token()
     if not token:
         print("[ERRO] Token Meta não encontrado. Defina META_TOKEN ou verifique config.json")
-        return
+        sys.exit(1)
 
-    criticos = []
-    baixos   = []
-    ok_count = 0
+    try:
+        dados = consultar_via_browser(token)
+    except Exception as e:
+        print(f"[ERRO] Falha no browser headless: {e}")
+        sys.exit(1)
 
-    for conta in CONTAS:
-        print(f"Consultando: {conta['nome']}...")
-        resultado = consultar_saldo(conta["id"], token)
-        if resultado is None:
-            continue
-        saldo = resultado["saldo"]
-        print(f"  Saldo: {fmt_brl(saldo)}")
-        if saldo <= LIMITE_CRITICO:
-            criticos.append({"nome": conta["nome"], "saldo": saldo})
-        elif saldo <= LIMITE_BAIXO:
-            baixos.append({"nome": conta["nome"], "saldo": saldo})
-        else:
-            ok_count += 1
+    criticos = [d for d in dados if d["status"] == "critico" and not d["erro"]]
+    baixos   = [d for d in dados if d["status"] == "baixo"   and not d["erro"]]
+    ok_count = len([d for d in dados if d["status"] == "ok"])
 
-    print(f"\nResultado: {len(criticos)} crítico(s), {len(baixos)} baixo(s), {ok_count} ok")
+    print(f"Resultado: {len(criticos)} crítico(s), {len(baixos)} baixo(s), {ok_count} ok")
 
     if not criticos and not baixos:
         print("Nenhum alerta necessário. Encerrando.")
         return
 
     # Montar mensagem
-    linhas = [
-        "🤖 BOB Saldos — Monaco Agency",
-        agora,
-        "",
-    ]
+    linhas = ["🤖 BOB Saldos — Monaco Agency", agora, ""]
     if criticos:
         linhas.append(f"🔴 CRÍTICO ({len(criticos)})")
         for d in sorted(criticos, key=lambda x: x["saldo"]):
@@ -156,17 +143,14 @@ def main():
         for d in sorted(baixos, key=lambda x: x["saldo"]):
             linhas.append(f"  · {d['nome']} → {fmt_brl(d['saldo'])}")
         linhas.append("")
-    linhas.append("Acesse: https://barbacovi76-ux.github.io/monaco-bm-monitor/saldos_dash.html")
+    linhas.append("Acesse: " + DASHBOARD_URL)
 
     mensagem = "\n".join(linhas)
     print("\nEnviando alerta WhatsApp...")
     print(mensagem)
 
     ok = enviar_whatsapp(mensagem)
-    if ok:
-        print("\n✅ Alerta enviado com sucesso!")
-    else:
-        print("\n❌ Falha ao enviar alerta.")
+    print("✅ Alerta enviado!" if ok else "❌ Falha ao enviar.")
 
 
 if __name__ == "__main__":
