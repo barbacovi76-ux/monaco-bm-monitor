@@ -883,6 +883,58 @@
       "limite_baixo": null,
       "metodo_forcado": null,
       "nome_exibicao": null
+    },
+    {
+      "nome": "La Reina Restaurante",
+      "account_id": "act_120250312780030207",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Capivara Urbana",
+      "account_id": "act_120246923829650209",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Marcelo Burguer",
+      "account_id": "act_6963889842385",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
+    },
+    {
+      "nome": "Perché Pizzaria",
+      "account_id": "act_120205099089530533",
+      "ativo": true,
+      "metricas": [
+        "saldo"
+      ],
+      "whatsapp_numero": "",
+      "limite_critico": null,
+      "limite_baixo": null,
+      "metodo_forcado": null,
+      "nome_exibicao": null
     }
   ]
 }
