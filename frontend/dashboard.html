@@ -667,8 +667,9 @@ function buildObjTabs() {
   const present = new Set(dados.map(x => x.objetivo||'SALES'));
   const order = ['','SALES','MESSAGES','LEADS','TRAFFIC','AWARENESS'];
   const container = document.getElementById('obj-tabs');
+  // Sempre mostra "Todos"; outras abas só se houver dados daquele tipo
   container.innerHTML = order
-    .filter(k => k==='' || present.has(k))
+    .filter(k => k==='' || (dados.length > 0 && present.has(k)))
     .map(k => {
       const cnt = k==='' ? dados.length : dados.filter(x=>(x.objetivo||'SALES')===k).length;
       const active = filtroObj===k;
@@ -965,6 +966,9 @@ function copiarRel() {
 
 if (localStorage.getItem(TK))
   document.getElementById('cfg-bar').innerHTML='<span class="tag-ok">Token salvo — clique em Carregar</span>';
+
+// Inicializa abas já na carga da página (mostra "Todos" mesmo sem dados)
+buildObjTabs();
 </script>
 
 <!-- Modal: Encerramentos -->
