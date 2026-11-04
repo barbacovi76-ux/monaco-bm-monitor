@@ -198,7 +198,7 @@
     {
       "nome": "BRUNA MACHADO - DOTCON",
       "account_id": "act_1102427261426373",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -250,7 +250,7 @@
     {
       "nome": "Rose moda intima",
       "account_id": "act_1033202122629700",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -328,7 +328,7 @@
     {
       "nome": "Ótica Scherer",
       "account_id": "act_1179077680434286",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -341,7 +341,7 @@
     {
       "nome": "Coonecta",
       "account_id": "act_566362413094185",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -445,7 +445,7 @@
     {
       "nome": "Maverick Tech",
       "account_id": "act_1117971404378887",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -484,7 +484,7 @@
     {
       "nome": "CA - Valdecir Filho",
       "account_id": "act_120243382603570670",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -497,7 +497,7 @@
     {
       "nome": "CA - Michelle Pedrosa",
       "account_id": "act_120214166533660343",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -510,7 +510,7 @@
     {
       "nome": "CA - Videz Store",
       "account_id": "act_23851602457880560",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -588,7 +588,7 @@
     {
       "nome": "CA - IZEE SECURITIZAD",
       "account_id": "act_1571125566708805",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -705,7 +705,7 @@
     {
       "nome": "Restaurante da Samires 2",
       "account_id": "act_1304028087651228",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -757,7 +757,7 @@
     {
       "nome": "Estúdio Vitória Daronch",
       "account_id": "act_1517516869463790",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -770,7 +770,7 @@
     {
       "nome": "Facilita Cell",
       "account_id": "act_1537434933967334",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -783,7 +783,7 @@
     {
       "nome": "Farmais conta2",
       "account_id": "act_883217132319518",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -796,7 +796,7 @@
     {
       "nome": "Pizza Masters CA01",
       "account_id": "act_1549880946376699",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -822,7 +822,7 @@
     {
       "nome": "QUIOSQUE BARAO",
       "account_id": "act_1438844094505821",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -861,7 +861,7 @@
     {
       "nome": "Shineray Toledo",
       "account_id": "act_776486155195221",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -874,7 +874,7 @@
     {
       "nome": "Black Tie",
       "account_id": "act_331624477543247",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
