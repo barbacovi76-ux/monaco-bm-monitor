@@ -560,9 +560,9 @@
       "nome_exibicao": null
     },
     {
-      "nome": "C.A 01 - Everton Dot",
+      "nome": "Dot Everton",
       "account_id": "act_1242530613606108",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -677,9 +677,9 @@
       "nome_exibicao": null
     },
     {
-      "nome": "PIZZAS DA MI",
+      "nome": "Bari Pizzas",
       "account_id": "act_435579423245411",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -716,9 +716,9 @@
       "nome_exibicao": null
     },
     {
-      "nome": "CA - Conta 676495",
+      "nome": "Perché Pizzaria 02",
       "account_id": "act_676495468011602",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
@@ -781,9 +781,9 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Farmais conta2",
+      "nome": "Pr Farma",
       "account_id": "act_883217132319518",
-      "ativo": false,
+      "ativo": true,
       "metricas": [
         "saldo"
       ],
