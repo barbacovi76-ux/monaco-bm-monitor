@@ -125,6 +125,11 @@ const token = localStorage.getItem(TOKEN_KEY);
 const LIMITE_CRITICO = 50;
 const LIMITE_BAIXO = 100;
 
+const WPP_URL = 'https://evolution-api-production-2227.up.railway.app';
+const WPP_KEY = 'monaco123';
+const WPP_INSTANCIA = 'teste';
+const GRUPO_OPERACOES = '120363403884174816@g.us';
+
 document.getElementById('s-limite-crit').textContent = 'R$ ' + LIMITE_CRITICO;
 document.getElementById('s-limite-baixo').textContent = 'R$ ' + LIMITE_BAIXO;
 
@@ -198,6 +203,45 @@ async function carregarSaldos() {
   btn.innerHTML = '<i class="ti ti-refresh"></i> Atualizar';
   btn.disabled = false;
   filtrar();
+
+  // Envio automático se houver crítico ou baixo
+  const alertas = dadosSaldos.filter(d => d.status === 'critico' || d.status === 'baixo');
+  if (alertas.length > 0) enviarAlertaSaldo(alertas);
+}
+
+async function enviarAlertaSaldo(alertas) {
+  const agora = new Date().toLocaleString('pt-BR', {
+    day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+  const criticos = alertas.filter(d => d.status === 'critico');
+  const baixos   = alertas.filter(d => d.status === 'baixo');
+
+  const fmt2 = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+  let linhas = [
+    '🤖 BOB Saldos — Monaco Agency',
+    agora,
+    ''
+  ];
+  if (criticos.length) {
+    linhas.push('🔴 CRÍTICO (' + criticos.length + ')');
+    criticos.forEach(d => linhas.push('  · ' + d.nome + ' → ' + fmt2(d.saldo)));
+    linhas.push('');
+  }
+  if (baixos.length) {
+    linhas.push('🟡 BAIXO (' + baixos.length + ')');
+    baixos.forEach(d => linhas.push('  · ' + d.nome + ' → ' + fmt2(d.saldo)));
+    linhas.push('');
+  }
+  linhas.push('Recarregar saldo em: ' + window.location.href);
+
+  try {
+    await fetch(WPP_URL + '/message/sendText/' + WPP_INSTANCIA, {
+      method: 'POST',
+      headers: { 'apikey': WPP_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number: GRUPO_OPERACOES, textMessage: { text: linhas.join('\n') } })
+    });
+  } catch(e) {}
 }
 
 function filtrar() {
