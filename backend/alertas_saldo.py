@@ -86,7 +86,7 @@ def consultar_via_browser(token: str) -> list:
 
         # Aguarda até a tabela ter linhas reais (máx 60s para 13 contas)
         page.wait_for_function(
-            "document.querySelectorAll('#tbody tr td:first-child .nome-cell').length >= 13",
+            "document.querySelectorAll('#tbody tr td:first-child .nome-cell').length >= 27",
             timeout=60000
         )
 
