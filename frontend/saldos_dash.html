@@ -68,6 +68,9 @@
     <button class="btn btn-primary" onclick="carregarSaldos()" id="btn-atualizar">
       <i class="ti ti-refresh"></i> Atualizar
     </button>
+    <button class="btn" onclick="enviarManual()" id="btn-enviar" style="display:none">
+      <i class="ti ti-brand-whatsapp"></i> Enviar Alerta
+    </button>
     <a href="dashboard.html" class="btn">
       <i class="ti ti-arrow-left"></i> Dashboard
     </a>
@@ -218,9 +221,26 @@ async function carregarSaldos() {
   btn.disabled = false;
   filtrar();
 
+  // Habilita botão de envio manual
+  document.getElementById('btn-enviar').style.display = '';
+
   // Envio automático se houver crítico ou baixo
   const alertas = dadosSaldos.filter(d => d.status === 'critico' || d.status === 'baixo');
   if (alertas.length > 0) enviarAlertaSaldo(alertas);
+}
+
+async function enviarManual() {
+  const alertas = dadosSaldos.filter(d => d.status === 'critico' || d.status === 'baixo');
+  if (alertas.length === 0) {
+    alert('✅ Nenhuma conta crítica ou baixa para alertar.');
+    return;
+  }
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+  await enviarAlertaSaldo(alertas);
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-brand-whatsapp"></i> Enviar Alerta';
 }
 
 async function enviarAlertaSaldo(alertas) {
