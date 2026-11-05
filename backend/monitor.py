@@ -224,26 +224,24 @@ def verificar_e_alertar():
 
 def verificar_encerramentos():
     cfg         = carregar_config()
-    token       = cfg["meta"]["contas"][0]["access_token"]
-    api_version = cfg["meta"]["api_version"]
-    cfg_wpp     = cfg["whatsapp"]
-    grupo       = cfg_wpp["numeros_destino"][0]
+    meta_token  = os.getenv("META_TOKEN", "")
+    api_version = cfg.get("meta", {}).get("api_version", "v19.0")
 
+    # WhatsApp
+    WPP_URL_ENC  = os.getenv("WPP_API_URL",    "https://evolution-api-production-2227.up.railway.app")
+    WPP_KEY_ENC  = os.getenv("WPP_API_KEY",    "monaco123")
+    WPP_INST_ENC = os.getenv("WPP_INSTANCIA",  "teste")
+    GRUPO_ENC    = os.getenv("GRUPO_OPERACOES", "120363403884174816@g.us")
+    cfg_wpp = {"api_url": WPP_URL_ENC, "api_key": WPP_KEY_ENC, "instancia": WPP_INST_ENC}
+    grupo   = GRUPO_ENC
+
+    # Carrega contas ativas do config.json
+    contas_cfg = cfg.get("contas") or cfg.get("meta", {}).get("contas", [])
     CONTAS_MONITOR = [
-        ("Rosa Sul Nova",          "act_2523170184768797"),
-        ("Mollinari Pizzaria",     "act_459274303920372"),
-        ("Villa Grano Pizzaria",   "act_909424425271250"),
-        ("Brados Pizzaria",        "act_972023765779926"),
-        ("Berlim Pizzaria",        "act_836447545843342"),
-        ("CA RJK SHOP",            "act_297417165372711"),
-        ("CA - Miotto Construtora","act_213109970735074"),
-        ("CA - ICGP",              "act_360815898753195"),
-        ("CA - Monaco Agency",     "act_732966175219099"),
-        ("BRUNA MACHADO",          "act_1102427261426373"),
-        ("CA - AMK Estetica",      "act_590117117342811"),
-        ("JS - UNIFORME",          "act_1452225369942067"),
-        ("SH Tijolos",             "act_3858259327816511"),
+        (c.get("nome_exibicao") or c.get("nome", c["account_id"]), c["account_id"])
+        for c in contas_cfg if c.get("ativo", True)
     ]
+    token = meta_token or (contas_cfg[0].get("access_token") if contas_cfg else "")
 
     hoje  = datetime.now(datetime.UTC).date() if hasattr(datetime, 'UTC') else datetime.utcnow().date()
     ontem = hoje - timedelta(days=1)
