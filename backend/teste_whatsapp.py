@@ -2,10 +2,10 @@
 """Teste pontual — envia mensagem de exemplo no grupo de operações."""
 import os, requests
 
-WPP_URL       = os.getenv("WPP_API_URL",    "https://evolution-api-production-2227.up.railway.app")
-WPP_KEY       = os.getenv("WPP_API_KEY",    "monaco123")
-WPP_INSTANCIA = os.getenv("WPP_INSTANCIA",  "teste")
-GRUPO_OPS     = os.getenv("GRUPO_OPERACOES", "120363403884174816@g.us")
+WPP_URL       = "https://evolution-api-production-2227.up.railway.app"
+WPP_KEY       = "monaco123"
+WPP_INSTANCIA = "teste"
+GRUPO_OPS     = "120363403884174816@g.us"
 
 msg = (
     "🤖 BOB Saldos — Monaco Agency\n"
