@@ -73,11 +73,28 @@ def enviar_whatsapp(mensagem: str) -> bool:
 
 
 def buscar_itens(account_id: str, token: str, tipo: str) -> list:
-    """Busca campanhas ou conjuntos de anúncios com stop_time definido."""
+    """Busca campanhas ou conjuntos com stop_time que estavam ativos nas últimas 24h.
+
+    Filtra por effective_status para evitar trazer itens antigos desativados há dias:
+    - ACTIVE: rodando agora
+    - PAUSED: pausados manualmente (podem ser reativados)
+    - CAMPAIGN_PAUSED / ADSET_PAUSED: pausados pela estrutura pai
+    - IN_PROCESS: em revisão
+    Com isso exclui DELETED, ARCHIVED e itens desativados há muito tempo.
+    """
     endpoint = "campaigns" if tipo == "campanha" else "adsets"
-    campos   = "id,name,status,effective_status,stop_time"
+    campos   = "id,name,status,effective_status,stop_time,updated_time"
+
+    # Filtra apenas status relevantes — evita lixo de contas antigas
+    status_filtro = (
+        "ACTIVE,PAUSED,CAMPAIGN_PAUSED,IN_PROCESS"
+        if tipo == "campanha"
+        else "ACTIVE,PAUSED,CAMPAIGN_PAUSED,ADSET_PAUSED,IN_PROCESS"
+    )
+
     url = (f"https://graph.facebook.com/{API_VERSION}/{account_id}/{endpoint}"
-           f"?fields={campos}&limit=100&access_token={token}")
+           f"?fields={campos}&effective_status=[{status_filtro}]"
+           f"&limit=200&access_token={token}")
     itens = []
     while url:
         try:
@@ -87,6 +104,33 @@ def buscar_itens(account_id: str, token: str, tipo: str) -> list:
                 print(f"  [AVISO] {data['error'].get('message', '')}")
                 break
             itens.extend(data.get("data", []))
+            url = data.get("paging", {}).get("next")
+        except Exception as e:
+            print(f"  [ERRO] {e}")
+            break
+    return itens
+
+
+def buscar_desativados_recentes(account_id: str, token: str, tipo: str, desde_ts: str) -> list:
+    """Busca itens desativados nas últimas 24h que tinham stop_time (foram desativados manualmente)."""
+    endpoint = "campaigns" if tipo == "campanha" else "adsets"
+    campos   = "id,name,status,effective_status,stop_time,updated_time"
+
+    # Filtra apenas os DESATIVADOS com updated_time recente
+    url = (f"https://graph.facebook.com/{API_VERSION}/{account_id}/{endpoint}"
+           f"?fields={campos}&effective_status=[PAUSED,CAMPAIGN_PAUSED,ADSET_PAUSED]"
+           f"&limit=200&access_token={token}")
+    itens = []
+    while url:
+        try:
+            r = requests.get(url, timeout=20)
+            data = r.json()
+            if "error" in data:
+                break
+            for item in data.get("data", []):
+                upd = item.get("updated_time", "")
+                if upd and upd >= desde_ts:
+                    itens.append(item)
             url = data.get("paging", {}).get("next")
         except Exception as e:
             print(f"  [ERRO] {e}")
@@ -110,9 +154,12 @@ def main():
 
     print(f"Verificando {len(contas)} contas...")
 
-    hoje   = datetime.now(timezone.utc).date()
-    ontem  = hoje - timedelta(days=1)
-    em3    = hoje + timedelta(days=3)
+    agora_utc = datetime.now(timezone.utc)
+    hoje      = agora_utc.date()
+    ontem     = hoje - timedelta(days=1)
+    em3       = hoje + timedelta(days=3)
+    # timestamp ISO para filtrar updated_time das últimas 24h
+    desde_ts  = (agora_utc - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S+0000")
 
     encerradas      = []  # stop_time == ontem
     encerrando_hoje = []  # stop_time == hoje
@@ -124,7 +171,19 @@ def main():
         print(f"  {nome}...")
 
         for tipo in ("campanha", "conjunto"):
-            itens = buscar_itens(aid, token, tipo)
+            # Itens ativos/pausados com stop_time
+            itens_ativos = buscar_itens(aid, token, tipo)
+            # Itens desativados nas últimas 24h (captura os que foram desligados ontem com stop_time)
+            itens_recentes = buscar_desativados_recentes(aid, token, tipo, desde_ts)
+
+            # Combina e deduplica por ID
+            vistos = set()
+            itens  = []
+            for item in itens_ativos + itens_recentes:
+                if item["id"] not in vistos:
+                    vistos.add(item["id"])
+                    itens.append(item)
+
             for item in itens:
                 stop = item.get("stop_time")
                 if not stop:
