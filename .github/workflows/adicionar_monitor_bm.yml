@@ -14,4 +14,4 @@ jobs:
       - run: pip install requests
       - run: python backend/adicionar_monitor_bm.py
         env:
-          ADS_MANAGER_TOKEN: ${{ secrets.ADS_MANAGER_TOKEN }}
+          ADS_MANAGER_TOKEN: ${{ secrets.META_TOKEN }}
