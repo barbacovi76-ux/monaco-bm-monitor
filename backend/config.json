@@ -170,19 +170,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "CA - Bella Capri Uberlândia Sabiá",
-      "account_id": "act_2379679152502158",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Villa Grano Pizzaria",
       "account_id": "act_909424425271250",
       "ativo": false,
