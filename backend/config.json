@@ -14,19 +14,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Dia de Pizza Dourados",
-      "account_id": "act_723575425785405",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "IH Campo Grande",
       "account_id": "act_1131240581799095",
       "ativo": false,
@@ -936,12 +923,5 @@
       "metodo_forcado": null,
       "nome_exibicao": null
     }
-  ],
-  "meta": {
-    "contas": [
-      {
-        "access_token": "EAAZAXnO7BzBwBRevRp5kVDqV6ZBZCaqZAdtnyKYTjVZBYZCoKuqDvEWbugHchidDZAsowsNJMES7wxjBdUsIxxVvlD1ZC6K4lksjKBmGRw17JxFAru0mH5Bq5lIRubAeSpx93nAggIeQsb16j6iQkFQvbDutNFnAM9dvkgDrJFZChZAcopaV6DTHP56zmHUugGfwZDZD"
-      }
-    ]
-  }
+  ]
 }
