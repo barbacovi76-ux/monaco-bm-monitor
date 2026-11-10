@@ -492,8 +492,12 @@ def gerar_frase_motivacional() -> str:
 
 def enviar_motivacional():
     cfg     = carregar_config()
-    cfg_wpp = cfg["whatsapp"]
-    grupo   = cfg_wpp["numeros_destino"][0]
+    _wpp_url  = os.getenv("WPP_API_URL",    cfg.get("whatsapp", {}).get("api_url",  "https://evolution-api-production-2227.up.railway.app"))
+    _wpp_key  = os.getenv("WPP_API_KEY",    cfg.get("whatsapp", {}).get("api_key",  "monaco123"))
+    _wpp_inst = os.getenv("WPP_INSTANCIA",  cfg.get("whatsapp", {}).get("instancia","teste"))
+    _wpp_dest = os.getenv("GRUPO_OPERACOES",cfg.get("whatsapp", {}).get("numeros_destino", ["120363403884174816@g.us"])[0] if cfg.get("whatsapp", {}).get("numeros_destino") else "120363403884174816@g.us")
+    cfg_wpp = {"api_url": _wpp_url, "api_key": _wpp_key, "instancia": _wpp_inst}
+    grupo   = _wpp_dest
     frase   = gerar_frase_motivacional()
     agora   = datetime.now().strftime("%d/%m/%Y")
     mensagem = (
@@ -526,10 +530,14 @@ def analisar_comparativo():
         return
 
     cfg         = carregar_config()
-    token       = cfg["meta"]["contas"][0]["access_token"]
-    api_version = cfg["meta"]["api_version"]
-    cfg_wpp     = cfg["whatsapp"]
-    grupo       = cfg_wpp["numeros_destino"][0]
+    token       = os.getenv("META_TOKEN", cfg["meta"]["contas"][0]["access_token"])
+    api_version = cfg.get("meta", {}).get("api_version", "v19.0")
+    _wpp_url  = os.getenv("WPP_API_URL",    cfg.get("whatsapp", {}).get("api_url",  "https://evolution-api-production-2227.up.railway.app"))
+    _wpp_key  = os.getenv("WPP_API_KEY",    cfg.get("whatsapp", {}).get("api_key",  "monaco123"))
+    _wpp_inst = os.getenv("WPP_INSTANCIA",  cfg.get("whatsapp", {}).get("instancia","teste"))
+    _wpp_dest = os.getenv("GRUPO_OPERACOES",cfg.get("whatsapp", {}).get("numeros_destino", ["120363403884174816@g.us"])[0] if cfg.get("whatsapp", {}).get("numeros_destino") else "120363403884174816@g.us")
+    cfg_wpp   = {"api_url": _wpp_url, "api_key": _wpp_key, "instancia": _wpp_inst}
+    grupo     = _wpp_dest
 
     CONTAS_FOOD = [
         ("Rosa Sul Nova",          "act_2523170184768797"),
