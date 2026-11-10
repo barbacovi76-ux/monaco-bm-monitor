@@ -2,98 +2,710 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Saldos — Monaco Agency</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="monaco.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-.summary {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px; margin-bottom: 24px;
-}
-.sc {
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px;
-}
-.sc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase;
-  letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
-.sc-val { font-size: 24px; font-weight: 600; font-feature-settings: 'tnum'; letter-spacing: -.04em; line-height: 1; }
-.sc-val.red   { color: var(--red);   }
-.sc-val.amber { color: var(--amber); }
-.sc-val.green { color: var(--green); }
-.sc-val.white { color: var(--hi);    }
+/* ═══════════════════════════════════════════════════
+   MONACO — Saldos Dashboard  |  Dark Premium v4.0
+   Layout: asymmetric sidebar + data grid
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg:       #050507;
+  --bg2:      #0a0a0d;
+  --bg3:      #0f0f13;
+  --card:     #111116;
+  --card2:    #18181f;
+  --line:     #1e1e28;
+  --line2:    #2a2a38;
+  --line3:    #38384a;
 
-.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+  --ink:      #f0f0f4;
+  --ink2:     #a8a8c0;
+  --mute:     #6060780;
+  --dim:      #40405a;
+
+  --green:    #22d3a0;
+  --green-bg: rgba(34,211,160,.08);
+  --amber:    #f59e0b;
+  --amber-bg: rgba(245,158,11,.08);
+  --red:      #ff4d6d;
+  --red-bg:   rgba(255,77,109,.08);
+  --blue:     #818cf8;
+  --blue-bg:  rgba(129,140,248,.08);
+
+  --gold:     #c8a44a;
+  --gold2:    #e8c46a;
+  --gold-bg:  rgba(200,164,74,.06);
+
+  --sans:  'Space Grotesk', system-ui, sans-serif;
+  --body:  'Inter', system-ui, sans-serif;
+  --mono:  'JetBrains Mono', monospace;
+
+  --radius-sm: 6px;
+  --radius:    12px;
+  --radius-lg: 20px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Grid noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Geometric accent lines ── */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; right: 0;
+  width: 1px;
+  height: 100vh;
+  background: linear-gradient(to bottom, transparent, var(--gold) 30%, transparent 70%, transparent);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ══════════════════════
+   TOP NAV
+══════════════════════ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 56px;
+  background: rgba(5,5,7,.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 max(24px, env(safe-area-inset-left,0px)) 0 max(24px, env(safe-area-inset-right,0px));
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-mark {
+  width: 32px; height: 32px;
+  background: var(--gold-bg);
+  border: 1px solid rgba(200,164,74,.25);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold2);
+  letter-spacing: -0.02em;
+}
+
+.nav-brand {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.nav-brand small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: -1px;
+}
+
+.nav-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--line2);
+  margin: 0 20px;
+}
+
+.nav-page {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.nav-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  padding-right: 12px;
+  border-right: 1px solid var(--line2);
+  margin-right: 4px;
+}
+
+/* ══════════════════════
+   BUTTONS
+══════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  border: 1px solid var(--line2);
+  background: var(--card);
+  color: var(--ink2);
+  text-decoration: none;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--line3); color: var(--ink); background: var(--card2); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-gold {
+  background: rgba(200,164,74,.12);
+  border-color: rgba(200,164,74,.3);
+  color: var(--gold2);
+}
+.btn-gold:hover { background: rgba(200,164,74,.18); border-color: rgba(200,164,74,.5); color: var(--gold2); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.btn-ghost:hover { background: var(--card); border-color: var(--line); }
+
+/* ══════════════════════
+   LAYOUT
+══════════════════════ */
+.shell {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px max(24px, env(safe-area-inset-left,0px));
+}
+
+/* ── Page heading ── */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.page-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--gold);
+  opacity: 0.6;
+}
+
+.page-title {
+  font-family: var(--sans);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.page-title span {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line3);
+}
+
+/* ══════════════════════
+   KPI TILES
+══════════════════════ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.kpi {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 20px 18px;
+  overflow: hidden;
+  transition: border-color 180ms;
+}
+.kpi:hover { border-color: var(--line2); }
+
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--kpi-accent, var(--line3)), transparent);
+}
+
+.kpi.kpi-red   { --kpi-accent: var(--red); }
+.kpi.kpi-amber { --kpi-accent: var(--amber); }
+.kpi.kpi-green { --kpi-accent: var(--green); }
+.kpi.kpi-gold  { --kpi-accent: var(--gold); }
+
+.kpi-label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+}
+
+.kpi-val {
+  font-family: var(--sans);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-val.red   { color: var(--red); }
+.kpi-val.amber { color: var(--amber); }
+.kpi-val.green { color: var(--green); }
+.kpi-val.white { color: var(--ink); }
+.kpi-val.gold  { color: var(--gold2); }
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 6px;
+  font-family: var(--mono);
+}
+
+/* ══════════════════════
+   FILTERS BAR
+══════════════════════ */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
 .search-wrap {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
-  flex: 1; min-width: 200px; transition: border-color .12s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  flex: 1;
+  min-width: 200px;
+  transition: border-color 120ms;
 }
-.search-wrap:focus-within { border-color: var(--line2); }
-.search-wrap i { color: var(--dim); font-size: 15px; }
-.search-wrap input { background: transparent; border: none; color: var(--ink); font-size: 13px; outline: none; width: 100%; font-family: var(--sans); }
+.search-wrap:focus-within { border-color: rgba(200,164,74,.3); }
+
+.search-icon {
+  width: 14px; height: 14px;
+  color: var(--dim);
+  flex-shrink: 0;
+}
+
+.search-wrap input {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-family: var(--body);
+  outline: none;
+  width: 100%;
+}
 .search-wrap input::placeholder { color: var(--dim); }
 
-.nome-cell { font-weight: 600; color: var(--ink); font-size: 13px; letter-spacing: -.02em; }
-.id-cell { font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--mono); letter-spacing: .04em; }
-.saldo-val { font-weight: 600; font-size: 14px; font-feature-settings: 'tnum'; font-family: var(--mono); }
-.saldo-val.red   { color: var(--red);   }
-.saldo-val.amber { color: var(--amber); }
-.saldo-val.green { color: var(--green); }
+.filter-sel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink2);
+  font-family: var(--body);
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 120ms;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2340405a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+.filter-sel:focus { border-color: var(--line2); }
+.filter-sel option { background: var(--card2); }
 
-.bar-wrap { width: 90px; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; }
-.bar-fill  { height: 100%; border-radius: 2px; transition: width .4s ease; }
-.progress-row { display: flex; align-items: center; gap: 8px; }
-.limit-val { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+/* ══════════════════════
+   TABLE
+══════════════════════ */
+.table-shell {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
 
-.last-upd { font-size: 11px; color: var(--dim); font-family: var(--mono); letter-spacing: .05em; }
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead tr {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg3);
+}
+
+th {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 13px 20px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(30,30,40,.8);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+
+tbody tr {
+  transition: background 100ms;
+}
+tbody tr:hover { background: rgba(255,255,255,.018); }
+
+.cell-name {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+.cell-id {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+.cell-saldo {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.cell-saldo.red   { color: var(--red); }
+.cell-saldo.amber { color: var(--amber); }
+.cell-saldo.green { color: var(--green); }
+
+.cell-limit {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress bar */
+.prog-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.prog-track {
+  flex: 1;
+  height: 2px;
+  background: var(--line2);
+  border-radius: 2px;
+  overflow: hidden;
+  min-width: 60px;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 500ms cubic-bezier(.4,0,.2,1);
+}
+.prog-pct {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  min-width: 32px;
+  text-align: right;
+}
+.prog-spent {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.badge::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+.badge-red   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(255,77,109,.2); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+.badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,211,160,.2); }
+
+/* Empty / loading */
+.table-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--dim);
+}
+.table-empty-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+.table-empty-txt {
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+.table-empty-sub {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 56px 24px;
+  color: var(--dim);
+  font-size: 13px;
+  font-family: var(--mono);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--line2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Error stripe on row ── */
+.row-error td:first-child {
+  position: relative;
+}
+.row-error td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10%; bottom: 10%;
+  width: 2px;
+  background: var(--red);
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+/* ── Table footer ── */
+.table-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--bg3);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════
+   RESPONSIVE
+══════════════════════ */
+@media (max-width: 700px) {
+  .page-head { flex-direction: column; align-items: flex-start; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  th:nth-child(3), td:nth-child(3),
+  th:nth-child(4), td:nth-child(4) { display: none; }
+  .nav-time { display: none; }
+}
+@media (max-width: 460px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .kpi-val { font-size: 28px; }
+}
 </style>
 </head>
 <body>
 
-<header class="hdr">
-  <a href="dashboard.html" class="logo">
-    <div class="logo-mark">M</div>
-    <div class="logo-text">
-      <span class="logo-name">Monaco Agency</span>
-      <span class="logo-sub">BM Monitor</span>
+<!-- NAV -->
+<nav class="nav">
+  <a href="dashboard.html" class="nav-logo">
+    <div class="nav-mark">M</div>
+    <div class="nav-brand">
+      Monaco Agency
+      <small>BM Monitor</small>
     </div>
-    <div class="logo-divider"></div>
-    <span class="logo-page">Saldos</span>
   </a>
+  <div class="nav-sep"></div>
+  <span class="nav-page">Saldos</span>
 
-  <div class="hdr-nav">
-    <span class="last-upd" id="last-upd"></span>
-    <button class="btn btn-primary" onclick="carregarSaldos()" id="btn-atualizar">
-      <i class="ti ti-refresh"></i> Atualizar
+  <div class="nav-actions">
+    <span class="nav-time" id="last-upd">—</span>
+    <button class="btn btn-gold" onclick="carregarSaldos()" id="btn-atualizar">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"/></svg>
+      Atualizar
     </button>
     <button class="btn" onclick="enviarManual()" id="btn-enviar" style="display:none">
-      <i class="ti ti-brand-whatsapp"></i> Enviar Alerta
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+      Enviar Alerta
     </button>
-    <a href="dashboard.html" class="btn">
-      <i class="ti ti-arrow-left"></i> Dashboard
+    <a href="dashboard.html" class="btn btn-ghost">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Dashboard
     </a>
   </div>
-</header>
+</nav>
 
-<div class="container">
+<div class="shell">
 
-  <div class="summary">
-    <div class="sc"><div class="sc-label">Total de BMs</div><div class="sc-val white" id="s-total">—</div></div>
-    <div class="sc"><div class="sc-label">Crítico (&lt; R$50)</div><div class="sc-val red" id="s-critico">—</div></div>
-    <div class="sc"><div class="sc-label">Baixo (&lt; R$100)</div><div class="sc-val amber" id="s-baixo">—</div></div>
-    <div class="sc"><div class="sc-label">Normal (&gt; R$100)</div><div class="sc-val green" id="s-ok">—</div></div>
-    <div class="sc"><div class="sc-label">Limite crítico</div><div class="sc-val white" id="s-limite-crit">R$ 50</div></div>
-    <div class="sc"><div class="sc-label">Limite baixo</div><div class="sc-val white" id="s-limite-baixo">R$ 100</div></div>
+  <!-- PAGE HEADING -->
+  <div class="page-head">
+    <div>
+      <div class="page-eyebrow">Meta Ads · Tempo Real</div>
+      <h1 class="page-title">Saldos <span>das Contas</span></h1>
+    </div>
   </div>
 
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi kpi-gold">
+      <div class="kpi-label">Total de Contas</div>
+      <div class="kpi-val gold" id="s-total">27</div>
+      <div class="kpi-sub">contas monitoradas</div>
+    </div>
+    <div class="kpi kpi-red">
+      <div class="kpi-label">Crítico &lt; R$50</div>
+      <div class="kpi-val red" id="s-critico">—</div>
+      <div class="kpi-sub">requer atenção imediata</div>
+    </div>
+    <div class="kpi kpi-amber">
+      <div class="kpi-label">Baixo &lt; R$100</div>
+      <div class="kpi-val amber" id="s-baixo">—</div>
+      <div class="kpi-sub">verificar em breve</div>
+    </div>
+    <div class="kpi kpi-green">
+      <div class="kpi-label">Normal &gt; R$100</div>
+      <div class="kpi-val green" id="s-ok">—</div>
+      <div class="kpi-sub">operando normalmente</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Limite Crítico</div>
+      <div class="kpi-val white" id="s-limite-crit" style="font-size:22px;padding-top:7px;">R$ 50</div>
+      <div class="kpi-sub">threshold configurado</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Limite Baixo</div>
+      <div class="kpi-val white" id="s-limite-baixo" style="font-size:22px;padding-top:7px;">R$ 100</div>
+      <div class="kpi-sub">threshold configurado</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
   <div class="filters">
     <div class="search-wrap">
-      <i class="ti ti-search"></i>
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="busca" placeholder="Buscar conta..." oninput="filtrar()">
     </div>
-    <select id="filtro-status" onchange="filtrar()">
+    <select id="filtro-status" class="filter-sel" onchange="filtrar()">
       <option value="">Todos os status</option>
       <option value="critico">Crítico</option>
       <option value="baixo">Baixo</option>
@@ -101,21 +713,36 @@
     </select>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Conta / BM</th>
-          <th>Saldo disponível</th>
-          <th>Limite de gasto</th>
-          <th>Utilização</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="5" style="text-align:center;padding:48px 16px;color:var(--dim);font-size:13px;">Clique em <strong style="color:var(--text)">Atualizar</strong> para carregar os saldos</td></tr>
-      </tbody>
-    </table>
+  <!-- TABLE -->
+  <div class="table-shell">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Conta / BM</th>
+            <th>Saldo disponível</th>
+            <th>Limite de gasto</th>
+            <th>Utilização</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td colspan="5">
+              <div class="table-empty">
+                <div class="table-empty-icon">◈</div>
+                <div class="table-empty-txt">Pronto para consultar</div>
+                <div class="table-empty-sub">Clique em <strong style="color:var(--gold)">Atualizar</strong> para carregar os saldos em tempo real</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-foot">
+      <span id="foot-count">27 contas · aguardando consulta</span>
+      <span>Monaco Agency · BM Monitor</span>
+    </div>
   </div>
 
 </div>
@@ -177,13 +804,14 @@ function getStatus(saldo) {
 
 async function carregarSaldos() {
   if (!token) {
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--dim)">Token não encontrado. Volte ao dashboard e salve o token.</td></tr>';
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="5"><div class="table-empty"><div class="table-empty-txt">Token não encontrado</div><div class="table-empty-sub">Volte ao dashboard e salve o token Meta.</div></div></td></tr>`;
     return;
   }
   const btn = document.getElementById('btn-atualizar');
-  btn.innerHTML = '<i class="ti ti-loader"></i> Carregando...';
+  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;margin-right:0"></div> Carregando...';
   btn.disabled = true;
-  document.getElementById('tbody').innerHTML = `<tr><td colspan="5"><div class="loading"><div class="spinner"></div>Consultando ${CONTAS.length} contas...</div></td></tr>`;
+
+  document.getElementById('tbody').innerHTML = `<tr><td colspan="5"><div class="loading-row"><div class="spinner"></div><span>Consultando ${CONTAS.length} contas na API Meta...</span></div></td></tr>`;
   dadosSaldos = [];
 
   for (const conta of CONTAS) {
@@ -192,7 +820,7 @@ async function carregarSaldos() {
       const r = await fetch(url);
       const d = await r.json();
       if (d.error) {
-        dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, status: 'critico', erro: true });
+        dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, pctUsado: 0, status: 'critico', erro: true });
         continue;
       }
       const rawSC = parseInt(d.spend_cap || 0);
@@ -204,59 +832,49 @@ async function carregarSaldos() {
       const pctUsado = spendCap > 0 ? Math.min((amountSpent / spendCap) * 100, 100) : 0;
       dadosSaldos.push({ ...conta, saldo, spendCap, amountSpent, pctUsado, status: getStatus(saldo), erro: false });
     } catch (e) {
-      dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, status: 'critico', erro: true });
+      dadosSaldos.push({ ...conta, saldo: 0, spendCap: 0, amountSpent: 0, pctUsado: 0, status: 'critico', erro: true });
     }
   }
 
   const critico = dadosSaldos.filter(d => d.status === 'critico').length;
   const baixo   = dadosSaldos.filter(d => d.status === 'baixo').length;
   const ok      = dadosSaldos.filter(d => d.status === 'ok').length;
+
   document.getElementById('s-total').textContent   = dadosSaldos.length;
   document.getElementById('s-critico').textContent = critico;
   document.getElementById('s-baixo').textContent   = baixo;
   document.getElementById('s-ok').textContent      = ok;
-  document.getElementById('last-upd').textContent  = new Date().toLocaleTimeString('pt-BR');
 
-  btn.innerHTML = '<i class="ti ti-refresh"></i> Atualizar';
+  const now = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('last-upd').textContent  = now;
+
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"/></svg> Atualizar';
   btn.disabled = false;
+
+  document.getElementById('btn-enviar').style.display = '';
   filtrar();
 
-  // Habilita botão de envio manual
-  document.getElementById('btn-enviar').style.display = '';
-
-  // Envio automático se houver crítico ou baixo
   const alertas = dadosSaldos.filter(d => d.status === 'critico' || d.status === 'baixo');
   if (alertas.length > 0) enviarAlertaSaldo(alertas);
 }
 
 async function enviarManual() {
   const alertas = dadosSaldos.filter(d => d.status === 'critico' || d.status === 'baixo');
-  if (alertas.length === 0) {
-    alert('✅ Nenhuma conta crítica ou baixa para alertar.');
-    return;
-  }
+  if (alertas.length === 0) return;
   const btn = document.getElementById('btn-enviar');
   btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader"></i> Enviando...';
+  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;margin-right:0"></div> Enviando...';
   await enviarAlertaSaldo(alertas);
   btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-brand-whatsapp"></i> Enviar Alerta';
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg> Enviar Alerta';
 }
 
 async function enviarAlertaSaldo(alertas) {
-  const agora = new Date().toLocaleString('pt-BR', {
-    day:'2-digit', month:'2-digit', year:'numeric',
-    hour:'2-digit', minute:'2-digit'
-  });
+  const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
   const criticos = alertas.filter(d => d.status === 'critico');
   const baixos   = alertas.filter(d => d.status === 'baixo');
-
   const fmt2 = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-  let linhas = [
-    '🤖 BOB Saldos — Monaco Agency',
-    agora,
-    ''
-  ];
+  let linhas = ['🤖 BOB Saldos — Monaco Agency', agora, ''];
   if (criticos.length) {
     linhas.push('🔴 CRÍTICO (' + criticos.length + ')');
     criticos.forEach(d => linhas.push('  · ' + d.nome + ' → ' + fmt2(d.saldo)));
@@ -267,8 +885,7 @@ async function enviarAlertaSaldo(alertas) {
     baixos.forEach(d => linhas.push('  · ' + d.nome + ' → ' + fmt2(d.saldo)));
     linhas.push('');
   }
-  linhas.push('Recarregar saldo em: ' + window.location.href);
-
+  linhas.push('Recarregar: ' + window.location.href);
   try {
     await fetch(WPP_URL + '/message/sendText/' + WPP_INSTANCIA, {
       method: 'POST',
@@ -293,9 +910,14 @@ function filtrar() {
 
   const tbody = document.getElementById('tbody');
   if (!dados.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--dim)">Nenhuma conta encontrada</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5"><div class="table-empty"><div class="table-empty-txt">Nenhum resultado</div><div class="table-empty-sub">Tente outro filtro ou busca.</div></div></td></tr>`;
     return;
   }
+
+  document.getElementById('foot-count').textContent =
+    dados.length + ' conta' + (dados.length !== 1 ? 's' : '') +
+    (filtroStatus ? ' · ' + filtroStatus : '') +
+    ' · atualizado às ' + (document.getElementById('last-upd').textContent || '—');
 
   const barColor = { critico: 'var(--red)', baixo: 'var(--amber)', ok: 'var(--green)' };
   const badgeMap = {
@@ -308,23 +930,23 @@ function filtrar() {
     const pct = d.spendCap > 0 ? Math.min(d.pctUsado, 100) : 0;
     const cor = barColor[d.status];
     const saldoClass = d.status === 'critico' ? 'red' : d.status === 'baixo' ? 'amber' : 'green';
-    return `<tr>
+    return `<tr class="${d.erro ? 'row-error' : ''}">
       <td>
-        <div class="nome-cell">${d.nome}</div>
-        <div class="id-cell">${d.id}</div>
+        <div class="cell-name">${d.nome}</div>
+        <div class="cell-id">${d.id}</div>
       </td>
-      <td><span class="saldo-val ${saldoClass}">${fmt(d.saldo)}</span></td>
-      <td style="color:var(--ink2);">${d.spendCap > 0 ? fmt(d.spendCap) : '—'}</td>
+      <td><span class="cell-saldo ${saldoClass}">${fmt(d.saldo)}</span></td>
+      <td><span class="cell-limit">${d.spendCap > 0 ? fmt(d.spendCap) : '—'}</span></td>
       <td>
         ${d.spendCap > 0 ? `
-          <div class="progress-row">
-            <div class="bar-wrap"><div class="bar-fill" style="width:${pct}%;background:${cor};"></div></div>
-            <span class="limit-val">${pct.toFixed(0)}%</span>
+          <div class="prog-wrap">
+            <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${cor};"></div></div>
+            <span class="prog-pct">${pct.toFixed(0)}%</span>
           </div>
-          <div style="font-size:10px;color:var(--dim);margin-top:3px;">${fmt(d.amountSpent)} gasto</div>
-        ` : '<span style="color:var(--dim)">—</span>'}
+          <div class="prog-spent">${fmt(d.amountSpent)} gasto</div>
+        ` : '<span style="color:var(--dim);font-size:12px;">—</span>'}
       </td>
-      <td>${badgeMap[d.status] || ''}</td>
+      <td>${d.erro ? '<span class="badge badge-red">Erro API</span>' : (badgeMap[d.status] || '')}</td>
     </tr>`;
   }).join('');
 }
