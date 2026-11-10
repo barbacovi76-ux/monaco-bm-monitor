@@ -27,19 +27,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "IH Dourados",
-      "account_id": "act_831936562721815",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Berlim",
       "account_id": "act_836447545843342",
       "ativo": true,
