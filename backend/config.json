@@ -144,19 +144,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "CA2- BISTROGOURMETPIZZARIA",
-      "account_id": "act_626472496317271",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Ótica Scherer",
       "account_id": "act_1179077680434286",
       "ativo": false,
