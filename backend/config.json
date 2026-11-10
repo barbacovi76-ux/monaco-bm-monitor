@@ -196,19 +196,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Duba lanches",
-      "account_id": "act_933386533018776",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Fornalha Pizzaria",
       "account_id": "act_1618084519451450",
       "ativo": false,
