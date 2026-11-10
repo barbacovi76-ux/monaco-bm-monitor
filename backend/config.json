@@ -27,19 +27,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "MrGabs",
-      "account_id": "act_728296823243425",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "IH Dourados",
       "account_id": "act_831936562721815",
       "ativo": false,
