@@ -40,19 +40,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "A Favorita",
-      "account_id": "act_969681458906352",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Pavao",
       "account_id": "act_1759603645448352",
       "ativo": false,
