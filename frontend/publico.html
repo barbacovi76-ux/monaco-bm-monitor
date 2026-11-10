@@ -13,7 +13,7 @@
   padding: 16px 20px; margin-bottom: 20px;
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
 }
-.bm-title { font-size: 16px; font-weight: 600; color: var(--hi); letter-spacing: -.03em; }
+.bm-title { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -.03em; }
 .bm-id { font-size: 10px; color: var(--dim); margin-top: 3px; font-family: var(--mono); letter-spacing: .04em; }
 .periodo-badge {
   background: var(--card2); border: 1px solid var(--line);
@@ -27,7 +27,7 @@
 }
 .section-title::before {
   content: ''; display: block; width: 3px; height: 12px;
-  background: var(--hi); border-radius: 2px; opacity: .5;
+  background: var(--ink); border-radius: 2px; opacity: .5;
 }
 .section {
   background: linear-gradient(180deg, var(--card2), var(--card));
@@ -36,10 +36,16 @@
 }
 .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
 .mc {
-  background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+  background: linear-gradient(160deg, var(--card2) 0%, var(--card) 100%);
+  border: 1px solid var(--line);
+  border-top: 1px solid var(--gold-glow);
+  border-radius: 14px; padding: 14px 16px;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  animation: fade-up .4s ease both;
 }
+.mc:hover { border-color: var(--line2); border-top-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,164,74,.08); }
 .mc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
-.mc-val { font-size: 20px; font-weight: 600; color: var(--hi); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
+.mc-val { font-size: 20px; font-weight: 600; color: var(--ink); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
 .mc-val.green { color: var(--green); }
 .mc-val.amber { color: var(--amber); }
 .mc-val.red { color: var(--red); }
@@ -50,7 +56,7 @@
 .sugestao.critico { background: var(--red2); border-color: var(--red); color: var(--ink2); }
 .sugestao.atencao { background: var(--amber2); border-color: var(--amber); color: var(--ink2); }
 .sugestao.ok { background: var(--green2); border-color: var(--green); color: var(--ink2); }
-.sugestao b { color: var(--hi); }
+.sugestao b { color: var(--ink); }
 
 .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag-item {
@@ -410,5 +416,6 @@ async function carregar() {
 
 carregar();
 </script>
+<script src="monaco-bg.js"></script>
 </body>
 </html>

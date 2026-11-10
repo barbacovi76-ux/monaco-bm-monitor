@@ -32,19 +32,30 @@
   gap: 10px; margin-bottom: 16px;
 }
 .mc {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: 14px; padding: 12px 14px;
+  background: linear-gradient(160deg, var(--card2) 0%, var(--card) 100%);
+  border: 1px solid var(--line);
+  border-top: 1px solid var(--gold-glow);
+  border-radius: 14px; padding: 14px 16px;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  animation: fade-up .4s ease both;
 }
-.mc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-.mc-val { font-size: 19px; font-weight: 700; color: #fff; font-feature-settings: 'tnum'; }
+.mc:hover {
+  border-color: var(--line2);
+  border-top-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(200,164,74,.08);
+}
+.mc-label { font-size: 10px; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; font-family: var(--mono); }
+.mc-val { font-size: 20px; font-weight: 700; color: var(--ink); font-feature-settings: 'tnum'; font-family: var(--sans); }
 .mc-val.green { color: var(--green); }
 .mc-val.amber { color: var(--amber); }
 .mc-val.red   { color: var(--red);   }
-.mc-sub { font-size: 11px; color: var(--dim); margin-top: 5px; }
+.mc-sub { font-size: 11px; color: var(--dim); margin-top: 5px; font-family: var(--mono); }
 
 .section {
   background: var(--card2); border: 1px solid var(--line);
   border-radius: 14px; padding: 16px 20px; margin-bottom: 14px;
+  animation: fade-up .5s ease both;
 }
 
 .chart-wrap      { position: relative; height: 240px; }
@@ -528,7 +539,8 @@ function exportarHTML() {
   const conteudo = document.getElementById('main-content').innerHTML;
   const bmTitulo = document.getElementById('bm-title').textContent;
   const periodoTxt = document.getElementById('periodo-label').textContent;
-  const blob = new Blob([`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Análise — ${bmNome}</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"><link rel="stylesheet" href="monaco.css"><style>${document.querySelector('style').textContent}</style></head><body><header class="hdr"><span class="logo-name" style="color:#fff;">${bmTitulo}</span><span class="periodo-badge">${periodoTxt}</span></header><div class="container"><div id="main-content">${conteudo}</div></div></body></html>`], { type: 'text/html;charset=utf-8' });
+  const blob = new Blob([`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Análise — ${bmNome}</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"><link rel="stylesheet" href="monaco.css"><style>${document.querySelector('style').textContent}</style></head><body><header class="hdr"><span class="logo-name" style="color:#fff;">${bmTitulo}</span><span class="periodo-badge">${periodoTxt}</span></header><div class="container"><div id="main-content">${conteudo}</div></div><script src="monaco-bg.js"></script>
+</body></html>`], { type: 'text/html;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `analise_${bmTitulo.replace(/[^a-zA-Z0-9]/g,'_')}_${periodoTxt.replace(/[^a-zA-Z0-9]/g,'_')}.html`;
@@ -537,5 +549,6 @@ function exportarHTML() {
 
 carregar();
 </script>
+<script src="monaco-bg.js"></script>
 </body>
 </html>

@@ -10,13 +10,13 @@
   .psw { display: flex; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 1px; }
   .psw-btn { padding: 4px 11px; font-size: 11px; border: none; background: transparent; color: var(--mute); cursor: pointer; border-radius: 999px; font-family: var(--mono); letter-spacing: .06em; text-transform: uppercase; transition: all var(--t-fast); }
   .psw-btn:hover { color: var(--ink); }
-  .psw-btn.on { background: var(--hi); color: var(--bg); font-weight: 600; }
+  .psw-btn.on { background: var(--ink); color: var(--bg); font-weight: 600; }
 
   .dp-wrap { display: none; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
   .dp-wrap.show { display: flex; }
   .dp-wrap input[type=date] { background: var(--card2); border: 1px solid var(--line2); border-radius: 6px; padding: 3px 8px; font-size: 11px; color: var(--ink); outline: none; font-family: var(--mono); }
   .dp-wrap span { font-size: 11px; color: var(--dim); }
-  .dp-wrap .dp-ok { padding: 3px 10px; font-size: 11px; background: var(--hi); color: var(--bg); border: none; border-radius: 999px; cursor: pointer; font-weight: 600; }
+  .dp-wrap .dp-ok { padding: 3px 10px; font-size: 11px; background: var(--ink); color: var(--bg); border: none; border-radius: 999px; cursor: pointer; font-weight: 600; }
 
   .last-run { font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: .05em; }
 
@@ -24,13 +24,17 @@
 
   .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 16px; }
   .mc {
-    background: linear-gradient(180deg, var(--card2), var(--card));
-    border: 1px solid var(--line); border-radius: 14px;
-    padding: 14px 16px; transition: border-color var(--t-base);
+    background: linear-gradient(160deg, var(--card2) 0%, var(--card) 100%);
+    border: 1px solid var(--line);
+    border-top: 1px solid var(--gold-glow);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: border-color .2s, transform .15s, box-shadow .2s;
+    animation: fade-up .4s ease both;
   }
-  .mc:hover { border-color: var(--line2); }
+  .mc:hover { border-color: var(--line2); border-top-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,164,74,.08); }
   .mc-lbl { font-size: 10.5px; color: var(--mute); letter-spacing: .07em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 8px; font-weight: 500; }
-  .mc-val { font-size: 22px; font-weight: 600; color: var(--hi); font-family: var(--mono); letter-spacing: -.04em; font-feature-settings: 'tnum'; }
+  .mc-val { font-size: 22px; font-weight: 600; color: var(--ink); font-family: var(--mono); letter-spacing: -.04em; font-feature-settings: 'tnum'; }
   .mc-val.r { color: var(--red); }
   .mc-val.a { color: var(--amber); }
   .mc-val.g { color: var(--green); }
@@ -79,7 +83,7 @@
 
   .alert-content { flex: 1; }
   .alert-bm { font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: .05em; margin-bottom: 3px; }
-  .alert-title { font-size: 13px; font-weight: 600; color: var(--hi); margin-bottom: 4px; letter-spacing: -.01em; }
+  .alert-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; letter-spacing: -.01em; }
   .alert-desc { font-size: 12px; color: var(--ink2); line-height: 1.6; }
   .alert-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .meta-tag { font-size: 10px; padding: 2px 8px; border-radius: 999px; font-family: var(--mono); letter-spacing: .04em; }
@@ -545,5 +549,6 @@ if (savedAlertas && savedLastRun) {
 }
 </script>
 <script src="monaco.js"></script>
+<script src="monaco-bg.js"></script>
 </body>
 </html>

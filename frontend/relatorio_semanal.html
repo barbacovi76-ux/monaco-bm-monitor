@@ -15,7 +15,7 @@
   flex-wrap: wrap; gap: 12px;
 }
 .periodo-label { font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: .07em; font-family: var(--mono); }
-.periodo-datas { font-size: 15px; font-weight: 600; color: var(--hi); letter-spacing: -.03em; margin-top: 3px; }
+.periodo-datas { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -.03em; margin-top: 3px; }
 .periodo-badge {
   background: var(--card2); border: 1px solid var(--line);
   border-radius: 999px; padding: 4px 12px;
@@ -27,16 +27,21 @@
   border: 1px solid var(--line2); background: transparent; color: var(--ink2);
   cursor: pointer; font-size: 12px; transition: all var(--t-fast);
 }
-.semana-nav button:hover { background: var(--card2); color: var(--hi); }
+.semana-nav button:hover { background: var(--card2); color: var(--ink); }
 .semana-nav span { font-size: 11px; color: var(--mute); min-width: 90px; text-align: center; font-family: var(--mono); }
 
 .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
 .sc {
-  background: linear-gradient(180deg, var(--card2), var(--card));
-  border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+  background: linear-gradient(160deg, var(--card2) 0%, var(--card) 100%);
+  border: 1px solid var(--line);
+  border-top: 1px solid var(--gold-glow);
+  border-radius: 14px; padding: 14px 16px;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  animation: fade-up .4s ease both;
 }
+.sc:hover { border-color: var(--line2); border-top-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,164,74,.08); }
 .sc-label { font-size: 10.5px; color: var(--mute); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .07em; font-weight: 500; font-family: var(--mono); }
-.sc-val { font-size: 20px; font-weight: 600; color: var(--hi); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
+.sc-val { font-size: 20px; font-weight: 600; color: var(--ink); letter-spacing: -.04em; line-height: 1; font-feature-settings: 'tnum'; }
 .sc-val.green { color: var(--green); }
 
 .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
@@ -73,7 +78,7 @@
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.7); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--card); border: 1px solid var(--line2); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; }
-.modal-title { font-size: 15px; font-weight: 600; color: var(--hi); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; letter-spacing: -.02em; }
+.modal-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; letter-spacing: -.02em; }
 .modal-close { background: none; border: none; color: var(--mute); font-size: 20px; cursor: pointer; transition: color var(--t-fast); }
 .modal-close:hover { color: var(--ink); }
 
@@ -368,8 +373,8 @@ function buildObjTabs() {
         'display:inline-flex;align-items:center;gap:5px;'+
         'padding:5px 13px;border-radius:999px;font-size:12px;cursor:pointer;'+
         'font-family:var(--mono);letter-spacing:.04em;font-weight:'+(active?'600':'400')+';'+
-        'border:1px solid '+(active?'var(--hi)':'var(--line)')+';'+
-        'background:'+(active?'var(--hi)':'transparent')+';'+
+        'border:1px solid '+(active?'var(--ink)':'var(--line)')+';'+
+        'background:'+(active?'var(--ink)':'transparent')+';'+
         'color:'+(active?'var(--bg)':'var(--mute)')+';'+
         'transition:all .12s;">'+
         labels[k]+
@@ -510,5 +515,6 @@ function showToast(msg, tipo) {
 atualizarPeriodo();
 buildObjTabs();
 </script>
+<script src="monaco-bg.js"></script>
 </body>
 </html>

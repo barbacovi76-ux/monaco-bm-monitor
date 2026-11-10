@@ -16,7 +16,7 @@
   background: var(--card2); color: var(--ink2); font-size: 12px; cursor: pointer;
   transition: all var(--t-fast);
 }
-.periodo-btn.active { background: var(--hi); color: var(--bg); border-color: var(--hi); font-weight: 600; }
+.periodo-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
 .date-inputs { display: flex; gap: 8px; align-items: center; }
 .date-inputs input[type=date] {
   background: var(--card2); border: 1px solid var(--line2); color: var(--text);
@@ -29,9 +29,17 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px; margin-bottom: 20px;
 }
-.sc { background: linear-gradient(180deg,var(--card2),var(--card)); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
-.sc-label { font-size: 10px; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
-.sc-val { font-size: 22px; font-weight: 700; font-feature-settings: 'tnum'; color: #fff; }
+.sc {
+  background: linear-gradient(160deg,var(--card2) 0%,var(--card) 100%);
+  border: 1px solid var(--line);
+  border-top: 1px solid var(--gold-glow);
+  border-radius: 14px; padding: 14px 16px;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  animation: fade-up .4s ease both;
+}
+.sc:hover { border-color: var(--line2); border-top-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,164,74,.08); }
+.sc-label { font-size: 10px; color: var(--mute); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; font-family: var(--mono); }
+.sc-val { font-size: 22px; font-weight: 700; font-feature-settings: 'tnum'; color: var(--ink); font-family: var(--sans); }
 .sc-delta { font-size: 11px; margin-top: 4px; font-family: var(--mono); }
 .sc-delta.up { color: var(--green); }
 .sc-delta.down { color: var(--red); }
@@ -44,7 +52,7 @@
   background: var(--card2); color: var(--ink2); font-size: 12px; cursor: pointer;
   transition: all var(--t-fast); display: flex; align-items: center; gap: 6px;
 }
-.method-tab.active { background: var(--hi); color: var(--bg); border-color: var(--hi); font-weight: 600; }
+.method-tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
 .method-tab .tab-count {
   background: rgba(255,255,255,.12); border-radius: 10px; padding: 1px 6px; font-size: 10px;
 }
@@ -877,5 +885,6 @@ function escapeHtml(s) {
   document.getElementById('dt-fim').addEventListener('change', atualizarLblPeriodo);
 })();
 </script>
+<script src="monaco-bg.js"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.bm-title { font-size: 16px; font-weight: 600; color: var(--hi); }
+.bm-title { font-size: 16px; font-weight: 600; color: var(--ink); }
 .bm-id { font-size: 11px; color: var(--dim); margin-top: 3px; font-family: var(--mono); }
 
 .bm-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -47,7 +47,7 @@
   font-weight: 500;
 }
 .tab-btn:hover { color: var(--ink2); }
-.tab-btn.ativo { background: var(--hi); color: var(--bg); font-weight: 600; }
+.tab-btn.ativo { background: var(--ink); color: var(--bg); font-weight: 600; }
 
 .metrics {
   display: grid;
@@ -56,10 +56,19 @@
   margin-bottom: 20px;
 }
 .mc {
-  background: linear-gradient(180deg, var(--card2), var(--card));
+  background: linear-gradient(160deg, var(--card2) 0%, var(--card) 100%);
   border: 1px solid var(--line);
+  border-top: 1px solid var(--gold-glow);
   border-radius: 14px;
   padding: 12px 14px;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  animation: fade-up .4s ease both;
+}
+.mc:hover {
+  border-color: var(--line2);
+  border-top-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(200,164,74,.08);
 }
 .mc-label {
   font-size: 11px;
@@ -86,7 +95,7 @@
   white-space: nowrap;
   cursor: pointer;
 }
-.nome-cell:hover { color: var(--hi); }
+.nome-cell:hover { color: var(--ink); }
 
 .status-badge {
   display: inline-flex;
@@ -175,7 +184,7 @@
 }
 .modal-criativo-inner img   { width: 100%; border-radius: 8px; max-height: 400px; object-fit: contain; }
 .modal-criativo-inner video { width: 100%; border-radius: 8px; max-height: 400px; }
-.modal-criativo-title { font-size: 13px; font-weight: 600; color: var(--hi); margin-bottom: 12px; }
+.modal-criativo-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
 .modal-criativo-body  { font-size: 12px; color: var(--ink2); margin-top: 8px; line-height: 1.6; }
 .modal-close-btn { float: right; background: none; border: none; color: var(--dim); font-size: 20px; cursor: pointer; }
 .modal-close-btn:hover { color: var(--ink); }
@@ -196,12 +205,12 @@
   background: var(--card); flex-shrink: 0;
 }
 .bob-title {
-  font-size: 14px; font-weight: 600; color: var(--hi);
+  font-size: 14px; font-weight: 600; color: var(--ink);
   display: flex; align-items: center; gap: 8px;
 }
 .bob-title-mark {
   width: 22px; height: 22px;
-  background: var(--hi);
+  background: var(--ink);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--bg);
   transform: rotate(45deg); border-radius: 2px;
@@ -241,7 +250,7 @@
 .bob-alert.atencao { background: var(--amber2); border-color: var(--amber); }
 .bob-alert.info    { background: var(--blue2);  border-color: var(--blue); }
 .bob-alert.ok      { background: var(--green2); border-color: var(--green); }
-.bob-alert-title   { font-size: 12px; font-weight: 600; color: var(--hi); margin-bottom: 3px; }
+.bob-alert-title   { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
 .bob-alert-desc    { font-size: 11px; color: var(--ink2); line-height: 1.6; }
 
 .bob-tag { font-size: 10px; padding: 2px 7px; border-radius: 999px; }
@@ -1170,5 +1179,6 @@ if (!accountId) {
   </div>
 </div>
 
+<script src="monaco-bg.js"></script>
 </body>
 </html>
