@@ -92,19 +92,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "BRUNA MACHADO - DOTCON",
-      "account_id": "act_1102427261426373",
-      "ativo": true,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "CA - AMK Estetica",
       "account_id": "act_590117117342811",
       "ativo": true,
