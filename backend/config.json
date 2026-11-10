@@ -53,19 +53,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Brava Pizza",
-      "account_id": "act_4279801688941861",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Pavao",
       "account_id": "act_1759603645448352",
       "ativo": false,
