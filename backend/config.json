@@ -131,19 +131,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Rose moda intima",
-      "account_id": "act_1033202122629700",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "45 920033459",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "CA- Leni ADS 02",
       "account_id": "act_1569287454130140",
       "ativo": false,
