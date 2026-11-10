@@ -131,19 +131,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "CA- Leni ADS 02",
-      "account_id": "act_1569287454130140",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "CA- BISTROGOURMETPIZZARIA",
       "account_id": "act_3379098802257981",
       "ativo": false,
