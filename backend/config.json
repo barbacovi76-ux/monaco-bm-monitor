@@ -14,19 +14,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "IH Campo Grande",
-      "account_id": "act_1131240581799095",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Mollinari",
       "account_id": "act_459274303920372",
       "ativo": true,
