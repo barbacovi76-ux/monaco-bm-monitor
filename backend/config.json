@@ -157,19 +157,6 @@
       "nome_exibicao": null
     },
     {
-      "nome": "Fornalha Pizzaria",
-      "account_id": "act_1618084519451450",
-      "ativo": false,
-      "metricas": [
-        "saldo"
-      ],
-      "whatsapp_numero": "",
-      "limite_critico": null,
-      "limite_baixo": null,
-      "metodo_forcado": null,
-      "nome_exibicao": null
-    },
-    {
       "nome": "Maverick Tech",
       "account_id": "act_1117971404378887",
       "ativo": false,
