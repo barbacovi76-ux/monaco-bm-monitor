@@ -146,7 +146,7 @@
     {
       "nome": "MIL BR SVA LTDA",
       "account_id": "act_1054071956093512",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -263,7 +263,7 @@
     {
       "nome": "Dot Everton",
       "account_id": "act_1242530613606108",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -289,7 +289,7 @@
     {
       "nome": "CA - IZEE SECURITIZAD",
       "account_id": "act_1571125566708805",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -380,7 +380,7 @@
     {
       "nome": "Bari Pizzas",
       "account_id": "act_435579423245411",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -406,7 +406,7 @@
     {
       "nome": "Restaurante da Samires 2",
       "account_id": "act_1304028087651228",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -445,7 +445,7 @@
     {
       "nome": "CA-KVAgro",
       "account_id": "act_1949417395697365",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
@@ -458,7 +458,7 @@
     {
       "nome": "Estúdio Vitória Daronch",
       "account_id": "act_1517516869463790",
-      "ativo": true,
+      "ativo": false,
       "metricas": [
         "saldo"
       ],
