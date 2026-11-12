@@ -699,7 +699,7 @@ def analisar_comparativo():
 
 def rodar_loop():
     cfg          = carregar_config()
-    horario_alvo = cfg["alertas"].get("horario_verificacao", "15:00")
+    horario_alvo = cfg.get("alertas", {}).get("horario_verificacao", "15:00")
 
     # Horarios em UTC (Railway usa UTC — BRT = UTC-3)
     # 07:00 BRT = 10:00 UTC — motivacional
