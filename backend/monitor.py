@@ -714,9 +714,11 @@ def rodar_loop():
     log.info(f"  Encerramentos:  {horario_encerramentos} UTC (08:00 BRT)")
     log.info(f"  Comparativo:    {horario_comparativo} UTC (09:00 BRT) — seg/qua/sex")
     log.info(f"  Saldo:          {horario_alvo} UTC (12:00 BRT)")
-    log.info(f"  Contas:         {len(cfg['meta']['contas'])}")
-    log.info(f"  Limite critico: {fmt_brl(cfg['alertas']['limite_critico'])}")
-    log.info(f"  Limite baixo:   {fmt_brl(cfg['alertas']['limite_baixo'])}")
+    _contas = cfg.get('contas') or cfg.get('meta', {}).get('contas', [])
+    _alertas_cfg = cfg.get('alertas', {})
+    log.info(f"  Contas:         {len(_contas)}")
+    log.info(f"  Limite critico: {fmt_brl(_alertas_cfg.get('limite_critico', 50))}")
+    log.info(f"  Limite baixo:   {fmt_brl(_alertas_cfg.get('limite_baixo', 150))}")
     log.info("")
 
     ultimo_dia_motivacional  = None
