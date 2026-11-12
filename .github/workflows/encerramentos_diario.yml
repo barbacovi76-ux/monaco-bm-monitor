@@ -1,0 +1,21 @@
+name: Verificacao de Encerramentos Diaria
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 08h Brasília (UTC-3)
+  workflow_dispatch:
+jobs:
+  verificar-encerramentos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python backend/encerramentos.py
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          WPP_API_URL: ${{ secrets.WPP_API_URL }}
+          WPP_API_KEY: ${{ secrets.WPP_API_KEY }}
+          WPP_INSTANCIA: ${{ secrets.WPP_INSTANCIA }}
+          WPP_DESTINO: ${{ secrets.GRUPO_OPERACOES }}
