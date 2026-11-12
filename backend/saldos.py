@@ -24,8 +24,8 @@ criticos, baixos, ok, erros = [], [], [], []
 
 for c in contas_ativas:
     nome = c.get('nome_exibicao') or c.get('nome', c['account_id'])
-    lim_crit = c.get('limite_critico', 50)
-    lim_baixo = c.get('limite_baixo', 150)
+    lim_crit = c.get('limite_critico') or 50
+    lim_baixo = c.get('limite_baixo') or 150
     try:
         r = requests.get(
             f"https://graph.facebook.com/v19.0/{c['account_id']}",
@@ -85,7 +85,7 @@ if not WPP_KEY:
     exit(0)
 
 url = f"{WPP_URL}/message/sendText/{WPP_INST}"
-payload = {"number": WPP_DEST, "text": mensagem}
+payload = {"number": WPP_DEST, "textMessage": {"text": mensagem}}
 headers = {"apikey": WPP_KEY, "Content-Type": "application/json"}
 
 try:
