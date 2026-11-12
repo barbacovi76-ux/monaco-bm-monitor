@@ -90,7 +90,7 @@ headers = {"apikey": WPP_KEY, "Content-Type": "application/json"}
 
 try:
     resp = requests.post(url, headers=headers, json=payload, timeout=15)
-    if resp.status_code == 200:
+    if resp.status_code in (200, 201):
         print("\n✅ Mensagem enviada no WhatsApp")
     else:
         print(f"\n❌ Falha ao enviar: {resp.status_code} — {resp.text[:200]}")
