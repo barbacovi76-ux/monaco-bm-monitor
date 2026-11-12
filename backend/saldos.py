@@ -3,7 +3,9 @@ import os
 import requests
 
 # ── Config ──────────────────────────────────────────────────────────
-cfg    = json.load(open('config.json'))
+import os as _os
+_base = _os.path.dirname(_os.path.abspath(__file__))
+cfg    = json.load(open(_os.path.join(_base, 'config.json')))
 token  = os.getenv("META_TOKEN", "")
 
 WPP_URL   = os.getenv("WPP_API_URL",  "https://evolution-api-production-2227.up.railway.app")
