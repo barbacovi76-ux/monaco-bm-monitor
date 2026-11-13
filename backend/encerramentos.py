@@ -66,6 +66,19 @@ for c in contas_ativas:
 # ── Montar mensagem ──────────────────────────────────────────────────
 if not encerradas and not encerrando_hoje:
     print("✅ Nenhum encerramento detectado.")
+    agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
+    mensagem_ok = f"✅ *ENCERRAMENTOS — Monaco Agency*\n_{agora_str}_\n\nNenhuma campanha encerrada ontem ou encerrando hoje."
+    url     = f"{WPP_URL}/message/sendText/{WPP_INST}"
+    payload = {"number": WPP_DEST, "textMessage": {"text": mensagem_ok}}
+    headers = {"apikey": WPP_KEY, "Content-Type": "application/json"}
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=15)
+        if resp.status_code in (200, 201):
+            print("✅ Confirmação enviada no WhatsApp")
+        else:
+            print(f"❌ Falha ao enviar confirmação: {resp.status_code}")
+    except Exception as e:
+        print(f"❌ Erro: {e}")
     exit(0)
 
 agora_str = datetime.now().strftime("%d/%m/%Y %H:%M")
