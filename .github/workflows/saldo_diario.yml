@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '0 19 * * *'   # 16h Brasília (UTC-3)
   workflow_dispatch:
+concurrency:
+  group: saldo-diario
+  cancel-in-progress: true
 jobs:
   verificar-saldo:
     runs-on: ubuntu-latest

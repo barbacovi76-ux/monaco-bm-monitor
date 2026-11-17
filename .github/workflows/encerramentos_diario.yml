@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '0 11 * * *'   # 08h Brasília (UTC-3)
   workflow_dispatch:
+concurrency:
+  group: encerramentos-diario
+  cancel-in-progress: true
 jobs:
   verificar-encerramentos:
     runs-on: ubuntu-latest

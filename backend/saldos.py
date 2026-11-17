@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+from datetime import datetime, timezone, timedelta
 
 # ── Config ──────────────────────────────────────────────────────────
 import os as _os
@@ -16,6 +17,13 @@ WPP_DEST  = os.getenv("WPP_DESTINO",  "120363403884174816@g.us")
 if not token:
     print("❌ META_TOKEN não definido")
     exit(1)
+
+# Proteção anti-duplicata: só roda entre 15h e 21h BRT (18h-00h UTC)
+_brt = datetime.now(timezone(timedelta(hours=-3)))
+_hora_brt = _brt.hour
+if not (15 <= _hora_brt <= 21):
+    print(f"⏭️ Fora da janela permitida ({_hora_brt}h BRT) — execução ignorada")
+    exit(0)
 
 # ── Buscar saldos ────────────────────────────────────────────────────
 contas_ativas = [c for c in cfg['contas'] if c.get('ativo', True)]
